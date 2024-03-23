@@ -1,0 +1,46 @@
+body {
+    background-color: rgb(146, 181, 212);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.flex-row-center-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.flex-column-center-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1em;
+}
+
+.container {
+    background-color: rgb(157, 209, 235);
+    border-radius: 1em;
+    padding: 1em;
+    box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
+}
+
+form>input,
+form>button,
+form>textarea {
+    width: 400px;
+    border-radius: 1em;
+    padding: 1em;
+    border:0;
+    box-shadow: rgb(204, 219, 232) 3px 3px 6px 0px inset, rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
+}
+
+form>button,
+button {
+    box-sizing: content-box;
+    border: 0;
+    box-shadow: unset
+}
