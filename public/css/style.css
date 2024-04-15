@@ -1,8 +1,9 @@
 body {
-    background-color: rgb(146, 181, 212);
+    background-color: beige;
+
     margin: 0;
-    font-size: 20px;
     height: 100vh;
+    width: 100vw;   
 }
 
 .flex-row-center-center {
@@ -20,38 +21,106 @@ body {
 }
 
 .container {
-    background-color: rgb(157, 209, 235);
+    background-color: white;
     border-radius: 1em;
     padding: 1em;
-    box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
 }
 
-form>input,
-form>button,
-form>textarea {
+
+form > input, form > button, form > textarea {
     width: 400px;
     border-radius: 1em;
     padding: 1em;
-    border: 0;
+    border: 0 solid black;
     box-shadow: rgb(204, 219, 232) 3px 3px 6px 0px inset, rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
 }
 
-form>button,
-button {
+form > button, button {
     box-sizing: content-box;
-    border: 0;
-    box-shadow: unset
+    box-shadow: rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px;
+    background-color: bisque;
+    font-weight: 600;
 }
 
-@media screen and (max-width: 414px) {
-    form,
+.sidebar {
+    width: calc(100% / 3);
+    align-self: baseline;
+}
+
+.main {
+    width: calc(100% / 3 * 2);
+
+}
+
+.projects {
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: flex-start;
+}
+
+.projects > .card {
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    border-radius: 1em;
+    padding: 1em;
+}
+
+.projects > .card > img {
+    margin-top: -1em;
+    margin-left: -1em;
+    margin-right: -1em;
+    border-radius: 1em 1em 0 0 ;
+}
+
+@media screen and (max-width: 480px) {
+    body {
+        height: 100vh !important;
+        margin-top: 0 !important;
+    }
+
     .container {
+        box-sizing: border-box;
+    }
+
+    form, .container {
         width: 100%;
     }
 
-    form>input,
-    form>textarea,
-    form>button {
+    form > input,
+    form > textarea,
+    form > button {
         width: calc(100% - 1em);
+    }
+
+
+    .main {
+        width: 100%;
+    }
+
+    .sidebar {
+        display: none;
+        margin-left: -70%;
+
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 70%;
+        background-color: white;
+        height: 100vh;
+    }
+
+    .add {
+        display: none;
+    }
+
+    .show {
+        display: block;
+        margin-left: 0;
+        /* transition: margin-left 2s ease; */
+    }
+
+    .projects {
+        justify-content: center;
     }
 }
