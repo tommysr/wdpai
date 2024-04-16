@@ -14,6 +14,31 @@ body {
   align-items: center;
 }
 
+.follow-bar {
+  position: absolute;
+  justify-content: end;
+  display: flex;
+  align-items: center;
+  gap: 2em;
+  top: 32px;
+  right: 0;
+}
+
+.text-bold-sm {
+  font-family: "Lekton";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 16px;
+  letter-spacing: 0.05em;
+
+  color: #ebf6e5;
+}
+
+.follow-bar > img {
+  display: inline-block;
+}
+
 .wrap {
   flex-wrap: wrap;
 }
@@ -100,11 +125,10 @@ form > button {
   letter-spacing: 0.15em;
 }
 
-
 #tos-checkbox {
-    box-sizing: border-box;
-    border: 2px solid #58c3b5;
-    border-radius: 20px;
+  box-sizing: border-box;
+  border: 2px solid #58c3b5;
+  border-radius: 20px;
 }
 
 .tos-text {
@@ -117,15 +141,15 @@ form > button {
 }
 
 .tos-text > a {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .tos-text > a:link {
-    color: white;
+  color: white;
 }
 
 .tos-text > a:visited {
-    color: royalblue;
+  color: royalblue;
 }
 
 .sidebar {
