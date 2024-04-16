@@ -1,4 +1,5 @@
 <?php
+require_once "config.php";
 
 class Database {
     private $username;
@@ -8,10 +9,10 @@ class Database {
 
     public function __construct()
     {
-        $this->username = "docker";
-        $this->password = "docker";
-        $this->host = "db";
-        $this->database = "db";
+        $this->username = USERNAME;
+        $this->password = PASSWORD;
+        $this->host = HOST;
+        $this->database = DATABASE;
     }
 
     public function connect()
