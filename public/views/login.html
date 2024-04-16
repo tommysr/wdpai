@@ -1,23 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="public/css/style.css" type="text/css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="public/css/style.css" type="text/css">
-    <title>Login</title>
-</head>
+    <title><?= $title; ?></title>
+  </head>
 
-<body class="flex-row-center-center">
-    <div class="container flex-column-center-center">
-        <h1>Login</h1>
-
-        <form action="" class="flex-column-center-center">
-            <input type="email" placeholder="email">
-            <input type="password" placeholder="password">
-            <button>Sign in</button>
-        </form>
+  <body class="flex-row-around-center wrap">
+    <div class="logo">
+      <img src="public/assets/logo_with_name.svg" />
     </div>
-</body>
 
+    <form action="" class="flex-column-center-center gap">
+      <input class="login-input" name="email" type="email" placeholder="email" />
+      <input class="login-input" name="password" type="password" placeholder="password" />
+      <button class="main-button" type="submit">Sign in</button>
+      <button class="secondary-button" type="button">Create account</button>
+    </form>
+  </body>
 </html>
