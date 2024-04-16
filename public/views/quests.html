@@ -32,10 +32,10 @@
         <h1>DASHBOARD</h1>
 
         <div class="projects flex-row-center-center">
-          <?php foreach($items as $item): ?>
+          <?php foreach($quests as $quest): ?>
           <div class="card">
-            <h2><?= $item->getDescription(); ?></h2>
-            <p><?= $item->getRequiredWallet(); ?></p>
+            <h2><?= $quest->getDescription(); ?></h2>
+            <p><?= $quest->getRequiredWallet(); ?></p>
           </div>
           <?php endforeach; ?>
         </div>
