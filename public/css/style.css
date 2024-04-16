@@ -1,57 +1,240 @@
 body {
-    background-color: rgb(146, 181, 212);
-    margin: 0;
-    font-size: 20px;
-    height: 100vh;
+  margin: 0;
+  font-family: "Inter";
+  font-style: normal;
+}
+
+.full-container {
+  height: 100vh;
+  width: 100vw;
+  background-color: #121d0b;
+}
+
+.follow-bar {
+  position: absolute;
+  justify-content: end;
+  display: flex;
+  align-items: center;
+  gap: 2em;
+  top: 32px;
+  right: 0;
+}
+
+.text-bold-sm {
+  font-family: "Lekton";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 16px;
+  letter-spacing: 0.05em;
+
+  color: #ebf6e5;
+}
+
+.follow-bar > img {
+  display: inline-block;
+}
+
+.wrap {
+  flex-wrap: wrap;
 }
 
 .flex-row-center-center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-row-evenly-center {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
 }
 
 .flex-column-center-center {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 1em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5em;
 }
 
 .container {
-    background-color: rgb(157, 209, 235);
-    border-radius: 1em;
-    padding: 1em;
-    box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px, rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
+  background-color: white;
+  border-radius: 1em;
+  padding: 1em;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
+    rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
 }
 
-form>input,
-form>button,
-form>textarea {
-    width: 400px;
-    border-radius: 1em;
-    padding: 1em;
-    border: 0;
-    box-shadow: rgb(204, 219, 232) 3px 3px 6px 0px inset, rgba(255, 255, 255, 0.5) -3px -3px 6px 1px inset;
+.logo > img {
+  width: 240px;
 }
 
-form>button,
-button {
-    box-sizing: content-box;
-    border: 0;
-    box-shadow: unset
+form > input,
+form > button,
+form > textarea {
+  border: 0;
+  border-radius: 10px;
 }
 
-@media screen and (max-width: 414px) {
-    form,
-    .container {
-        width: 100%;
-    }
+form > input {
+  width: 300px;
+  height: 50px;
 
-    form>input,
-    form>textarea,
-    form>button {
-        width: calc(100% - 1em);
-    }
+  text-align: center;
+}
+
+form > button {
+  width: 200px;
+  height: 65px;
+
+  box-sizing: border-box;
+  text-transform: uppercase;
+}
+
+.login-input {
+  box-shadow: inset 0px 5px 6px 2px rgba(0, 0, 0, 0.12);
+  background: rgba(236, 248, 243, 0.2);
+  color: #ebf6e5;
+
+  font-weight: 700;
+  font-size: 1.2em;
+  letter-spacing: 0.18em;
+}
+
+.main-button {
+  background-color: #b0da99;
+  color: #121d0b;
+  border-radius: 10px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+  font-weight: 900;
+  font-size: 16px;
+  letter-spacing: 0.15em;
+}
+
+.secondary-button {
+  background-color: transparent;
+  color: #ebf6e5;
+  border-radius: 10px;
+
+  border: 2px solid #ebf6e5;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.15em;
+}
+
+#tos-checkbox {
+  box-sizing: border-box;
+  border: 2px solid #58c3b5;
+  border-radius: 20px;
+}
+
+.tos-text {
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 15px;
+
+  letter-spacing: 0.05em;
+  color: #ebf6e5;
+}
+
+.tos-text > a {
+  text-decoration: underline;
+}
+
+.tos-text > a:link {
+  color: white;
+}
+
+.tos-text > a:visited {
+  color: royalblue;
+}
+
+.sidebar {
+  background-color: white;
+  width: calc(100% / 3);
+  align-self: baseline;
+}
+
+.main {
+  width: calc(100% / 3 * 2);
+}
+
+.projects {
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: flex-start;
+}
+
+.projects > .card {
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  border-radius: 1em;
+  padding: 1em;
+}
+
+.projects > .card > img {
+  margin-top: -1em;
+  margin-left: -1em;
+  margin-right: -1em;
+  border-radius: 1em 1em 0 0;
+}
+
+@media screen and (max-width: 600px) {
+  body {
+    height: 100vh !important;
+    margin-top: 0 !important;
+  }
+
+  .full-container {
+    flex-direction: column;
+  }
+
+  .container {
+    box-sizing: border-box;
+  }
+
+  /* form,
+  .container {
+    width: 100%;
+  } */
+
+  .main {
+    width: 100%;
+  }
+
+  .sidebar {
+    display: none;
+    margin-left: -70%;
+
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 70%;
+    background-color: white;
+    height: 100vh;
+  }
+
+  .add {
+    display: none;
+  }
+
+  .show {
+    display: block;
+    margin-left: 0;
+    /* transition: margin-left 2s ease; */
+  }
+
+  .follow-bar {
+    display: none;
+  }
+
+  .projects {
+    justify-content: center;
+  }
 }
