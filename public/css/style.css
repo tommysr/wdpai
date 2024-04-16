@@ -153,6 +153,7 @@ form > button {
 }
 
 .sidebar {
+  background-color: white;
   width: calc(100% / 3);
   align-self: baseline;
 }
@@ -227,6 +228,10 @@ form > button {
     display: block;
     margin-left: 0;
     /* transition: margin-left 2s ease; */
+  }
+
+  .follow-bar {
+    display: none;
   }
 
   .projects {
