@@ -18,6 +18,6 @@ class QuestsController extends AppController
   public function quests()
   {
     $quests = $this->questRepository->getQuests();
-    $this->render('quests', ['quests' => $quests]);
+    $this->render('quests', ['title' => 'quest list', 'quests' => $quests]);
   }
 }
