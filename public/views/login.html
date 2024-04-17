@@ -18,6 +18,8 @@
       rel="stylesheet"
     />
 
+    <script type="text/javascript" src="public/js/login.js" defer></script>
+
     <title><?= $title; ?></title>
   </head>
 
@@ -36,26 +38,42 @@
         <img src="public/assets/logo_with_name.svg" />
       </div>
 
-      <div class="flex-column-center-center">
-        <form action="" class="flex-column-center-center">
-          <input
-            class="login-input"
-            name="email"
-            type="email"
-            placeholder="email"
-          />
-          <input
-            class="login-input"
-            name="password"
-            type="password"
-            placeholder="password"
-          />
+      <div class="flex-column-center-center gap-1-5">
+        <form
+          action="login"
+          method="post"
+          class="flex-column-center-center gap-1-5"
+        >
+          <div class="flex-column-center-center">
+            <input
+              class="login-input"
+              name="email"
+              type="email"
+              placeholder="email address"
+              required
+            />
+            <span id="email-error" class="error-message"></span>
+          </div>
+
+          <div class="flex-column-center-center">
+            <input
+              class="login-input"
+              name="password"
+              type="password"
+              placeholder="password"
+              required
+              minlength="8"
+            />
+            <span id="password-error" class="error-message"></span>
+          </div>
           <button class="main-button">Sign in</button>
         </form>
 
         <form action="/register">
           <button class="secondary-button">Create account</button>
         </form>
+
+        <span class="error-message"><?= $message; ?></span>
       </div>
     </main>
   </body>
