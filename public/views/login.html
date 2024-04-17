@@ -36,22 +36,27 @@
         <img src="public/assets/logo_with_name.svg" />
       </div>
 
-      <form action="" class="flex-column-center-center">
-        <input
-          class="login-input"
-          name="email"
-          type="email"
-          placeholder="email"
-        />
-        <input
-          class="login-input"
-          name="password"
-          type="password"
-          placeholder="password"
-        />
-        <button class="main-button" type="submit">Sign in</button>
-        <button class="secondary-button" type="button">Create account</button>
-      </form>
+      <div class="flex-column-center-center">
+        <form action="" class="flex-column-center-center">
+          <input
+            class="login-input"
+            name="email"
+            type="email"
+            placeholder="email"
+          />
+          <input
+            class="login-input"
+            name="password"
+            type="password"
+            placeholder="password"
+          />
+          <button class="main-button">Sign in</button>
+        </form>
+
+        <form action="/register">
+          <button class="secondary-button">Create account</button>
+        </form>
+      </div>
     </main>
   </body>
 </html>
