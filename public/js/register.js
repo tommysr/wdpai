@@ -36,8 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const checkPasswordValidity = () => {
     if (password.validity.valid) {
       passwordErrorMessage.textContent = "";
-    } else if (username.validity.valueMissing) {
-    } else if (password.validity.tooShort) {
+    } else if (password.validity.tooShort || password.validity.valueMissing) {
       passwordErrorMessage.textContent =
         "Password must be at least 8 characters long";
     }
@@ -51,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
       confirmedPasswordErrorMessage.textContent =
         "Confirmed password does not match the password";
     } else {
-      confirmedPasswordErrorMessage.textContent = ""
+      confirmedPasswordErrorMessage.textContent = "";
       return true;
     }
 
