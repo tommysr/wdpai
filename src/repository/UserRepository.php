@@ -20,6 +20,22 @@ class UserRepository extends Repository
     ]);
   }
 
+  public function getUser(string $email): ?User {
+    $stmt = $this->db->connect()->prepare('
+      SELECT * FROM USERS WHERE email = :email
+    ');
+    $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+    $stmt->execute();
+
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$user) {
+      return null;
+    }
+
+    return new User($user['email'], $user['password'], $user['username'], $user['joindate']);
+  }
+
 
   public function userExists($email): bool
   {

@@ -17,13 +17,32 @@ class AuthController extends AppController
     $this->userRepository = new UserRepository();
   }
 
+
   public function login()
   {
     if (!$this->isPost()) {
       return $this->render('login', ['title' => 'Sign in']);
     }
 
-    // TODO: Handle sign in
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    if (!Validator::validateEmail($email)) {
+      return $this->renderLoginView('incorrect email');
+    }
+
+    $user = $this->userRepository->getUser($email);
+
+    if (!$user) {
+      return $this->renderLoginView('you are not registered');
+    }
+
+    if (!password_verify($password, $user->getPassword())) {
+      return $this->renderLoginView('incorrect password');
+    }
+
+    $url = "http://$_SERVER[HTTP_HOST]";
+    header("Location: {$url}/quests");
   }
 
   public function register()
@@ -72,5 +91,10 @@ class AuthController extends AppController
   private function renderRegisterView(string $message = '')
   {
     return $this->render('register', ['title' => 'Sign up', 'message' => $message]);
+  }
+
+  private function renderLoginView(string $message = '')
+  {
+    return $this->render('login', ['title' => 'Sign in', 'message' => $message]);
   }
 }
