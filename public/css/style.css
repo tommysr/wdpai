@@ -10,14 +10,21 @@ body {
   background-color: #121d0b;
 }
 
-.follow-bar {
+.absolute-follow {
   position: absolute;
-  justify-content: end;
+  top: 35px;
+  right: 0;
+}
+
+.follow-bar-mobile {
+  display: none;
+}
+
+.follow-bar {
   display: flex;
+  justify-content: end;
   align-items: center;
   gap: 2em;
-  top: 32px;
-  right: 0;
 }
 
 .text-bold-sm {
@@ -55,7 +62,7 @@ body {
   gap: 1.5em;
 }
 
-.flex-column-center-center{
+.flex-column-center-center {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -84,15 +91,6 @@ form input[type="password"] {
   text-align: center;
 }
 
-form button {
-  width: 200px;
-  height: 65px;
-  border: 0;
-  border-radius: 10px;
-  box-sizing: border-box;
-  text-transform: uppercase;
-}
-
 .login-input {
   box-shadow: inset 0px 5px 6px 2px rgba(0, 0, 0, 0.12);
   background: rgba(236, 248, 243, 0.2);
@@ -108,7 +106,12 @@ form button {
   color: #121d0b;
   border-radius: 10px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-
+  width: 200px;
+  height: 65px;
+  border: 0;
+  border-radius: 10px;
+  box-sizing: border-box;
+  text-transform: uppercase;
   font-weight: 900;
   font-size: 16px;
   letter-spacing: 0.15em;
@@ -240,6 +243,21 @@ form button {
 
   .follow-bar {
     display: none;
+  }
+
+  .follow-bar-mobile {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: end;
+    align-items: center; */
+    gap: 1em;
+  }
+
+  .follow-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .projects {
