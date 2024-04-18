@@ -41,6 +41,12 @@ class AuthController extends AppController
       return $this->renderLoginView('incorrect password');
     }
 
+    // Start the session
+    session_start();
+
+    // Store user information in session
+    $_SESSION['user_id'] = $user->getId();
+
     $url = "http://$_SERVER[HTTP_HOST]";
     header("Location: {$url}/quests");
   }

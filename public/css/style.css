@@ -2,6 +2,7 @@ body {
   margin: 0;
   font-family: "Inter";
   font-style: normal;
+  background-color: #121d0b;
 }
 
 .full-container {
@@ -36,6 +37,38 @@ body {
   letter-spacing: 0.05em;
 
   color: #ebf6e5;
+}
+
+.modal {
+  max-width: 1200px;
+  padding: 2em;
+  padding-bottom: 3em;
+  box-sizing: border-box;
+  background: rgba(41, 112, 80, 0.2);
+  border: 1px solid #297050;
+  border-radius: 10px;
+}
+
+.modal > p {
+  font-family: "Lekton";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 2em;
+  line-height: 2em;
+  text-align: center;
+  letter-spacing: 0.05em;
+  color: #ebf6e5;
+}
+
+.wallet-name {
+  font-family: "Lekton";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 3em;
+  line-height: 4em;
+  text-align: center;
+  letter-spacing: 0.1em;
+  color: #58c3b5;
 }
 
 .follow-bar > img {
@@ -118,6 +151,10 @@ form input[type="password"] {
 }
 
 .secondary-button {
+  width: 200px;
+  height: 65px;
+
+  text-transform: uppercase;
   background-color: transparent;
   color: #ebf6e5;
   border-radius: 10px;
@@ -165,34 +202,104 @@ form input[type="password"] {
   margin-top: 5px;
 }
 
-.sidebar {
-  background-color: white;
-  width: calc(100% / 3);
-  align-self: baseline;
+.card-background {
+  justify-content: center;
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) minmax(400px, 2fr) minmax(
+      300px,
+      1fr
+    );
+  background: rgba(41, 112, 80, 0.2);
+  border: 1px solid #297050;
+  box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
+  border-radius: 20px 20px 20px 0px;
 }
 
-.main {
-  width: calc(100% / 3 * 2);
+i {
+  color: #65ccb8;
 }
 
-.projects {
-  flex-wrap: wrap;
-  gap: 1.5rem;
+.enter-button {
+  width: 40%;
+  border: 0;
+  text-align: center;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  background: #b0da99;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.5em;
+  line-height: 2em;
+  letter-spacing: 0.4em;
+  color: #000000;
+}
+
+.card-inner {
+  padding-left: 1em;
+  display: flex;
+  flex-direction: column;
   justify-content: flex-start;
 }
 
-.projects > .card {
-  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
-    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
-  border-radius: 1em;
-  padding: 1em;
+.info {
+  margin-right: 20px;
+  font-family: "Lekton";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.5em;
+  line-height: 1.5em;
+  color: #ebf6e5;
 }
 
-.projects > .card > img {
-  margin-top: -1em;
-  margin-left: -1em;
-  margin-right: -1em;
-  border-radius: 1em 1em 0 0;
+.card-image-background {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1em;
+  background: linear-gradient(180deg, #b0da99 0%, #65ccb8 100%);
+  border-radius: 20px 0px;
+}
+
+.card-right-background {
+  background: linear-gradient(
+    180deg,
+    rgba(176, 218, 153, 0.3) 0%,
+    rgba(101, 204, 184, 0.3) 100%
+  );
+  border-radius: 0px 20px 20px 0px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1em;
+}
+
+.card-image {
+  width: 90%;
+  height: 90%;
+  border-radius: 20px 0px;
+}
+
+.title {
+  font-family: "Lekton";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 1.5em;
+  letter-spacing: 0.05em;
+  color: #ebf6e5;
+  margin: 1em 0;
+}
+
+.description {
+  font-family: "Lekton";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.2em;
+  letter-spacing: 0.05em;
+  color: #ebf6e5;
 }
 
 @media screen and (max-width: 600px) {

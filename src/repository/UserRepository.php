@@ -20,7 +20,8 @@ class UserRepository extends Repository
     ]);
   }
 
-  public function getUser(string $email): ?User {
+  public function getUser(string $email): ?User
+  {
     $stmt = $this->db->connect()->prepare('
       SELECT * FROM USERS WHERE email = :email
     ');
@@ -33,7 +34,7 @@ class UserRepository extends Repository
       return null;
     }
 
-    return new User($user['email'], $user['password'], $user['username'], $user['joindate']);
+    return new User($user['userid'], $user['email'], $user['password'], $user['username'], $user['joindate']);
   }
 
 
