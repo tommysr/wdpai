@@ -2,6 +2,7 @@ body {
   margin: 0;
   font-family: "Inter";
   font-style: normal;
+  background-color: #121d0b;
 }
 
 .full-container {
@@ -36,6 +37,38 @@ body {
   letter-spacing: 0.05em;
 
   color: #ebf6e5;
+}
+
+.modal {
+  max-width: 1200px;
+  padding: 2em;
+  padding-bottom: 3em;
+  box-sizing: border-box;
+  background: rgba(41, 112, 80, 0.2);
+  border: 1px solid #297050;
+  border-radius: 10px;
+}
+
+.modal > p {
+  font-family: "Lekton";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 2em;
+  line-height: 2em;
+  text-align: center;
+  letter-spacing: 0.05em;
+  color: #ebf6e5;
+}
+
+.wallet-name {
+  font-family: "Lekton";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 3em;
+  line-height: 4em;
+  text-align: center;
+  letter-spacing: 0.1em;
+  color: #58c3b5;
 }
 
 .follow-bar > img {

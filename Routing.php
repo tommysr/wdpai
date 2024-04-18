@@ -22,7 +22,10 @@ class Router
 
   public static function run($url)
   {
-    $action = explode("/", $url)[0];
+    $urlParts = explode("/", $url);
+    $action = array_shift($urlParts);
+    $params = $urlParts;
+
 
     if (!array_key_exists($action, self::$routes)) {
       self::renderErrorPage(404, "path not found");
@@ -31,10 +34,10 @@ class Router
 
     $controller = self::$routes[$action];
     $object = new $controller;
-    $action = $action ?: 'index';
+    $action = empty($action) ? 'index' : $action;
 
     try {
-      $object->$action();
+      call_user_func_array(array($object, $action), $params);
     } catch (Exception $e) {
       error_log('Error occurred: ' . $e->getMessage());
       self::renderErrorPage(500, 'internal server error, try again later');
