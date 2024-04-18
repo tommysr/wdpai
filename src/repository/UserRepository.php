@@ -34,7 +34,7 @@ class UserRepository extends Repository
       return null;
     }
 
-    return new User($user['email'], $user['password'], $user['username'], $user['joindate']);
+    return new User($user['userid'], $user['email'], $user['password'], $user['username'], $user['joindate']);
   }
 
 
@@ -68,20 +68,5 @@ class UserRepository extends Repository
     } else {
       return false;
     }
-  }
-
-  public function hasUserParticipatedInQuest($email, $questId)
-  {
-    $sql = "SELECT COUNT(*) AS participation_count
-              FROM QuestStatistics qs
-              INNER JOIN Users u ON qs.UserID = u.UserID
-              WHERE u.Email = :email
-              AND qs.QuestID = :questId";
-
-    $stmt = $this->db->connect()->prepare($sql);
-    $stmt->execute(['email' => $email, 'questId' => $questId]);
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    return $result['participation_count'] > 0;
   }
 }

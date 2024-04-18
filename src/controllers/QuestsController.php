@@ -3,18 +3,18 @@
 require_once "AppController.php";
 require_once __DIR__ . '/../models/Quest.php';
 require_once __DIR__ . '/../repository/QuestRepository.php';
-require_once __DIR__ . '/../repository/UserRepository.php';
+require_once __DIR__ . '/../repository/QuestStatisticsRepository.php';
 
 class QuestsController extends AppController
 {
   private $questRepository;
-  private $userRepository;
+  private $questStatisticsRepository;
 
   public function __construct()
   {
     parent::__construct();
     $this->questRepository = new QuestRepository();
-    $this->userRepository = new UserRepository();
+    $this->questStatisticsRepository = new QuestStatisticsRepository();
   }
 
   public function quests()
@@ -24,16 +24,18 @@ class QuestsController extends AppController
   }
 
   public function enterQuest($quest_id)
-  {    
+  {
     session_start();
 
-    if (!isset($_SESSION['email'])) {
+    $user_id = $_SESSION['user_id'];
+
+    if (!isset($user_id)) {
       $url = "http://$_SERVER[HTTP_HOST]";
       header("Location: {$url}/login");
       return;
     }
 
-    if (!$this->userCanEnterQuest($_SESSION['email'], $quest_id)) {
+    if (!$this->userCanEnterQuest($user_id, $quest_id)) {
       return $this->quests();
     }
 
@@ -45,8 +47,12 @@ class QuestsController extends AppController
     echo "Success";
   }
 
-  private function userCanEnterQuest($userEmail, $questId)
+  private function userCanEnterQuest($userId, $questId)
   {
-    return !$this->userRepository->hasUserParticipatedInQuest($userEmail, $questId);
+    if ($this->questStatisticsRepository->getQuestStatistic($userId, $questId)) {
+      return false;
+    }
+
+    return true;
   }
 }

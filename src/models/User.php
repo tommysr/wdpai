@@ -6,13 +6,16 @@ class User
   private $password;
   private $name;
   private $joinDate;
+  private $id;
 
   public function __construct(
+    int $id,
     string $email,
     string $password,
     string $name,
     ?string $joinDate = null
   ) {
+    $this->id = $id;
     $this->email = $email;
     $this->password = $password;
     $this->name = $name;
@@ -23,6 +26,11 @@ class User
     } else {
       $this->joinDate = date('Y-m-d');
     }
+  }
+
+  public function getId(): int
+  {
+    return $this->id;
   }
 
   public function getEmail(): string
