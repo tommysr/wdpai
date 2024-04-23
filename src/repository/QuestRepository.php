@@ -24,9 +24,7 @@ class QuestRepository extends Repository
 
   public function getQuestById($questId): ?Quest
   {
-    $sql = "SELECT *
-    FROM Quests q
-    WHERE q.QuestID = :questId;";
+    $sql = "SELECT * FROM Quests WHERE QuestID = :questId";
 
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute(['questId' => $questId]);
@@ -43,9 +41,7 @@ class QuestRepository extends Repository
   public function getQuests(): array
   {
     $quests = [];
-    $stmt = $this->db->connect()->prepare('
-      SELECT * FROM quests;
-    ');
+    $stmt = $this->db->connect()->prepare('SELECT * FROM quests');
     $stmt->execute();
     $fetched = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

@@ -10,9 +10,7 @@ class OptionsRepository extends Repository
   {
     $options = [];
 
-    $sql = "SELECT *
-    FROM Options o
-    WHERE o.QuestionID = :questionId;";
+    $sql = "SELECT * FROM Options WHERE QuestionID = :questionId";
 
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute(['questionId' => $questionId]);
