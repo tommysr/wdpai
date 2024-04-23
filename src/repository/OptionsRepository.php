@@ -19,7 +19,7 @@ class OptionsRepository extends Repository
     $optionsFetched = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($optionsFetched as $option) {
-      $options[] = new Option($option['optionid'], $option['questionid'], $option['text'], $option['isCorrect']);
+      $options[] = new Option($option['optionid'], $option['questionid'], $option['text'], $option['iscorrect']);
     }
 
 

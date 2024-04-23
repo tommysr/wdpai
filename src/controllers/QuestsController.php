@@ -34,6 +34,7 @@ class QuestsController extends AppController
 
   public function startQuest(int $questId)
   {
+
     $quest = $this->questRepository->getQuestById($questId);
 
     if ($quest === null) {
@@ -42,6 +43,10 @@ class QuestsController extends AppController
 
     $questions = $this->questionsRepository->getQuestionsByQuestId($questId);
 
+    if (count($questions) === 0) {
+      throw new Exception('no questions in database');
+    }
+
     return $this->renderQuestion($questions[0]);
   }
 
@@ -49,12 +54,12 @@ class QuestsController extends AppController
   {
     $question_type = $question->getType();
     $options = $this->optionsRepository->getOptionsByQuestionId($question->getQuestionId());
-
-    switch ($question_type) {
-      case QuestionType::SingleChoice:
+    
+    switch ($question_type->getValue()) {
+      case QuestionType::SINGLE_CHOICE:
         $this->renderSingleChoiceQuestion($question, $options);
         break;
-      case QuestionType::MultipleChoice:
+      case QuestionType::MULTIPLE_CHOICE:
         $this->renderMultipleChoiceQuestion($question, $options);
         break;
       default:
@@ -64,17 +69,17 @@ class QuestsController extends AppController
 
   private function renderSingleChoiceQuestion($question, $options)
   {
-
+    echo "single choice";
   }
 
   private function renderMultipleChoiceQuestion($question, $options)
   {
-
+    echo "multiple choice";
   }
 
   private function renderReadTextQuestion($question)
   {
-
+    echo "text read";
   }
 
 
@@ -95,6 +100,18 @@ class QuestsController extends AppController
     // }
   }
 
+  private function redirectToQuests()
+  {
+    $url = "http://$_SERVER[HTTP_HOST]";
+    header("Location: {$url}/quests");
+  }
+
+  private function redirectToLogin()
+  {
+    $url = "http://$_SERVER[HTTP_HOST]";
+    header("Location: {$url}/login");
+  }
+
 
   public function enterQuest($quest_id)
   {
@@ -103,30 +120,44 @@ class QuestsController extends AppController
     $user_id = $_SESSION['user_id'];
 
     if (!isset($user_id)) {
-      $url = "http://$_SERVER[HTTP_HOST]";
-      header("Location: {$url}/login");
-      return;
+      return $this->redirectToLogin();
     }
-
-    if (!$this->userCanEnterQuest($user_id, $quest_id)) {
-      return $this->quests();
-    }
-    
 
     $quest = $this->questRepository->getQuestById($quest_id);
 
-    if (!$quest) {
-      return $this->quests();
+    if (!$this->userCanEnterQuest($user_id, $quest_id) || !$quest) {
+      return $this->redirectToQuests();
     }
-
-    $wallets = $this->walletRepository->getBlockchainWallets($user_id, $quest->getRequiredWallet());
 
     if (!$this->isPost()) {
+      $wallets = $this->walletRepository->getBlockchainWallets($user_id, $quest->getRequiredWallet());
+
       return $this->render('enterQuest', ['title' => 'enter quest', 'wallets' => $wallets]);
+    } else {
+      $walletSelect = $_POST['walletSelect'];
+      if (!isset($walletSelect)) {
+        return $this->redirectToQuests();
+      }
+
+      if ($walletSelect === 'new') {
+        $newWalletAddress = $_POST['newWalletAddress'];
+
+        if (isset($newWalletAddress)) {
+
+          $newWalletAddress = $_POST['newWalletAddress'];
+          $wallet = new Wallet(0, $user_id, $quest->getRequiredWallet(), $newWalletAddress, date('Y-m-d'), date('Y-m-d'));
+          $walletId = $this->walletRepository->addWallet($wallet);
+
+          echo $walletId;
+          $_SESSION['wallet_id'] = $walletId;
+
+        } else {
+          return $this->redirectToQuests();
+        }
+      } else {
+        $_SESSION['wallet_id'] = $walletSelect;
+      }
     }
-
-
-    // $wallet_address = $this->walletAddressRepository->find($user_id);
 
     $this->startQuest($quest_id);
   }

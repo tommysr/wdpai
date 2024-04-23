@@ -5,6 +5,8 @@ require_once __DIR__ . '/../models/Wallet.php';
 
 class WalletRepository extends Repository
 {
+
+
   public function getBlockchainWallets(int $userId, string $blockchain): array
   {
     $sql = "SELECT *
@@ -37,5 +39,7 @@ class WalletRepository extends Repository
       $wallet->getCreatedAt(),
       $wallet->getUpdatedAt()
     ]);
+
+    return $this->db->connect()->lastInsertId();
   }
 }

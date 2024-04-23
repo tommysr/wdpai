@@ -12,14 +12,15 @@ class QuestionsRepository extends Repository
 
     $sql = "SELECT *
     FROM Questions q
-    WHERE o.QuestID = :questId;";
+    WHERE q.QuestID = :questId;";
 
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute(['questId' => $questId]);
     $questionsFetched = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($questionsFetched as $question) {
-      $questions[] = new Question($question['questionid'], $question['questid'], $question['text'], $question['type']);
+      $type = QuestionType::fromName($question['type']);
+      $questions[] = new Question($question['questionid'], $question['questid'], $question['text'], $type);
     }
 
     return $questions;

@@ -15,6 +15,8 @@ class Wallet
     $this->userId = $userId;
     $this->blockchain = $blockchain;
     $this->walletAddress = $walletAddress;
+
+    
     $this->createdAt = $createdAt;
     $this->updatedAt = $updatedAt;
   }

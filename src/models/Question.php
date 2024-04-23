@@ -1,11 +1,39 @@
 <?php
 
-class QuestionType {
-  const SingleChoice = 'single_choice';
-  const MultipleChoice = 'multiple_choice';
-  const NoChoice = 'no_choice';
-}
+class QuestionType
+{
+  const SINGLE_CHOICE = 'single_choice';
+  const MULTIPLE_CHOICE = 'multiple_choice';
+  const NO_CHOICE = 'no_choice';
+  const UNKNOWN = 'unknown';
 
+  protected $value;
+
+  public function __construct($value)
+  {
+    $this->value = $value;
+  }
+
+  // Method to parse a string into a QuestionType instance
+  public static function fromName(string $name): ?self
+  {
+    switch ($name) {
+      case self::SINGLE_CHOICE:
+      case self::MULTIPLE_CHOICE:
+      case self::NO_CHOICE:
+      case self::UNKNOWN:
+        return new static($name);
+      default:
+        return null;
+    }
+  }
+
+  // Getter method for the value
+  public function getValue(): string
+  {
+    return $this->value;
+  }
+}
 
 class Question
 {
