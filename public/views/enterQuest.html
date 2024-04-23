@@ -19,6 +19,9 @@
       rel="stylesheet"
     />
 
+    <script type="text/javascript" src="/public/js/walletSelect.js" defer></script>
+
+
     <title><?= $title; ?></title>
   </head>
   <body class="flex-column-center-center">
@@ -31,7 +34,18 @@
       <span class="wallet-name"> Wallet name </span>
 
       <form action="" method="post" class="flex-column-center-center gap-1-5">
+        <select id="walletSelect" onchange="handleWalletSelect(this)" class="login-input">
+          <?php foreach($wallets as $wallet): ?>
+          <option value="<?=$wallet->getWalletId(); ?>">
+            <?= $wallet->getWalletAddress(); ?>
+          </option>
+          <?php endforeach; ?>
+
+          <option value="new">Insert new</option>
+        </select>
+
         <input
+          id="newWalletInput"
           name="wallet-address"
           type="text"
           class="login-input"

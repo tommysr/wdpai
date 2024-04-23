@@ -1,11 +1,11 @@
 <?php
 
-enum QuestionType
-{
-  case SingleChoice;
-  case MultipleChoice;
-  case NoChoice;
+class QuestionType {
+  const SingleChoice = 'single_choice';
+  const MultipleChoice = 'multiple_choice';
+  const NoChoice = 'no_choice';
 }
+
 
 class Question
 {
@@ -43,4 +43,5 @@ class Question
   {
     return $this->type;
   }
+
 }

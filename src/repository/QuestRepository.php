@@ -26,11 +26,12 @@ class QuestRepository extends Repository
   {
     $sql = "SELECT *
     FROM Quests q
-    WHERE o.QuestID = :questId;";
+    WHERE q.QuestID = :questId;";
 
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute(['questId' => $questId]);
     $questFetched = $stmt->fetch(PDO::FETCH_ASSOC);
+
 
     if ($questFetched === false) {
       return null;
