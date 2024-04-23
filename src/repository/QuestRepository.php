@@ -5,7 +5,7 @@ require_once __DIR__ . '/../models/Quest.php';
 
 class QuestRepository extends Repository
 {
-  private function createModel(array $data): Quest
+  private function constructQuestModel(array $data): Quest
   {
     return new Quest(
       $data['questid'],
@@ -35,7 +35,7 @@ class QuestRepository extends Repository
       return null;
     }
 
-    return $this->createModel($questFetched);
+    return $this->constructQuestModel($questFetched);
   }
 
   public function getQuests(): array
@@ -46,7 +46,7 @@ class QuestRepository extends Repository
     $fetched = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($fetched as $fetched_quest) {
-      $quests[] = $this->createModel($fetched_quest);
+      $quests[] = $this->constructQuestModel($fetched_quest);
     }
 
     return $quests;

@@ -92,7 +92,8 @@ class QuestsController extends AppController
 
   private function redirectToGameplay($questId)
   {
-    // Redirect to the gameplay page, passing the questId
+
+    $_SESSION['questId'] = $questId;
     $url = "http://$_SERVER[HTTP_HOST]";
     header("Location: {$url}/gameplay/{$questId}");
   }

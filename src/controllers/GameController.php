@@ -30,7 +30,7 @@ class GameController extends AppController
     session_start();
 
     $userId = $_SESSION['user_id'];
-    $currentQuestion = $_SESSION['current_question'] ? $_SESSION['current_question'] + 1 : 0;
+    $currentQuestionId = $_SESSION['current_question'];
 
     if (!isset($userId)) {
       return $this->redirectToLogin();
@@ -40,30 +40,63 @@ class GameController extends AppController
       return $this->redirectToUnauthorized();
     }
 
-    $questions = $this->questionsRepository->getQuestionsByQuestId($questId);
+    if (!isset($currentQuestionId)) {
+      $_SESSION['current_question'] = 0;
+    }
 
-    if (count($questions) === 0) {
+
+
+    $questions = $this->questionsRepository->getQuestionsByQuestId($questId);
+    $questions_count = count($questions);
+
+    if ($questions_count === 0) {
       throw new NoQuestionsException('no questions in database');
     }
 
-    $this->renderQuestion($questions[$currentQuestion]);
+    if (!isset($_SESSION['questions-count'])) {
+      $_SESSION['questions-count'] = $questions_count;
+    }
+
+    $this->renderQuestion($questions[$currentQuestionId]);
   }
 
-  public function processUserResponse($questionID, $selectedOptions)
+  public function processUserResponse($questionId)
   {
-    // // Check user's response against the correct answer (if applicable)
-    // // Update user's score and store their response
+    $optionId = [$_POST['option']];
 
-    // // Determine next question (e.g., get next question from database)
-    // $nextQuestion = $this->questionRepository->getNextQuestion($questionID);
+    if (!isset($_SESSION['userScore'])) {
+      $_SESSION['user-score'] = 0;
+    }
 
-    // if ($nextQuestion) {
-    //     // Render next question view
-    //     $this->renderQuestion($nextQuestion);
-    // } else {
-    //     // End quiz
-    //     $this->endQuiz();
-    // }
+    $result = $this->gameService->processUserResponse($questionId, $optionId);
+    $_SESSION['user-score'] += $result['score'];
+    $_SESSION['max-score'] += $result['maxScore'];
+
+    if ($result['correctPercentage'] > 75) {
+      $_SESSION['correct-answers'] += 1;
+    }
+
+
+    $this->renderQuestionSummary($result['score'], $result['maxScore'], $result['stars']);
+  }
+
+  private function renderQuestionSummary(int $questionScore, int $questionMaxScore, int $stars)
+  {
+    $overallScore = $_SESSION['user-score'];
+    $overallMaxScore = $_SESSION['max-score'];
+    $questionsCount = $_SESSION['questions-count'];
+    $correctAnswers = $_SESSION['correct-answers'];
+
+
+    $this->render('questionSummary', [
+      'stars' => $stars,
+      'score' => $questionScore,
+      'maxScore' => $questionMaxScore,
+      'overallScore' => $overallScore,
+      'overallMaxScore' => $overallMaxScore,
+      'correctAnswers' => $correctAnswers,
+      'questionsCount' => $questionsCount
+    ]);
   }
 
   private function renderQuestion(Question $question)
@@ -84,8 +117,8 @@ class GameController extends AppController
   }
 
   private function renderSingleChoiceQuestion($question, $options)
-  { 
-    $this->render('singleChoiceQuestion', ['question' => $question,'options'=> $options]);
+  {
+    $this->render('singleChoiceQuestion', ['question' => $question, 'options' => $options]);
   }
 
   private function renderMultipleChoiceQuestion($question, $options)

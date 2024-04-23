@@ -10,4 +10,5 @@ Router::get('enterQuest', 'QuestsController');
 Router::get('login', 'AuthController');
 Router::get('register', 'AuthController');
 Router::get('gameplay', 'GameController');
+Router::get('processUserResponse', 'GameController');
 Router::run($path);

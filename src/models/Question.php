@@ -41,6 +41,7 @@ class Question
   private int $questId;
   private string $text;
   private QuestionType $type;
+  private int $score;
 
 
   public function __construct(int $questionId, int $questId, string $text, QuestionType $type)
@@ -49,6 +50,7 @@ class Question
     $this->questId = $questId;
     $this->text = $text;
     $this->type = $type;
+    $this->score = 2;
   }
 
 

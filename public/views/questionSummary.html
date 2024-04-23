@@ -24,7 +24,7 @@
   <body class="flex-column-center-center">
     <div class="backBar">
       <a href="#" class=""><img src="/public/assets/back_arrow.svg" /></a>
-      <span class="back-text">Choose answer</span>
+      <span class="back-text">Points</span>
     </div>
 
     <div class="follow-bar absolute-follow">
@@ -37,30 +37,9 @@
     </div>
 
     <div class="flex-column-center-center">
-      <form action="/processUserResponse/<?= $question->getQuestionId(); ?>" method="post" class="question-container">
-        <span class="question-text"><?= $question->getText(); ?></span>
-
-        <div class="options-container">
-          <?php 
-          $colorClasses = array("pink", "orange", "cyan", "purple");
-     
-          $counter = 0;
-          
-          foreach($options as $option): 
-          ?>
-          <label class="option-container">
-            <input type="radio" name="option" value="<?= $option->getOptionId(); ?>" />
-            <span
-              class="checkmark <?= $colorClasses[$counter % count($colorClasses)]; ?>"
-            ></span>
-            <span class="option-text"><?= $option->getText(); ?></span>
-          </label>
-          <?php 
-            $counter++;
-            endforeach; 
-          ?>
-        </div>
-
+      <form action="/nextQuestion" method="post" class="question-container">
+        <span class="question-text"><?= $score; ?></span>
+        <span class="question-text"><?= $maxScore; ?></span>
         <button class="main-button">Continue</button>
       </form>
     </div>
