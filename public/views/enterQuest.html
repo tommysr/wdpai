@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/public/css/style.css" type="text/css" />
-    <link rel="stylesheet" href="/public//css/nav.css" type="text/css" />
+    <link rel="stylesheet" href="/public/css/nav.css" type="text/css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -19,6 +19,9 @@
       rel="stylesheet"
     />
 
+    <script type="text/javascript" src="/public/js/walletSelect.js" defer></script>
+
+
     <title><?= $title; ?></title>
   </head>
   <body class="flex-column-center-center">
@@ -31,8 +34,19 @@
       <span class="wallet-name"> Wallet name </span>
 
       <form action="" method="post" class="flex-column-center-center gap-1-5">
+        <select id="walletSelect" name="walletSelect" onchange="handleWalletSelect(this)" class="login-input">
+          <?php foreach($wallets as $wallet): ?>
+          <option value="<?=$wallet->getWalletId(); ?>">
+            <?= $wallet->getWalletAddress(); ?>
+          </option>
+          <?php endforeach; ?>
+
+          <option value="new">Insert new</option>
+        </select>
+
         <input
-          name="wallet-address"
+          id="newWalletInput"
+          name="newWalletAddress"
           type="text"
           class="login-input"
           placeholder="wallet address"

@@ -11,6 +11,25 @@ body {
   background-color: #121d0b;
 }
 
+.backBar {
+  display: flex;
+  align-items: center;
+  gap: 2em;
+  position: absolute;
+  top: 35px;
+  left: 35px;
+}
+
+.back-text {
+  font-family: "Lekton";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 2em;
+  text-align: center;
+  letter-spacing: 0.05em;
+  color: #ebf6e5;
+}
+
 .absolute-follow {
   position: absolute;
   top: 35px;
@@ -116,7 +135,8 @@ body {
 
 form input[type="text"],
 form input[type="email"],
-form input[type="password"] {
+form input[type="password"],
+form select {
   width: 300px;
   height: 50px;
   border: 0;
@@ -132,6 +152,108 @@ form input[type="password"] {
   font-weight: 700;
   font-size: 1.2em;
   letter-spacing: 0.18em;
+}
+
+.question-text {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 2em;
+  line-height: 2.5em;
+  text-align: center;
+  letter-spacing: 0.1em;
+  color: #ebf6e5;
+}
+
+.option-text {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.5em;
+  line-height: 2em;
+  letter-spacing: 0.07em;
+  color: #ebf6e5;
+}
+
+.question-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2em;
+}
+
+.options-container {
+  min-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 2em;
+}
+
+.option-container {
+  display: inline-flex;
+  justify-content: space-between;
+  gap: 2em;
+  align-items: center;
+}
+
+.option-container input {
+  opacity: 0;
+}
+
+.checkmark {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+  border: 2px solid #ffffff;
+}
+
+.pink {
+  background: #e9526d;
+}
+
+.orange {
+  background: #ff9f0f;
+}
+
+.cyan {
+  background: #30fad3;
+}
+
+.purple {
+  background: #7052e9;
+}
+
+.option-container:hover input ~ .checkmark {
+  background-color: #58c3b5;
+}
+
+.option-container input:checked ~ .checkmark {
+  background-color: #8eec13;
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.option-container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.option-container .checkmark:after {
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
 }
 
 .main-button {
@@ -200,6 +322,10 @@ form input[type="password"] {
   font-weight: bold;
   font-size: 14px;
   margin-top: 5px;
+}
+
+#newWalletInput {
+  display: none;
 }
 
 .card-background {
