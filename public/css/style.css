@@ -129,6 +129,61 @@ body {
     rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
 }
 
+.score-text {
+  font-family: "Lekton";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 2em;
+  text-align: center;
+  letter-spacing: 0.05em;
+  color: #ebf6e5;
+}
+
+.progress-bar {
+  width: 100%;
+  display: flex;
+  background-color: #f3f3f3;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+  border: 2px solid #387161;
+}
+.progress {
+  width: 0%;
+  height: 30px;
+  background: linear-gradient(78.2deg, #58c3b5 0%, #b0da99 100%);
+  border-radius: 5px 0px 0px 5px;
+  text-align: center;
+  line-height: 30px;
+  color: white;
+}
+
+.max-progress {
+  width: 0%;
+  height: 30px;
+  background: linear-gradient(78.2deg, #741fd4 0%, #b0da99 100%);
+  border-radius: 0px 5px 5px 0px;
+  text-align: center;
+  line-height: 30px;
+  color: white;
+}
+
+.indicator {
+  width: 2px;
+  height: 30px;
+  background-color: #00ff40;
+}
+
+.score {
+  font-family: "Lekton";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 4em;
+  text-align: center;
+  letter-spacing: 0.05em;
+  color: #ebf6e5;
+}
+
 .logo > img {
   width: 240px;
 }

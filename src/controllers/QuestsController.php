@@ -29,7 +29,6 @@ class QuestsController extends AppController
     $quests = $this->questRepository->getQuests();
     $this->render('quests', ['title' => 'quest list', 'quests' => $quests]);
   }
-
   public function enterQuest($questId)
   {
     session_start();
@@ -44,7 +43,7 @@ class QuestsController extends AppController
       return $this->redirectToUnauthorized();
     }
 
-    if (!$this->isPost()) {
+    if ($this->isGet()) {
       return $this->renderEnterQuestPage($userId, $questId);
     } else {
       return $this->handlePostEnterQuestRequest($userId, $questId);
@@ -69,17 +68,24 @@ class QuestsController extends AppController
     if ($walletSelect === 'new') {
       return $this->handleNewWallet($userId, $questId);
     } else {
-      $_SESSION['wallet_id'] = $walletSelect;
-      $_SESSION['quest_id'] = $questId;
-      $_SESSION['current_question'] = 0;
-
-      return $this->redirectToGameplay();
+      return $this->startQuest($walletSelect, $questId);
     }
+  }
+
+  private function startQuest($walletId, $questId) {
+    $quest = $this->questRepository->getQuestById($questId);
+
+    $_SESSION['wallet_id'] = $walletId;
+    $_SESSION['quest_id'] = $questId;
+    $_SESSION['quest_points'] = $quest -> getPoints();
+
+    return $this->redirectToGameplay();
   }
 
   private function handleNewWallet($userId, $questId)
   {
     $newWalletAddress = $_POST['newWalletAddress'] ?? null;
+
     if (!$newWalletAddress) {
       return $this->redirectToQuests();
     }
@@ -88,11 +94,7 @@ class QuestsController extends AppController
     $wallet = new Wallet(0, $userId, $quest->getRequiredWallet(), $newWalletAddress, date('Y-m-d'), date('Y-m-d'));
     $walletId = $this->walletRepository->addWallet($wallet);
 
-    $_SESSION['wallet_id'] = $walletId;
-    $_SESSION['quest_id'] = $questId;
-    $_SESSION['current_question'] = 0;
-
-    return $this->redirectToGameplay();
+    return $this->startQuest($walletId, $questId);
   }
 
   private function redirectToGameplay()

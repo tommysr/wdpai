@@ -41,6 +41,10 @@ class GameController extends AppController
       return $this->redirectToUnauthorized();
     }
 
+    if (!isset($currentQuestionId)) {
+      $_SESSION['current_question'] = 0;
+    }
+
     $questions = $this->questionsRepository->getQuestionsByQuestId($questId);
     $questions_count = count($questions);
 
@@ -70,6 +74,7 @@ class GameController extends AppController
     }
 
     $result = $this->gameService->processUserResponse($questionId, $optionId);
+
     $_SESSION['user_score'] += $result['score'];
     $_SESSION['max_score'] += $result['maxScore'];
 
@@ -83,10 +88,8 @@ class GameController extends AppController
   private function renderQuestionSummary(int $questionScore, int $questionMaxScore, int $stars)
   {
     $overallScore = $_SESSION['user_score'];
-    $overallMaxScore = $_SESSION['max_score'];
-    $questionsCount = $_SESSION['questions_count'];
-    $correctAnswers = $_SESSION['correct_answers'];
-
+    $maxScoreUntilNow = $_SESSION['max_score'];
+    $overallMaxScore = $_SESSION['quest_points'];
 
     $this->render('questionSummary', [
       'stars' => $stars,
@@ -94,8 +97,7 @@ class GameController extends AppController
       'maxScore' => $questionMaxScore,
       'overallScore' => $overallScore,
       'overallMaxScore' => $overallMaxScore,
-      'correctAnswers' => $correctAnswers,
-      'questionsCount' => $questionsCount
+      'maxScoreUntilNow' => $maxScoreUntilNow
     ]);
   }
 

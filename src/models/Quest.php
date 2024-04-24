@@ -12,9 +12,10 @@ class Quest {
     private $participantsCount;
     private $participantLimit;
     private $poolAmount;
+    private $points;
     // private $pictures;
 
-    public function __construct($questID, $title, $description, $worthKnowledge, $requiredWallet, $timeRequired, $expiryDate, $participantsCount, $participantLimit, $poolAmount) {
+    public function __construct($questID, $title, $description, $worthKnowledge, $requiredWallet, $timeRequired, $expiryDate, $participantsCount, $participantLimit, $poolAmount, $points) {
         $this->questID = $questID;
         $this->title = $title;
         $this->description = $description;
@@ -25,7 +26,7 @@ class Quest {
         $this->participantsCount = $participantsCount;
         $this->participantLimit = $participantLimit;
         $this->poolAmount = $poolAmount;
-        // $this->pictures = $pictures;
+        $this->points = $points;
     }
 
     public function getQuestID() {
@@ -66,6 +67,10 @@ class Quest {
 
     public function getPoolAmount() {
         return $this->poolAmount;
+    }
+
+    public function getPoints() {
+        return $this->points;
     }
 
     // public function getPictures() {
