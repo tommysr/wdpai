@@ -25,6 +25,7 @@ class GameController extends AppController
     $this->optionsRepository = new OptionsRepository();
   }
 
+
   public function gameplay()
   {
     session_start();
@@ -61,7 +62,7 @@ class GameController extends AppController
 
   public function processUserResponse($questionId)
   {
-    $optionId = [$_POST['option']] ?? [];
+    $optionId = $_POST['option'] ? [$_POST['option']] : [];
 
     foreach ($_POST as $key => $value) {
       if (strpos($key, 'option') === 0) {

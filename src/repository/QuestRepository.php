@@ -17,7 +17,8 @@ class QuestRepository extends Repository
       $data['expirydate'],
       $data['participantscount'],
       $data['participantlimit'],
-      $data['poolamount']
+      $data['poolamount'],
+      $data['points']
     );
   }
 
