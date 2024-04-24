@@ -70,7 +70,10 @@ class QuestsController extends AppController
       return $this->handleNewWallet($userId, $questId);
     } else {
       $_SESSION['wallet_id'] = $walletSelect;
-      return $this->redirectToGameplay($questId);
+      $_SESSION['quest_id'] = $questId;
+      $_SESSION['current_question'] = 0;
+
+      return $this->redirectToGameplay();
     }
   }
 
@@ -86,16 +89,16 @@ class QuestsController extends AppController
     $walletId = $this->walletRepository->addWallet($wallet);
 
     $_SESSION['wallet_id'] = $walletId;
+    $_SESSION['quest_id'] = $questId;
+    $_SESSION['current_question'] = 0;
 
-    return $this->redirectToGameplay($questId);
+    return $this->redirectToGameplay();
   }
 
-  private function redirectToGameplay($questId)
+  private function redirectToGameplay()
   {
-
-    $_SESSION['questId'] = $questId;
     $url = "http://$_SERVER[HTTP_HOST]";
-    header("Location: {$url}/gameplay/{$questId}");
+    header("Location: {$url}/gameplay");
   }
 
   private function redirectToUnauthorized()

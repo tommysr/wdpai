@@ -11,4 +11,5 @@ Router::get('login', 'AuthController');
 Router::get('register', 'AuthController');
 Router::get('gameplay', 'GameController');
 Router::get('processUserResponse', 'GameController');
+Router::get('nextQuestion', 'GameController');
 Router::run($path);
