@@ -4,7 +4,7 @@ class QuestionType
 {
   const SINGLE_CHOICE = 'single_choice';
   const MULTIPLE_CHOICE = 'multiple_choice';
-  const NO_CHOICE = 'no_choice';
+  const READ_TEXT = 'read_text';
   const UNKNOWN = 'unknown';
 
   protected $value;
@@ -20,7 +20,7 @@ class QuestionType
     switch ($name) {
       case self::SINGLE_CHOICE:
       case self::MULTIPLE_CHOICE:
-      case self::NO_CHOICE:
+      case self::READ_TEXT:
       case self::UNKNOWN:
         return new static($name);
       default:
