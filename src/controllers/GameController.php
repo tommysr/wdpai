@@ -62,6 +62,12 @@ class GameController extends AppController
 
   public function processUserResponse($questionId)
   {
+    session_start();
+
+    if (!$_SESSION['awaiting_response']) {
+      return;
+    }
+
     $optionId = $_POST['option'] ? [$_POST['option']] : [];
 
     foreach ($_POST as $key => $value) {
@@ -127,8 +133,11 @@ class GameController extends AppController
 
   private function renderQuestion(Question $question)
   {
+    session_start();
     $question_type = $question->getType();
     $options = $this->optionsRepository->getOptionsByQuestionId($question->getQuestionId());
+    $_SESSION['awaiting_response'] = true;
+
 
     switch ($question_type->getValue()) {
       case QuestionType::SINGLE_CHOICE:
@@ -138,6 +147,7 @@ class GameController extends AppController
         $this->renderMultipleChoiceQuestion($question, $options);
         break;
       default:
+        $_SESSION['awaiting_response'] = false;
         $this->renderReadTextQuestion($question);
     }
   }
@@ -154,7 +164,7 @@ class GameController extends AppController
 
   private function renderReadTextQuestion($question)
   {
-    echo "text read";
+    $this->render('readText', ['question' => $question]);
   }
 
 
