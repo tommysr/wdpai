@@ -24,10 +24,10 @@ class QuestsController extends AppController
     $this->questAuthorizationService = new QuestAuthorizationService();
   }
 
-  public function quests()
+  public function index()
   {
     $quests = $this->questRepository->getQuests();
-    $this->render('quests', ['title' => 'quest list', 'quests' => $quests]);
+    $this->render('layout', ['title' => 'quest list', 'quests' => $quests], 'quests');
   }
   public function enterQuest($questId)
   {
@@ -72,12 +72,13 @@ class QuestsController extends AppController
     }
   }
 
-  private function startQuest($walletId, $questId) {
+  private function startQuest($walletId, $questId)
+  {
     $quest = $this->questRepository->getQuestById($questId);
 
     $_SESSION['wallet_id'] = $walletId;
     $_SESSION['quest_id'] = $questId;
-    $_SESSION['quest_points'] = $quest -> getPoints();
+    $_SESSION['quest_points'] = $quest->getPoints();
 
     return $this->redirectToGameplay();
   }

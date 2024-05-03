@@ -2,58 +2,53 @@
 
 require_once "AppController.php";
 require_once __DIR__ . '/../models/User.php';
-require_once __DIR__ . '/../repository/UserRepository.php';
+require_once __DIR__ . '/../services/AuthService.php';
 require_once __DIR__ . '/../validators/Validator.php';
 
 
 class AuthController extends AppController
 {
-  private UserRepository $userRepository;
+  private AuthService $authService;
 
 
   public function __construct()
   {
     parent::__construct();
-    $this->userRepository = new UserRepository();
+    $this->authService = new AuthService();
   }
 
+  public function logout()
+  {
+    $this->sessionService->end();
+    $this->redirect('/');
+  }
 
   public function login()
   {
-    if (!$this->isPost()) {
-      return $this->render('login', ['title' => 'Sign in']);
+    if (!$this->request->isPost()) {
+      return $this->renderLoginView();
     }
 
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+    $email = $this->request->post('email');
+    $password = $this->request->post('password');
+    $result = $this->authService->login($email, $password);
 
-    if (!Validator::validateEmail($email)) {
-      return $this->renderLoginView('incorrect email');
+
+    if ($result instanceof User) {
+      // set userId
+      $this->sessionService->set('userId', $result->getId());
+      // redirect to quests
+      $this->redirect('/');
+    } else {
+      // failed but print just generic message
+      $this->renderLoginView("incorrect email or password");
     }
-
-    $user = $this->userRepository->getUser($email);
-
-    if (!$user) {
-      return $this->renderLoginView('you are not registered');
-    }
-
-    if (!password_verify($password, $user->getPassword())) {
-      return $this->renderLoginView('incorrect password');
-    }
-
-    // Start the session
-    session_start();
-
-    // Store user information in session
-    $_SESSION['user_id'] = $user->getId();
-
-    $url = "http://$_SERVER[HTTP_HOST]";
-    header("Location: {$url}/quests");
   }
+
 
   public function register()
   {
-    if (!$this->isPost()) {
+    if (!$this->request->isPost()) {
       return $this->renderRegisterView();
     }
 
@@ -61,37 +56,14 @@ class AuthController extends AppController
     $username = $_POST['username'];
     $password = $_POST['password'];
     $confirmedPassword = $_POST['confirmedPassword'];
-    $repository = $this->userRepository;
 
-    $validationRules = [
-      ['validator' => 'validateEmail', 'value' => $email, 'errorMessage' => 'Invalid email'],
-      ['validator' => 'validatePassword', 'value' => $password, 'errorMessage' => 'Use a strong password (at least 8 characters)'],
-      ['validator' => 'validateUsername', 'value' => $username, 'errorMessage' => 'Invalid username'],
-      ['validator' => 'validateConfirmedPassword', 'value' => ['password' => $password, 'confirmedPassword' => $confirmedPassword], 'errorMessage' => 'Passwords do not match']
-    ];
+    $result = $this->authService->register($email, $username, $password, $confirmedPassword);
 
-    foreach ($validationRules as $rule) {
-      $validator = $rule['validator'];
-      $value = $rule['value'];
-
-      if (!Validator::$validator($value)) {
-        return $this->renderRegisterView($rule['errorMessage']);
-      }
+    if (is_string($result)) {
+     return $this->renderRegisterView($result);
     }
 
-    if ($repository->userExists($email)) {
-      return $this->renderRegisterView('This email is already registered');
-    }
-
-    if ($repository->userNameExists($username)) {
-      return $this->renderRegisterView('Username is already taken');
-    }
-
-    $password_hash = password_hash($password, PASSWORD_DEFAULT);
-    $user = new User($email, $password_hash, $username, null);
-    $this->userRepository->addUser($user);
-
-    return $this->render('login', ['title' => 'Sign in', 'message' => 'registered']);
+    $this->renderLoginView();
   }
 
   private function renderRegisterView(string $message = '')
