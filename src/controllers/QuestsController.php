@@ -24,100 +24,83 @@ class QuestsController extends AppController
     $this->questAuthorizationService = new QuestAuthorizationService();
   }
 
-  public function quests()
+  public function index()
   {
+    var_dump($_SESSION);
     $quests = $this->questRepository->getQuests();
-    $this->render('quests', ['title' => 'quest list', 'quests' => $quests]);
+    $this->render('layout', ['title' => 'quest list', 'quests' => $quests], 'quests');
   }
+
+  private function checkParticipation($userId, $questId)
+  {
+    if (!AuthInterceptor::isLoggedIn()) {
+      $this->redirect('login');
+    } else if ($this->questAuthorizationService->questStatisticsExists($userId, $questId)) {
+      $this->redirect("unauthorized");
+    }
+  }
+
   public function enterQuest($questId)
   {
-    session_start();
+    $userId = SessionService::get('userId');
 
-    $userId = $_SESSION['user_id'];
+    $this->checkParticipation($userId, $questId);
 
-    if (!isset($userId)) {
-      return $this->redirectToLogin();
-    }
-
-    if (!$this->questAuthorizationService->isUserAuthorized($userId, $questId)) {
-      return $this->redirectToUnauthorized();
-    }
-
-    if ($this->isGet()) {
-      return $this->renderEnterQuestPage($userId, $questId);
+    if ($this->request->isGet()) {
+      $this->renderStartQuest($userId, $questId);
     } else {
-      return $this->handlePostEnterQuestRequest($userId, $questId);
+      $this->startQuest($userId, $questId);
     }
   }
 
-  private function renderEnterQuestPage($userId, $questId)
+  private function renderStartQuest($userId, $questId)
   {
     $quest = $this->questRepository->getQuestById($questId);
     $wallets = $this->walletRepository->getBlockchainWallets($userId, $quest->getRequiredWallet());
-    return $this->render('enterQuest', ['title' => 'enter quest', 'wallets' => $wallets]);
+
+    $this->render('enterQuest', ['title' => 'enter quest', 'wallets' => $wallets, 'message' => '']);
   }
 
-  private function handlePostEnterQuestRequest($userId, $questId)
+  private function startQuest($userId, $questId)
   {
-    $walletSelect = $_POST['walletSelect'] ?? null;
+    $walletSelect = $this->request->post('walletSelect');
 
     if (!$walletSelect) {
-      return $this->redirectToQuests();
+      return $this->redirect('');
     }
+
+    $walletId = $walletSelect;
 
     if ($walletSelect === 'new') {
-      return $this->handleNewWallet($userId, $questId);
-    } else {
-      return $this->startQuest($walletSelect, $questId);
+      $newWalletAddress = $this->request->post('newWalletAddress');
+
+      if (!$newWalletAddress) {
+        return null;
+      }
+
+      $walletId = $this->addNewWallet($userId, $questId, $newWalletAddress);
     }
+
+    $this->startQuestWithWallet($walletId, $questId);
   }
 
-  private function startQuest($walletId, $questId) {
-    $quest = $this->questRepository->getQuestById($questId);
-
-    $_SESSION['wallet_id'] = $walletId;
-    $_SESSION['quest_id'] = $questId;
-    $_SESSION['quest_points'] = $quest -> getPoints();
-
-    return $this->redirectToGameplay();
-  }
-
-  private function handleNewWallet($userId, $questId)
+  private function startQuestWithWallet($walletId, $questId)
   {
-    $newWalletAddress = $_POST['newWalletAddress'] ?? null;
-
-    if (!$newWalletAddress) {
-      return $this->redirectToQuests();
-    }
-
     $quest = $this->questRepository->getQuestById($questId);
-    $wallet = new Wallet(0, $userId, $quest->getRequiredWallet(), $newWalletAddress, date('Y-m-d'), date('Y-m-d'));
+
+    SessionService::set('walletId', $walletId);
+    SessionService::set('questId', $questId);
+    SessionService::set('questPoints', $quest->getPoints());
+
+    $this->redirect('gameplay');
+  }
+
+  private function addNewWallet($userId, $questId, $walletAddress): int
+  {
+    $quest = $this->questRepository->getQuestById($questId);
+    $wallet = new Wallet(0, $userId, $quest->getRequiredWallet(), $walletAddress, date('Y-m-d'), date('Y-m-d'));
     $walletId = $this->walletRepository->addWallet($wallet);
 
-    return $this->startQuest($walletId, $questId);
-  }
-
-  private function redirectToGameplay()
-  {
-    $url = "http://$_SERVER[HTTP_HOST]";
-    header("Location: {$url}/gameplay");
-  }
-
-  private function redirectToUnauthorized()
-  {
-    $url = "http://$_SERVER[HTTP_HOST]";
-    header("Location: {$url}/unauthorized");
-  }
-
-  private function redirectToQuests()
-  {
-    $url = "http://$_SERVER[HTTP_HOST]";
-    header("Location: {$url}/quests");
-  }
-
-  private function redirectToLogin()
-  {
-    $url = "http://$_SERVER[HTTP_HOST]";
-    header("Location: {$url}/login");
+    return $walletId;
   }
 }

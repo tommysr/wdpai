@@ -34,7 +34,7 @@ class UserRepository extends Repository
       return null;
     }
 
-    return new User($user['userid'], $user['email'], $user['password'], $user['username'], $user['joindate']);
+    return new User($user['userid'], $user['email'], $user['password'], $user['username'], $user['role'], $user['joindate']);
   }
 
 

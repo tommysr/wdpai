@@ -2,24 +2,14 @@
 
 class QuestAuthorizationService
 {
-  private $questStatisticsRepository;
+  private QuestStatisticsRepository $questStatisticsRepository;
 
-  public function __construct()
+  public function __construct(QuestStatisticsRepository $questStatisticsRepository = null)
   {
-    $this->questStatisticsRepository = new QuestStatisticsRepository();
+    $this->questStatisticsRepository = $questStatisticsRepository ?: new QuestStatisticsRepository();
   }
 
-  public function isUserAuthorized($userId, $questId)
-  {
-
-    if ($this->questStatisticsExists($userId, $questId)) {
-      return false;
-    }
-
-    return true;
-  }
-
-  private function questStatisticsExists($userId, $questId)
+  public function questStatisticsExists($userId, $questId): bool
   {
     if ($this->questStatisticsRepository->getQuestStatistic($userId, $questId)) {
       return true;

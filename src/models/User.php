@@ -2,24 +2,26 @@
 
 class User
 {
-  private $email;
-  private $password;
-  private $name;
-  private $joinDate;
-  private $id;
+  private string $email;
+  private string $password;
+  private string $name;
+  private string $joinDate;
+  private int $id;
+  private string $role;
 
   public function __construct(
     int $id,
     string $email,
     string $password,
     string $name,
-    ?string $joinDate = null
+    string $role = 'normal',
+    string $joinDate = null
   ) {
     $this->id = $id;
     $this->email = $email;
     $this->password = $password;
     $this->name = $name;
-    $this->joinDate = $joinDate;
+    $this->role = $role;
 
     if ($joinDate !== null) {
       $this->joinDate = DateTime::createFromFormat('Y-m-d', $joinDate)->format('Y-m-d');
@@ -38,7 +40,7 @@ class User
     return $this->email;
   }
 
-  public function getPassword()
+  public function getPassword(): string
   {
     return $this->password;
   }
@@ -51,5 +53,10 @@ class User
   public function getJoinDate(): string
   {
     return $this->joinDate;
+  }
+
+  public function getRole(): string
+  {
+    return $this->role;
   }
 }

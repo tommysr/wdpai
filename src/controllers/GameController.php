@@ -3,6 +3,7 @@
 require_once "AppController.php";
 require_once __DIR__ . '/../services/GameService.php';
 require_once __DIR__ . '/../services/QuestAuthorizationService.php';
+require_once __DIR__ . '/../services/SessionService.php';
 require_once __DIR__ . '/../repository/QuestionsRepository.php';
 require_once __DIR__ . '/../repository/OptionsRepository.php';
 require_once __DIR__ . '/../exceptions/Quests.php';
@@ -25,36 +26,26 @@ class GameController extends AppController
     $this->optionsRepository = new OptionsRepository();
   }
 
-
   public function gameplay()
   {
-    session_start();
-
-    $userId = $_SESSION['user_id'];
-    $questId = $_SESSION['quest_id'];
-    $currentQuestionId = $_SESSION['current_question'];
-
-    if (!isset($userId)) {
-      return $this->redirectToLogin();
+    if (!AuthInterceptor::isLoggedIn()) {
+      $this->redirect('login');
     }
 
-    if (!$this->questAuthorizationService->isUserAuthorized($userId, $questId)) {
-      return $this->redirectToUnauthorized();
+    $questId = SessionService::get('questId');
+
+    if (!$questId) {
+      return $this->redirect("unauthorized");
     }
 
-    if (!isset($currentQuestionId)) {
-      $_SESSION['current_question'] = 0;
-    }
+    $currentQuestionId = SessionService::get("currentQuestion") ?? 0;
+    SessionService::set("currentQuestion", $currentQuestionId);
 
     $questions = $this->questionsRepository->getQuestionsByQuestId($questId);
     $questions_count = count($questions);
 
     if ($questions_count === 0) {
       throw new NoQuestionsException('no questions in database');
-    }
-
-    if (!isset($_SESSION['questions_count'])) {
-      $_SESSION['questions_count'] = $questions_count;
     }
 
     $this->renderQuestion($questions[$currentQuestionId]);
@@ -110,26 +101,22 @@ class GameController extends AppController
 
   public function nextQuestion()
   {
-    session_start();
+    $questId = SessionService::get('questId');
+    $currentQuestion = SessionService::get('currentQuestion');
+    $nextQuestion = $currentQuestion + 1;
 
-    $questId = $_SESSION['quest_id'];
-    $currentQuestionId = $_SESSION['current_question'];
+
     $questions = $this->questionsRepository->getQuestionsByQuestId($questId);
     $questions_count = count($questions);
 
-    if ($currentQuestionId + 1 === $questions_count) {
-      return $this->renderQuestSummary();
+    if ($nextQuestion === $questions_count) {
+      return $this->render('questSummary');
     }
 
-    $_SESSION['current_question'] = $currentQuestionId + 1;
-    $this->renderQuestion($questions[$currentQuestionId + 1]);
+    SessionService::set('currentQuestion', $nextQuestion);
+    $this->renderQuestion($questions[$nextQuestion]);
   }
 
-
-  private function renderQuestSummary()
-  {
-    $this->render('questSummary');
-  }
 
   private function renderQuestion(Question $question)
   {
@@ -165,20 +152,6 @@ class GameController extends AppController
   private function renderReadTextQuestion($question)
   {
     $this->render('readText', ['question' => $question]);
-  }
-
-
-  private function redirectToUnauthorized()
-  {
-    $url = "http://$_SERVER[HTTP_HOST]";
-    header("Location: {$url}/unauthorized");
-  }
-
-
-  private function redirectToLogin()
-  {
-    $url = "http://$_SERVER[HTTP_HOST]";
-    header("Location: {$url}/login");
   }
 }
 
