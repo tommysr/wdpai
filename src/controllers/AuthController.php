@@ -4,6 +4,7 @@ require_once "AppController.php";
 require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../services/AuthService.php';
 require_once __DIR__ . '/../validators/Validator.php';
+require_once __DIR__ . '/../middleware/AuthInterceptor.php';
 
 
 class AuthController extends AppController
@@ -25,6 +26,8 @@ class AuthController extends AppController
 
   public function login()
   {
+    !AuthInterceptor::check() || $this->redirect('/');
+
     if (!$this->request->isPost()) {
       return $this->renderLoginView();
     }
@@ -48,6 +51,8 @@ class AuthController extends AppController
 
   public function register()
   {
+    !AuthInterceptor::check() || $this->redirect("/");
+
     if (!$this->request->isPost()) {
       return $this->renderRegisterView();
     }
