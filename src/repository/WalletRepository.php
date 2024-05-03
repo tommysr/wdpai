@@ -26,7 +26,7 @@ class WalletRepository extends Repository
     return $wallets;
   }
 
-  public function addWallet(Wallet $wallet)
+  public function addWallet(Wallet $wallet): int
   {
     $sql = 'INSERT INTO UserWallets (UserID, Blockchain, WalletAddress, CreatedAt, UpdatedAt) VALUES (?, ?, ?, ?, ?);';
 

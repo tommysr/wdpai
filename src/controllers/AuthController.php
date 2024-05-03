@@ -26,7 +26,9 @@ class AuthController extends AppController
 
   public function login()
   {
-    !AuthInterceptor::check() || $this->redirect('/');
+    if (AuthInterceptor::isLoggedIn()) {
+      return $this->redirect("/");
+    }
 
     if (!$this->request->isPost()) {
       return $this->renderLoginView();
@@ -38,12 +40,15 @@ class AuthController extends AppController
 
 
     if ($result instanceof User) {
-      // set userId
-      $this->sessionService->set('userId', $result->getId());
-      // redirect to quests
+      $this->sessionService->set(
+        'user',
+        [
+          'id' => $result->getId(),
+          'role' => $result->getRole()
+        ]
+      );
       $this->redirect('/');
     } else {
-      // failed but print just generic message
       $this->renderLoginView("incorrect email or password");
     }
   }
@@ -51,7 +56,9 @@ class AuthController extends AppController
 
   public function register()
   {
-    !AuthInterceptor::check() || $this->redirect("/");
+    if (AuthInterceptor::isLoggedIn()) {
+      return $this->redirect("/");
+    }
 
     if (!$this->request->isPost()) {
       return $this->renderRegisterView();
@@ -65,7 +72,7 @@ class AuthController extends AppController
     $result = $this->authService->register($email, $username, $password, $confirmedPassword);
 
     if (is_string($result)) {
-     return $this->renderRegisterView($result);
+      return $this->renderRegisterView($result);
     }
 
     $this->renderLoginView();

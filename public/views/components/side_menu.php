@@ -19,8 +19,18 @@
     </a>
 
 
+    <?php if ($user && $user['role'] == 'admin'): ?>
+      <a class="nav-link flex-column-center-center" href="#">
+        Add quest
+        <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />
+        </svg>
+      </a>
+    <?php endif; ?>
+
+
     <!-- Check if user is logged in to render appropriate link -->
-    <?php if ($userLogged): ?>
+    <?php if ($user): ?>
       <a href="/logout" class="main-button">Sign out</a>
     <?php else: ?>
       <a href="/login" class="main-button">Sign in</a>

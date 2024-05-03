@@ -34,7 +34,7 @@ class SessionService
     unset($_SESSION[$key]);
   }
 
-  public function end()
+  public static function end()
   {
     session_unset();
     session_destroy();

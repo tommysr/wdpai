@@ -3,18 +3,18 @@
 
 class AuthInterceptor
 {
-  public static function check()
+  public static function isLoggedIn()
   {
-    if (isset($_SESSION['userId'])) {
+    if (isset($_SESSION['user'])) {
       return true;
     }
 
     return false;
   }
 
-  public static function checkAdmin()
+  public static function isAdmin()
   {
-    if (isset($_SESSION['userId']) && $_SESSION['userRole'] == 'Admin') {
+    if (isset($_SESSION['user']) && $_SESSION['user']['role'] == 'Admin') {
       return true;
     }
 

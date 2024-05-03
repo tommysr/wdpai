@@ -46,9 +46,10 @@ class AppController
 
     protected function redirect(string $url, int $code = 0): void
     {
-        $url = "http://$_SERVER[HTTP_HOST]" . $url;
+        $url = "http://$_SERVER[HTTP_HOST]/" . $url;
         header('Location:' . $url, true, $code);
     }
+
 
     public function render(string $template, array $variables = [], string $content = null)
     {
@@ -58,7 +59,7 @@ class AppController
         if (file_exists($templatePath)) {
             extract($variables);
 
-            $userLogged = $this->sessionService->get('userId');
+            $user = $this->sessionService->get('user');
 
             ob_start();
             include $templatePath;
