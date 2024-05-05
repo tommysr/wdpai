@@ -1,6 +1,6 @@
 <h1 class="main-text">Create Quiz</h1>
 
-<form id="quizForm" method="post" action="/updateQuest/<?= $quest ? $quest->getQuestID() : ''; ?>"
+<form id="quizForm" method="post" action="/editQuest/<?= $quest ? $quest->getQuestID() : ''; ?>"
   class="flex-column-center-center gap-1">
   <label for="quizTitle" class="input-description main-text">Quiz Title:</label>
   <input type="text" id="quizTitle" name="quizTitle" placeholder="title" value="<?= $quest ? $quest->getTitle() : '' ?>"
@@ -34,19 +34,22 @@
     <?php
     if ($quest):
       $questions = $quest->getQuestions();
-      foreach ($questions as $question): ?>
+      foreach ($questions as $question):
+        $questionId = $question->getQuestionId();
+        ?>
 
         <div class="question flex-column-center-center gap-1">
-          <input type="hidden" name="questionId" value="<?= $question->getQuestionId(); ?>">
           <label for="questionText" class="input-description main-text">Question Text:</label>
-          <textarea name="questionText[]" class="questionText main-text" cols="30" rows="10"
+          <textarea name="questions[<?= $questionId; ?>][text]" class="questionText main-text" cols="30" rows="10"
             required><?= $question->getText(); ?></textarea>
           <div class="options">
-            <?php foreach ($question->getOptions() as $option): ?>
+            <?php foreach ($question->getOptions() as $option): 
+                $optionId = $option->getOptionId();
+              ?>
               <div class="option">
-                <input type="text" class="optionText" name="optionText[]" value="<?= $option->getText() ?>">
+                <input type="text" class="optionText" name="options[<?= $questionId; ?>][<?= $optionId; ?>][text]" value="<?= $option->getText() ?>">
                 <label class="option-container">
-                  <input type="checkbox" name="isCorrect[]" <?= $option->getIsCorrect() ? 'checked' : '' ?> />
+                  <input type="checkbox" name="options[<?= $questionId; ?>][<?= $optionId; ?>][isCorrect]" <?= $option->getIsCorrect() ? 'checked' : '' ?> value="true"/>
                   <span class="checkmark"></span>
                 </label>
                 <button type="button" class="removeOption"><i class="fa fa-times-circle" aria-hidden="true"></i></button><br>

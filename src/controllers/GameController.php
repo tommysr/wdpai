@@ -126,7 +126,7 @@ class GameController extends AppController
     $_SESSION['awaiting_response'] = true;
 
 
-    switch ($question_type->getValue()) {
+    switch ($question_type) {
       case QuestionType::SINGLE_CHOICE:
         $this->renderSingleChoiceQuestion($question, $options);
         break;

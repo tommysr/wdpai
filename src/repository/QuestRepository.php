@@ -58,16 +58,25 @@ class QuestRepository extends Repository
 
   public function getApprovedQuests(): array
   {
-    $quests = $this->getQuests();
-    $approvedQuests = [];
-
-    foreach ($quests as $quest) {
-      if (!$quest->isApproved()) {
-        $approvedQuests[] = $quest;
-      }
-    }
-
-    return $approvedQuests;
+    return $this->getQuestByApprovedFlag(true);
   }
 
+  public function getQuestToApprove(): array
+  {
+    return $this->getQuestByApprovedFlag(false);
+  }
+
+  private function getQuestByApprovedFlag(bool $isApproved): array
+  {
+    $quests = [];
+    $stmt = $this->db->connect()->prepare('SELECT * FROM quests WHERE approved = :approved');
+    $stmt->execute(['approved' => $isApproved]);
+    $fetched = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($fetched as $fetched_quest) {
+      $quests[] = $this->constructQuestModel($fetched_quest);
+    }
+
+    return $quests;
+  }
 }

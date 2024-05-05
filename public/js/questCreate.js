@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function addOption(questionDiv) {
     const optionsDiv = questionDiv.querySelector(".options");
     const newOptionDiv = document.createElement("div");
-    newOptionDiv.classList="option"
+    newOptionDiv.classList = "option";
 
     newOptionDiv.innerHTML = `
       <input type="text" class="optionText" name="optionText[]">

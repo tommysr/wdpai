@@ -60,6 +60,58 @@ class QuestsController extends AppController
     }
   }
 
+  public function editQuest(?int $questId = null)
+  {
+    try {
+      $this->questAuthorizationService->authorizeQuestAction(QuestAuthorizeRequest::EDIT, $questId);
+
+      $quizData = array(
+        "quizTitle" => $_POST["quizTitle"],
+        "quizDescription" => $_POST["quizDescription"],
+        "requiredWallet" => $_POST["requiredWallet"],
+        "timeRequired" => $_POST["timeRequired"],
+        "expiryDate" => $_POST["expiryDate"],
+        "participantsLimit" => $_POST["participantsLimit"],
+        "poolAmount" => $_POST["poolAmount"]
+      );
+
+
+      foreach ($_POST["questions"] as $questionId => $questionData) {
+        $options = [];
+        $correctOptionsCount = 0;
+        $type = QuestionType::UNKNOWN;
+
+        if (isset($_POST["options"][$questionId])) {
+          foreach ($_POST["options"][$questionId] as $optionIndex => $optionData) {
+            $isCorrect = isset($optionData['isCorrect']);
+            if ($isCorrect) {
+              $correctOptionsCount++;
+            }
+            $options[] = new Option($optionIndex, $questionId, $optionData['text'], $isCorrect);
+          }
+
+          if ($correctOptionsCount == 1) {
+            $type = QuestionType::SINGLE_CHOICE;
+          } else if ($correctOptionsCount == 0) {
+            throw new Exception('baaad');
+          } else {
+            $type = QuestionType::MULTIPLE_CHOICE;
+          }
+        } else {
+          $type = QuestionType::READ_TEXT;
+        }
+
+        $question = new Question($questionId, $questId, $questionData['text'], $type);
+        $question->setOptions($options);
+      }
+
+    } catch (Exception $e) {
+
+    } catch (NotLoggedInException $e) {
+      $this->redirectWithParams('login', ['message' => 'first, you need to log in']);
+    }
+  }
+
   public function enterQuest($questId)
   {
     try {

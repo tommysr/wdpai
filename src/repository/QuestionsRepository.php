@@ -7,7 +7,7 @@ class QuestionsRepository extends Repository
 {
   private function constructQuestionModel(array $question): Question
   {
-    $type = QuestionType::fromName($question['type']);
+    $type = getQuestionTypeFromName($question['type']);
     return new Question($question['questionid'], $question['questid'], $question['text'], $type);
   }
 

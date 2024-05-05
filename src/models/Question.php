@@ -1,39 +1,24 @@
 <?php
 
-class QuestionType
+enum QuestionType
 {
-  const SINGLE_CHOICE = 'single_choice';
-  const MULTIPLE_CHOICE = 'multiple_choice';
-  const READ_TEXT = 'read_text';
-  const UNKNOWN = 'unknown';
-
-  protected $value;
-
-  public function __construct($value)
-  {
-    $this->value = $value;
-  }
-
-  // Method to parse a string into a QuestionType instance
-  public static function fromName(string $name): ?self
-  {
-    switch ($name) {
-      case self::SINGLE_CHOICE:
-      case self::MULTIPLE_CHOICE:
-      case self::READ_TEXT:
-      case self::UNKNOWN:
-        return new static($name);
-      default:
-        return null;
-    }
-  }
-
-  // Getter method for the value
-  public function getValue(): string
-  {
-    return $this->value;
-  }
+  case SINGLE_CHOICE;
+  case MULTIPLE_CHOICE;
+  case READ_TEXT;
+  case UNKNOWN;
 }
+
+
+function getQuestionTypeFromName(string $name): QuestionType {
+  $lookup = [
+      'single_choice' => QuestionType::SINGLE_CHOICE,
+      'multiple_choice' => QuestionType::MULTIPLE_CHOICE,
+      'read_text' => QuestionType::READ_TEXT,
+  ];
+
+  return $lookup[$name] ?? QuestionType::UNKNOWN;
+}
+
 
 class Question
 {
