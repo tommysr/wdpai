@@ -15,11 +15,16 @@ class QuestsController extends AppController
   private $questRepository;
   private $walletRepository;
   private $questAuthorizationService;
+  private $questionsRepository;
+
+  private $optionsRepository;
 
   public function __construct()
   {
     parent::__construct();
     $this->questRepository = new QuestRepository();
+    $this->questionsRepository = new QuestionsRepository();
+    $this->optionsRepository = new OptionsRepository();
     $this->walletRepository = new WalletRepository();
     $this->questAuthorizationService = new QuestAuthorizationService();
   }
@@ -29,6 +34,25 @@ class QuestsController extends AppController
     var_dump($_SESSION);
     $quests = $this->questRepository->getQuests();
     $this->render('layout', ['title' => 'quest list', 'quests' => $quests], 'quests');
+  }
+
+  public function createQuest(?int $questId = null)
+  {
+    $quest = null;
+    $questionsWithOptions = [];
+
+    if ($questId != null) {
+      $quest = $this->questRepository->getQuestById($questId);
+      $questions = $this->questionsRepository->getQuestionsByQuestId($questId);
+
+      foreach ($questions as $question) {
+        $options = $this->optionsRepository->getOptionsByQuestionId($question->getQuestionId());
+        $questionWithOptions = ['question' => $question, 'options' => $options];
+        $questionsWithOptions[] = $questionWithOptions;
+      }
+    }
+
+    $this->render('createQuest', ['title' => 'quest add', 'quest' => $quest, 'questionWithOptions' => $questionsWithOptions]);
   }
 
   private function checkParticipation($userId, $questId)
