@@ -52,7 +52,7 @@ class QuestsController extends AppController
       }
     }
 
-    $this->render('createQuest', ['title' => 'quest add', 'quest' => $quest, 'questionWithOptions' => $questionsWithOptions]);
+    $this->render('layout', ['title' => 'quest add', 'quest' => $quest, 'questionWithOptions' => $questionsWithOptions], 'createQuest');
   }
 
   private function checkParticipation($userId, $questId)

@@ -30,16 +30,15 @@ document.addEventListener("DOMContentLoaded", function () {
   function addQuestion() {
     const questionsDiv = document.getElementById("questions");
     const newQuestionDiv = document.createElement("div");
-    newQuestionDiv.classList.add("question");
+    newQuestionDiv.classList = "question flex-column-center-center gap-1";
 
     newQuestionDiv.innerHTML = `
-      <label for="questionText">Question Text:</label>
-      <input type="text" class="questionText" name="questionText[]" required><br>
+      <label for="questionText" class="input-description main-text">Question Text:</label>
+      <textarea name="questionText[]" class="questionText" cols="30" rows="10" required> </textarea>
 
       <div class="options"></div>
-      <button type="button" class="addOption">Add Option</button><br>
-
-      <button type="button" class="removeQuestion">Remove Question</button><br><br>
+      <button type="button" class="addOption main-button">Add Option</button><br>
+      <button type="button" class="removeQuestion secondary-button">Remove Question</button><br><br>
     `;
     questionsDiv.appendChild(newQuestionDiv);
 
@@ -59,12 +58,17 @@ document.addEventListener("DOMContentLoaded", function () {
   function addOption(questionDiv) {
     const optionsDiv = questionDiv.querySelector(".options");
     const newOptionDiv = document.createElement("div");
+    newOptionDiv.classList="option"
 
     newOptionDiv.innerHTML = `
-      <label for="optionText">Option Text:</label>
       <input type="text" class="optionText" name="optionText[]">
-      <input type="checkbox" class="isCorrect" name="isCorrect[]">
-      <button type="button" class="removeOption">Remove Option</button><br>
+
+      <label class="option-container">
+        <input type="checkbox" name="isCorrect[]"/>
+        <span class="checkmark"></span>
+      </label>
+      <button type="button" class="removeOption"><i class="fa fa-times-circle"
+        aria-hidden="true"></i></button><br>
     `;
     optionsDiv.appendChild(newOptionDiv);
 
