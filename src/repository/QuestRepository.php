@@ -62,7 +62,7 @@ class QuestRepository extends Repository
     $approvedQuests = [];
 
     foreach ($quests as $quest) {
-      if ($quest->isApproved()) {
+      if (!$quest->isApproved()) {
         $approvedQuests[] = $quest;
       }
     }

@@ -20,7 +20,7 @@
 
           <span class="info">
             <i class="fas fa-flag-checkered"></i>
-            <?= $quest->getTimeRequired(); ?>
+            <?= $quest->getTimeRequiredMinutes(); ?>
           </span>
         </div>
 
@@ -29,7 +29,7 @@
       <div class="card-right-background">
         <span class="info">
           <i class="fas fa-clock"></i>
-          <?= $quest->getExpiryDate(); ?>
+          <?= $quest->getExpiryDateString(); ?>
         </span>
 
         <span class="info">

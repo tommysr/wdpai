@@ -16,7 +16,7 @@
   <input type="number" name="timeRequired" value="<?= $quest ? $quest->getTimeRequiredMinutes() : '' ?>">
 
   <label for="expiryDate" class="input-description main-text">Expiry date:</label>
-  <input type="date" name="expiryDate" value="<?= $quest ? $quest->getExpiryDateString(): '' ?>">
+  <input type="date" name="expiryDate" value="<?= $quest ? $quest->getExpiryDateString() : '' ?>">
 
 
   <label for="participantsLimit" class="input-description main-text">Participants limit:</label>
@@ -31,33 +31,35 @@
   <h2 class="main-text">Questions</h2>
 
   <div id="questions" class="flex-column-center-center gap-1">
-    <?php foreach ($questionWithOptions as $questionWithOption):
-      $question = $questionWithOption['question'];
-      $options = $questionWithOption['options'];
-      ?>
+    <?php
+    if ($quest):
+      $questions = $quest->getQuestions();
+      foreach ($questions as $question): ?>
 
-      <div class="question flex-column-center-center gap-1">
-        <input type="hidden" name="questionId" value="<?= $question->getQuestionId(); ?>">
-        <label for="questionText" class="input-description main-text">Question Text:</label>
-        <textarea name="questionText[]" class="questionText main-text" cols="30" rows="10"
-          required><?= $question->getText(); ?></textarea>
-        <div class="options">
-          <?php foreach ($options as $option): ?>
-            <div class="option">
-              <input type="text" class="optionText" name="optionText[]" value="<?= $option->getText() ?>">
-              <label class="option-container">
-                <input type="checkbox" name="isCorrect[]" <?= $option->getIsCorrect() ? 'checked' : '' ?> />
-                <span class="checkmark"></span>
-              </label>
-              <button type="button" class="removeOption"><i class="fa fa-times-circle" aria-hidden="true"></i></button><br>
-              <br>
-            </div>
-          <?php endforeach; ?>
+        <div class="question flex-column-center-center gap-1">
+          <input type="hidden" name="questionId" value="<?= $question->getQuestionId(); ?>">
+          <label for="questionText" class="input-description main-text">Question Text:</label>
+          <textarea name="questionText[]" class="questionText main-text" cols="30" rows="10"
+            required><?= $question->getText(); ?></textarea>
+          <div class="options">
+            <?php foreach ($question->getOptions() as $option): ?>
+              <div class="option">
+                <input type="text" class="optionText" name="optionText[]" value="<?= $option->getText() ?>">
+                <label class="option-container">
+                  <input type="checkbox" name="isCorrect[]" <?= $option->getIsCorrect() ? 'checked' : '' ?> />
+                  <span class="checkmark"></span>
+                </label>
+                <button type="button" class="removeOption"><i class="fa fa-times-circle" aria-hidden="true"></i></button><br>
+                <br>
+              </div>
+            <?php endforeach; ?>
+          </div>
+          <button type="button" class="addOption main-button">Add Option</button><br>
+          <button type="button" class="removeQuestion secondary-button">Remove Question</button><br><br>
         </div>
-        <button type="button" class="addOption main-button">Add Option</button><br>
-        <button type="button" class="removeQuestion secondary-button">Remove Question</button><br><br>
-      </div>
-    <?php endforeach; ?>
+      <?php endforeach;
+    endif; ?>
+
   </div>
 
   <button type="button" id="addQuestion" class="main-button">Add Question</button><br><br>

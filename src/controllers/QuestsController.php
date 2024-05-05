@@ -8,6 +8,7 @@ require_once __DIR__ . '/../repository/QuestionsRepository.php';
 require_once __DIR__ . '/../repository/OptionsRepository.php';
 require_once __DIR__ . '/../repository/WalletRepository.php';
 require_once __DIR__ . '/../services/QuestAuthorizationService.php';
+require_once __DIR__ . '/../services/QuestService.php';
 require_once __DIR__ . '/../exceptions/Quests.php';
 
 class QuestsController extends AppController
@@ -16,7 +17,7 @@ class QuestsController extends AppController
   private $walletRepository;
   private $questAuthorizationService;
   private $questionsRepository;
-
+  private $questService;
   private $optionsRepository;
 
   public function __construct()
@@ -27,6 +28,7 @@ class QuestsController extends AppController
     $this->optionsRepository = new OptionsRepository();
     $this->walletRepository = new WalletRepository();
     $this->questAuthorizationService = new QuestAuthorizationService();
+    $this->questService = new QuestService();
   }
 
 
@@ -40,89 +42,41 @@ class QuestsController extends AppController
   // create quest returns quest data given by questId param and checks access to given route
   public function createQuest(?int $questId = null)
   {
-    if ($questId) {
-      // unauthorized if user is not creator of given quest
-      // redirects if access is missing
-      $this->checkEditRequest($questId);
-    } else {
-      // unauthorized if user is not an admin
-      // redirects if access is missing
-      $this->checkCreateRequest();
-    }
+    try {
+      $requestType = $questId ? QuestAuthorizeRequest::EDIT : QuestAuthorizeRequest::CREATE;
 
-    $quest = null;
-    $questionsWithOptions = [];
+      $this->questAuthorizationService->authorizeQuestAction($requestType, $questId);
 
-    if ($questId != null) {
-      $quest = $this->questRepository->getQuestById($questId);
-      $questions = $this->questionsRepository->getQuestionsByQuestId($questId);
+      $quest = $this->questService->getQuestWithQuestionsAndOptions($questId);
 
-      foreach ($questions as $question) {
-        $options = $this->optionsRepository->getOptionsByQuestionId($question->getQuestionId());
-        $questionWithOptions = ['question' => $question, 'options' => $options];
-        $questionsWithOptions[] = $questionWithOptions;
-      }
-    }
-
-    $this->render('layout', ['title' => 'quest add', 'quest' => $quest, 'questionWithOptions' => $questionsWithOptions], 'createQuest');
-  }
-
-
-  private function getSignedUserId(): ?int
-  {
-    $userSession = $this->sessionService->get('user');
-    return $userSession ? $userSession['id'] : null;
-  }
-
-  private function getSignedUserRole(): ?string
-  {
-    $userSession = $this->sessionService->get('user');
-    return $userSession ? $userSession['role'] : null;
-  }
-
-  private function canUserCreate(): bool
-  {
-    return $this->getSignedUserRole() === 'admin';
-  }
-
-  private function checkEditRequest(int $questId)
-  {
-    $id = $this->getSignedUserId();
-    $quest = $this->questRepository->getQuestById($questId);
-
-    if ($quest === null || $id == null || $quest->getCreatorId() !== $id) {
-      $this->redirect('unauthorized');
-    }
-  }
-
-  private function checkCreateRequest()
-  {
-    if ($this->getSignedUserRole() !== 'admin') {
-      $this->redirect('unauthorized');
-    }
-  }
-
-  private function checkParticipationRequest(int $questId)
-  {
-    $id = $this->getSignedUserId();
-
-    if ($id === null) {
-      $this->redirect('login');
-    } else if ($this->questAuthorizationService->questStatisticsExists($id, $questId)) {
-      $this->redirect("unauthorized");
+      $this->render('layout', [
+        'title' => 'quest add',
+        'quest' => $quest
+      ], 'createQuest');
+    } catch (NotLoggedInException $e) {
+      $this->redirectWithParams('login', ['message' => 'first, you need to log in']);
+    } catch (Exception $e) {
+      $this->redirectWithParams('error', ['message' => $e->getMessage()]);
     }
   }
 
   public function enterQuest($questId)
   {
-    $this->checkParticipationRequest($questId);
+    try {
+      $this->questAuthorizationService->authorizeQuestAction(QuestAuthorizeRequest::ENTER, $questId);
 
-    $userId = $this->getSignedUserId();
+      $userId = $this->sessionService->get('user')['id'];
 
-    if ($this->request->isGet()) {
-      $this->renderStartQuest($userId, $questId);
-    } else {
-      $this->startQuest($userId, $questId);
+      if ($this->request->isGet()) {
+        $this->renderStartQuest($userId, $questId);
+      } else {
+        $this->startQuest($userId, $questId);
+      }
+
+    } catch (NotLoggedInException $e) {
+      $this->redirectWithParams('login', ['message' => 'first, you need to log in']);
+    } catch (Exception $e) {
+      $this->redirectWithParams('error', ['message' => $e->getMessage()]);
     }
   }
 
@@ -131,7 +85,7 @@ class QuestsController extends AppController
     $quest = $this->questRepository->getQuestById($questId);
     $wallets = $this->walletRepository->getBlockchainWallets($userId, $quest->getRequiredWallet());
 
-    $this->render('enterQuest', ['title' => 'enter quest', 'wallets' => $wallets, 'message' => '']);
+    $this->render('enterQuest', ['title' => 'enter quest', 'wallets' => $wallets]);
   }
 
   private function startQuest($userId, $questId)
@@ -139,7 +93,7 @@ class QuestsController extends AppController
     $walletSelect = $this->request->post('walletSelect');
 
     if (!$walletSelect) {
-      return $this->redirect('');
+      $this->redirectWithParams('error', ['message' => 'something went wrong', 'code' => 404]);
     }
 
     $walletId = $walletSelect;
@@ -148,7 +102,7 @@ class QuestsController extends AppController
       $newWalletAddress = $this->request->post('newWalletAddress');
 
       if (!$newWalletAddress) {
-        return null;
+        $this->redirectWithParams('error', ['message' => 'something went wrong', 'code' => 404]);
       }
 
       $walletId = $this->addNewWallet($userId, $questId, $newWalletAddress);

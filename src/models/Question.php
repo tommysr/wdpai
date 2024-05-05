@@ -43,6 +43,8 @@ class Question
   private QuestionType $type;
   private int $score;
 
+  private $options = array();
+
 
   public function __construct(int $questionId, int $questId, string $text, QuestionType $type)
   {
@@ -74,4 +76,13 @@ class Question
     return $this->type;
   }
 
+  public function getOptions()
+  {
+    return $this->options;
+  }
+
+  public function setOptions(array $options)
+  {
+    $this->options = $options;
+  }
 }

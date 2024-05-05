@@ -1,5 +1,7 @@
 <?php
 
+require_once 'Question.php';
+
 class Quest
 {
 
@@ -17,6 +19,8 @@ class Quest
     private int $points;
     private int $creatorId;
     private bool $approved;
+
+    private $questions = array();
 
     public function __construct(
         int $questID,
@@ -110,12 +114,22 @@ class Quest
         return $this->token;
     }
 
-    public function getCreatorId() 
+    public function getCreatorId()
     {
         return $this->creatorId;
     }
 
-    public function isApproved() {
+    public function isApproved()
+    {
         return $this->approved;
+    }
+
+    public function getQuestions() {
+        return $this->questions;
+    }
+
+    public function setQuestions(array $questions) 
+    {
+        $this->questions = $questions;
     }
 }
