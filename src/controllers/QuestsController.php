@@ -29,15 +29,27 @@ class QuestsController extends AppController
     $this->questAuthorizationService = new QuestAuthorizationService();
   }
 
+
+  // returns quests which are approved by some general admin
   public function index()
   {
-    var_dump($_SESSION);
-    $quests = $this->questRepository->getQuests();
+    $quests = $this->questRepository->getApprovedQuests();
     $this->render('layout', ['title' => 'quest list', 'quests' => $quests], 'quests');
   }
 
+  // create quest returns quest data given by questId param and checks access to given route
   public function createQuest(?int $questId = null)
   {
+    if ($questId) {
+      // unauthorized if user is not creator of given quest
+      // redirects if access is missing
+      $this->checkEditRequest($questId);
+    } else {
+      // unauthorized if user is not an admin
+      // redirects if access is missing
+      $this->checkCreateRequest();
+    }
+
     $quest = null;
     $questionsWithOptions = [];
 
@@ -55,20 +67,57 @@ class QuestsController extends AppController
     $this->render('layout', ['title' => 'quest add', 'quest' => $quest, 'questionWithOptions' => $questionsWithOptions], 'createQuest');
   }
 
-  private function checkParticipation($userId, $questId)
+
+  private function getSignedUserId(): ?int
   {
-    if (!AuthInterceptor::isLoggedIn()) {
+    $userSession = $this->sessionService->get('user');
+    return $userSession ? $userSession['id'] : null;
+  }
+
+  private function getSignedUserRole(): ?string
+  {
+    $userSession = $this->sessionService->get('user');
+    return $userSession ? $userSession['role'] : null;
+  }
+
+  private function canUserCreate(): bool
+  {
+    return $this->getSignedUserRole() === 'admin';
+  }
+
+  private function checkEditRequest(int $questId)
+  {
+    $id = $this->getSignedUserId();
+    $quest = $this->questRepository->getQuestById($questId);
+
+    if ($quest === null || $id == null || $quest->getCreatorId() !== $id) {
+      $this->redirect('unauthorized');
+    }
+  }
+
+  private function checkCreateRequest()
+  {
+    if ($this->getSignedUserRole() !== 'admin') {
+      $this->redirect('unauthorized');
+    }
+  }
+
+  private function checkParticipationRequest(int $questId)
+  {
+    $id = $this->getSignedUserId();
+
+    if ($id === null) {
       $this->redirect('login');
-    } else if ($this->questAuthorizationService->questStatisticsExists($userId, $questId)) {
+    } else if ($this->questAuthorizationService->questStatisticsExists($id, $questId)) {
       $this->redirect("unauthorized");
     }
   }
 
   public function enterQuest($questId)
   {
-    $userId = SessionService::get('userId');
+    $this->checkParticipationRequest($questId);
 
-    $this->checkParticipation($userId, $questId);
+    $userId = $this->getSignedUserId();
 
     if ($this->request->isGet()) {
       $this->renderStartQuest($userId, $questId);

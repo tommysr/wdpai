@@ -13,19 +13,22 @@ class QuestRepository extends Repository
       $data['description'],
       $data['worthknowledge'],
       $data['requiredwallet'],
-      $data['timerequired'],
+      $data['timerequired_minutes'],
       $data['expirydate'],
       $data['participantscount'],
       $data['participantlimit'],
       $data['poolamount'],
-      $data['points']
+      $data['token'],
+      $data['points'],
+      $data['creator'],
+      $data['approved']
     );
   }
 
 
   public function getQuestById($questId): ?Quest
   {
-    $sql = "SELECT * FROM Quests WHERE QuestID = :questId";
+    $sql = "SELECT * FROM quests WHERE QuestID = :questId";
 
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute(['questId' => $questId]);
@@ -52,4 +55,19 @@ class QuestRepository extends Repository
 
     return $quests;
   }
+
+  public function getApprovedQuests(): array
+  {
+    $quests = $this->getQuests();
+    $approvedQuests = [];
+
+    foreach ($quests as $quest) {
+      if ($quest->isApproved()) {
+        $approvedQuests[] = $quest;
+      }
+    }
+
+    return $approvedQuests;
+  }
+
 }

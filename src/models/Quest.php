@@ -1,79 +1,121 @@
 <?php
 
-class Quest {
+class Quest
+{
 
-    private $questID;
-    private $title;
-    private $description;
-    private $worthKnowledge;
-    private $requiredWallet;
-    private $timeRequired;
-    private $expiryDate;
-    private $participantsCount;
-    private $participantLimit;
-    private $poolAmount;
-    private $points;
-    // private $pictures;
+    private int $questID;
+    private string $title;
+    private string $description;
+    private int $worthKnowledge;
+    private string $requiredWallet;
+    private int $timeRequiredMinutes;
+    private string $expiryDate;
+    private int $participantsCount;
+    private int $participantLimit;
+    private float $poolAmount;
+    private string $token;
+    private int $points;
+    private int $creatorId;
+    private bool $approved;
 
-    public function __construct($questID, $title, $description, $worthKnowledge, $requiredWallet, $timeRequired, $expiryDate, $participantsCount, $participantLimit, $poolAmount, $points) {
+    public function __construct(
+        int $questID,
+        string $title,
+        string $description,
+        int $worthKnowledge,
+        string $requiredWallet,
+        int $timeRequiredMinutes,
+        string $expiryDate,
+        int $participantsCount,
+        int $participantLimit,
+        float $poolAmount,
+        string $token,
+        int $points,
+        int $creatorId,
+        bool $approved
+    ) {
         $this->questID = $questID;
         $this->title = $title;
         $this->description = $description;
         $this->worthKnowledge = $worthKnowledge;
         $this->requiredWallet = $requiredWallet;
-        $this->timeRequired = $timeRequired;
+        $this->timeRequiredMinutes = $timeRequiredMinutes;
         $this->expiryDate = $expiryDate;
         $this->participantsCount = $participantsCount;
         $this->participantLimit = $participantLimit;
         $this->poolAmount = $poolAmount;
+        $this->token = $token;
         $this->points = $points;
+        $this->creatorId = $creatorId;
+        $this->approved = $approved;
     }
 
-    public function getQuestID() {
+    public function getQuestID()
+    {
         return $this->questID;
     }
 
-    public function getTitle() {
+    public function getTitle()
+    {
         return $this->title;
     }
 
-    public function getDescription() {
+    public function getDescription()
+    {
         return $this->description;
     }
 
-    public function getWorthKnowledge() {
+    public function getWorthKnowledge()
+    {
         return $this->worthKnowledge;
     }
 
-    public function getRequiredWallet() {
+    public function getRequiredWallet()
+    {
         return $this->requiredWallet;
     }
 
-    public function getTimeRequired() {
-        return $this->timeRequired;
+    public function getTimeRequiredMinutes()
+    {
+        return $this->timeRequiredMinutes;
     }
 
-    public function getExpiryDate() {
+    public function getExpiryDateString()
+    {
         return $this->expiryDate;
     }
 
-    public function getParticipantsCount() {
+    public function getParticipantsCount()
+    {
         return $this->participantsCount;
     }
 
-    public function getParticipantLimit() {
+    public function getParticipantLimit()
+    {
         return $this->participantLimit;
     }
 
-    public function getPoolAmount() {
+    public function getPoolAmount()
+    {
         return $this->poolAmount;
     }
 
-    public function getPoints() {
+    public function getPoints()
+    {
         return $this->points;
     }
 
-    // public function getPictures() {
-    //     return $this->pictures;
-    // }
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    public function getCreatorId() 
+    {
+        return $this->creatorId;
+    }
+
+    public function isApproved() {
+        return $this->approved;
+    }
 }
