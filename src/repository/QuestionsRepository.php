@@ -46,4 +46,78 @@ class QuestionsRepository extends Repository
 
     return $questions;
   }
+
+  public function deleteQuestions(array $questions)
+  {
+    $pdo = $this->db->connect();
+    $pdo->beginTransaction();
+
+    try {
+      $sql = 'DELETE * FROM questions WHERE questionid = :questionid';
+      $stmt = $pdo->prepare($sql);
+
+      foreach ($questions as $question) {
+        $stmt->execute([
+          ':questionid' => $question->getQuestionId(),
+        ]);
+      }
+
+      $pdo->commit();
+    } catch (PDOException $e) {
+      $pdo->rollBack();
+
+      throw new Exception("Transaction failed: " . $e->getMessage());
+    }
+  }
+
+  public function updateQuestions(array $questions)
+  {
+    $pdo = $this->db->connect();
+    $pdo->beginTransaction();
+
+    try {
+      $sql = 'UPDATE questions WHERE questionid = :questionid SET text = :text, type = :type';
+      $stmt = $pdo->prepare($sql);
+
+      foreach ($questions as $question) {
+        $stmt->execute([
+          ':questionid' => $question->getQuestionId(),
+          ':text' => $question->getText(),
+          ':type' => $question->getType(),
+        ]);
+      }
+
+      $pdo->commit();
+    } catch (PDOException $e) {
+      $pdo->rollBack();
+
+      throw new Exception("Transaction failed: " . $e->getMessage());
+    }
+  }
+
+
+  public function saveQuestions(array $questions)
+  {
+    $pdo = $this->db->connect();
+    $pdo->beginTransaction();
+
+    try {
+      $sql = 'INSERT INTO questions (questid, text, type) VALUES (:questid, :text, :type)';
+      $stmt = $pdo->prepare($sql);
+
+      foreach ($questions as $question) {
+        $stmt->execute([
+          ':questid' => $question->getQuestId(),
+          ':text' => $question->getText(),
+          ':type' => $question->getType(),
+        ]);
+      }
+
+      $pdo->commit();
+    } catch (PDOException $e) {
+      $pdo->rollBack();
+
+      throw new Exception("Transaction failed: " . $e->getMessage());
+    }
+  }
 }

@@ -25,6 +25,67 @@ class QuestRepository extends Repository
     );
   }
 
+  public function updateQuest(Quest $quest)
+  {
+    $sql = "UPDATE quests WHERE questid = :questid SET
+    title = :title, 
+    description = :description, 
+    worthknowledge = :worthknowledge, 
+    requiredwallet = :requiredwallet, 
+    expirydate = :expirydate, 
+    participantscount = :participantscount, 
+    participantlimit = :participantlimit, 
+    poolamount = :poolamount, 
+    token = :token, 
+    points = :points, 
+    timerequired_minutes, = :timerequired_minutes,
+    creator = :creator, 
+    approved = :approved";
+
+    $stmt = $this->db->connect()->prepare($sql);
+
+    $stmt->execute([
+      ':questid' => $quest->getQuestID(),
+      ':title' => $quest->getTitle(),
+      ':description' => $quest->getDescription(),
+      ':worthknowledge' => $quest->getWorthKnowledge(),
+      ':requiredwallet' => $quest->getRequiredWallet(),
+      ':expirydate' => $quest->getExpiryDateString(),
+      ':participantscount' => $quest->getParticipantsCount(),
+      ':participantlimit' => $quest->getParticipantLimit(),
+      ':poolamount' => $quest->getPoolAmount(),
+      ':token' => $quest->getToken(),
+      ':points' => $quest->getPoints(),
+      ':timerequired_minutes' => $quest->getTimeRequiredMinutes(),
+      ':creator' => $quest->getCreatorId(),
+      ':approved' => $quest->isApproved(),
+    ]);
+  }
+
+  public function saveQuest(Quest $quest)
+  {
+    $sql = "INSERT INTO quests (title, description, worthknowledge, requiredwallet, expirydate, participantscount, participantlimit, poolamount, token, points, timerequired_minutes, creator, approved)
+    VALUES (:title, :description, :worthknowledge, :requiredwallet, :expirydate, :participantscount, :participantlimit, :poolamount, :token, :points, :timerequired_minutes, :creator, :approved)";
+
+    $stmt = $this->db->connect()->prepare($sql);
+
+    $stmt->execute([
+      ':title' => $quest->getTitle(),
+      ':description' => $quest->getDescription(),
+      ':worthknowledge' => $quest->getWorthKnowledge(),
+      ':requiredwallet' => $quest->getRequiredWallet(),
+      ':expirydate' => $quest->getExpiryDateString(),
+      ':participantscount' => $quest->getParticipantsCount(),
+      ':participantlimit' => $quest->getParticipantLimit(),
+      ':poolamount' => $quest->getPoolAmount(),
+      ':token' => $quest->getToken(),
+      ':points' => $quest->getPoints(),
+      ':timerequired_minutes' => $quest->getTimeRequiredMinutes(),
+      ':creator' => $quest->getCreatorId(),
+      ':approved' => $quest->isApproved(),
+    ]);
+  }
+
 
   public function getQuestById($questId): ?Quest
   {

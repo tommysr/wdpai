@@ -26,7 +26,7 @@
   <input type="text" name="poolAmount" value="<?= $quest ? $quest->getPoolAmount() : '' ?>">
 
   <label for="poolAmount" class="input-description main-text">Payout token:</label>
-  <input type="text" name="poolAmount" value="<?= $quest ? $quest->getToken() : '' ?>">
+  <input type="text" name="token" value="<?= $quest ? $quest->getToken() : '' ?>">
 
   <h2 class="main-text">Questions</h2>
 

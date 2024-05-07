@@ -7,7 +7,8 @@ require_once __DIR__ . '/../models/Option.php';
 class OptionsRepository extends Repository
 {
 
-  public function getCorrectOptionsIdsForQuestionId(int $questionId): array {
+  public function getCorrectOptionsIdsForQuestionId(int $questionId): array
+  {
     $options = [];
 
     $sql = "SELECT OptionID FROM Options WHERE QuestionID = :questionId AND isCorrect = true";
@@ -39,5 +40,30 @@ class OptionsRepository extends Repository
 
 
     return $options;
+  }
+
+  public function saveOptions(array $options)
+  {
+    $pdo = $this->db->connect();
+    $pdo->beginTransaction();
+
+    try {
+      $sql = 'INSERT INTO options (questionid, text, iscorrect) VALUES (:questionid, :text, :iscorrect)';
+      $stmt = $pdo->prepare($sql);
+
+      foreach ($options as $option) {
+        $stmt->execute([
+          ':questionid' => $option->getOptionId(),
+          ':text' => $option->getText(),
+          ':iscorrect' => $option->getIsCorrect(),
+        ]);
+      }
+
+      $pdo->commit();
+    } catch (PDOException $e) {
+      $pdo->rollBack();
+
+      throw new Exception("Transaction failed: " . $e->getMessage());
+    }
   }
 }

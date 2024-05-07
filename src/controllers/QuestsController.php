@@ -11,6 +11,26 @@ require_once __DIR__ . '/../services/QuestAuthorizationService.php';
 require_once __DIR__ . '/../services/QuestService.php';
 require_once __DIR__ . '/../exceptions/Quests.php';
 
+
+function compareQuestionsId($a, $b)
+{
+  if ($a->getQuestionId() == $b->getQuestionId()) {
+    return 0; // Objects are equal
+  }
+  return ($a->getQuestionId() < $b->getQuestionId()) ? -1 : 1;
+}
+
+function compareQuestions(Question $q1, Question $q2)
+{
+  if ($q1->__equals($q2)) {
+    return 0;
+  }
+
+  return 1;
+}
+
+
+
 class QuestsController extends AppController
 {
   private $questRepository;
@@ -60,57 +80,211 @@ class QuestsController extends AppController
     }
   }
 
+  // (string)
+  function validateString($value, $maxLength)
+  {
+    return strlen($value) > 0 && strlen($value) <= $maxLength;
+  }
+
+  // (string)
+  function validateWallet($value)
+  {
+    return is_string($value);
+  }
+
+  // (integer)
+  function validateInteger($value)
+  {
+    return filter_var($value, FILTER_VALIDATE_INT) !== false;
+  }
+
+  // (float)
+  function validateFloat($value)
+  {
+    return filter_var($value, FILTER_VALIDATE_FLOAT) !== false;
+  }
+
+  //  (date string)
+  function validateDate($value)
+  {
+    $date = DateTime::createFromFormat('Y-m-d', $value);
+    return $date && $date->format('Y-m-d') === $value;
+  }
+
+  // (3-letter string)
+  function validateToken($value)
+  {
+    return strlen($value) === 3 && ctype_alpha($value);
+  }
+
+  function validateQuizData(array $quizData)
+  {
+    $errors = [];
+
+    if (!$this->validateString($quizData['title'], 400)) {
+      $errors[] = 'Title must be a string with maximum length 400 characters.';
+    }
+    if (!$this->validateString($quizData['description'], 255)) {
+      $errors[] = 'Description must be a string with maximum length 255 characters.';
+    }
+    if (!$this->validateWallet($quizData['requiredWallet'])) {
+      $errors[] = 'Required wallet must be a string.';
+    }
+    if (!$this->validateInteger($quizData['timeRequired'])) {
+      $errors[] = 'Time required must be an integer.';
+    }
+    if (!$this->validateInteger($quizData['participantsLimit'])) {
+      $errors[] = 'Participants limit must be an integer.';
+    }
+    if (!$this->validateFloat($quizData['poolAmount'])) {
+      $errors[] = 'Pool amount must be a valid float.';
+    }
+    if (!$this->validateDate($quizData['expiryDate'])) {
+      $errors[] = 'Expiry date must be a valid date in the format "YYYY-MM-DD".';
+    }
+    if (!$this->validateToken($quizData['token'])) {
+      $errors[] = 'Token must be a 3-letter string.';
+    }
+
+    if (!empty($errors)) {
+      throw new ValidationException(implode(';', $errors));
+    }
+  }
+
+
   public function editQuest(?int $questId = null)
   {
     try {
       $this->questAuthorizationService->authorizeQuestAction(QuestAuthorizeRequest::EDIT, $questId);
 
-      $quizData = array(
-        "quizTitle" => $_POST["quizTitle"],
-        "quizDescription" => $_POST["quizDescription"],
-        "requiredWallet" => $_POST["requiredWallet"],
-        "timeRequired" => $_POST["timeRequired"],
-        "expiryDate" => $_POST["expiryDate"],
-        "participantsLimit" => $_POST["participantsLimit"],
-        "poolAmount" => $_POST["poolAmount"]
-      );
+      $questions = [];
 
-
-      foreach ($_POST["questions"] as $questionId => $questionData) {
+      foreach ($this->request->post('questions') as $questionId => $questionData) {
         $options = [];
         $correctOptionsCount = 0;
-        $type = QuestionType::UNKNOWN;
+        $questionType = QuestionType::UNKNOWN;
 
-        if (isset($_POST["options"][$questionId])) {
-          foreach ($_POST["options"][$questionId] as $optionIndex => $optionData) {
+        if (isset($this->request->post('options')[$questionId])) {
+          foreach ($this->request->post('options')[$questionId] as $optionIndex => $optionData) {
             $isCorrect = isset($optionData['isCorrect']);
+
             if ($isCorrect) {
               $correctOptionsCount++;
             }
+
             $options[] = new Option($optionIndex, $questionId, $optionData['text'], $isCorrect);
           }
 
           if ($correctOptionsCount == 1) {
-            $type = QuestionType::SINGLE_CHOICE;
-          } else if ($correctOptionsCount == 0) {
-            throw new Exception('baaad');
+            $questionType = QuestionType::SINGLE_CHOICE;
           } else {
-            $type = QuestionType::MULTIPLE_CHOICE;
+            $questionType = QuestionType::MULTIPLE_CHOICE;
           }
         } else {
-          $type = QuestionType::READ_TEXT;
+          $questionType = QuestionType::READ_TEXT;
         }
 
-        $question = new Question($questionId, $questId, $questionData['text'], $type);
+        $question = new Question($questionId, $questId, $questionData['text'], $questionType);
         $question->setOptions($options);
+        $questions[] = $question;
       }
 
-    } catch (Exception $e) {
+      $quizData = array(
+        "title" => $this->request->post("quizTitle"),
+        "description" => $this->request->post("quizDescription"),
+        "requiredWallet" => $this->request->post("requiredWallet"),
+        "timeRequired" => $this->request->post("timeRequired"),
+        "expiryDate" => $this->request->post("expiryDate"),
+        "participantsLimit" => $this->request->post("participantsLimit"),
+        "poolAmount" => $this->request->post("poolAmount"),
+        "token" => $this->request->post("token"),
+      );
 
+      // $this->validateQuizData($quizData);
+
+      $quest = new Quest(
+        $questId ?? 0,
+        $quizData['title'],
+        $quizData['description'],
+        0,
+        $quizData['requiredWallet'],
+        $quizData['timeRequired'],
+        $quizData['expiryDate'],
+        0,
+        $quizData['participantsLimit'],
+        $quizData['poolAmount'],
+        $quizData['token'],
+        0,
+        SessionService::get('user')['id'],
+        false
+      );
+
+      $quest->setQuestions($questions);
+
+      if ($questId) {
+
+        // $this->questRepository->updateQuest($quest);
+        $currentQuestions = $this->questionsRepository->getQuestionsByQuestId($questId);
+
+        // usort($questions, 'compareQuestionsId');
+        // usort($currentQuestions, 'compareQuestionsId');
+
+        // $toDelete = array_udiff($currentQuestions, $questions, 'compareQuestions');
+
+        // echo sizeof($toDelete) . ' ';
+        // // $this->questionsRepository->deleteQuestions($toDelete);
+
+        // $toAdd = array_udiff($questions, $currentQuestions, 'compareQuestions');
+
+        // echo sizeof($toAdd) . ' ';
+        // // $this->questionsRepository->saveQuestions($toAdd);
+
+        $questionsToUpdate = [];
+        $questionsToDelete = [];
+        $questionsToAdd = [];
+
+        $currentQuestionMap = array_reduce($currentQuestions, function ($acc, $question) {
+          $acc[$question->getQuestionId()] = $question;
+          return $acc;
+        }, []);
+
+        foreach ($questions as $question) {
+          $currentQuestion = $currentQuestionMap[$question->getQuestionId()] ?? null;
+
+          if ($currentQuestion !== null) {
+            if (!$currentQuestion->__equals($question)) {
+              $questionsToUpdate[] = $question;
+            }
+            unset($currentQuestionMap[$question->getQuestionId()]);
+          } else {
+            $questionsToAdd[] = $question;
+          }
+        }
+
+        $questionsToDelete = array_values($currentQuestionMap);
+
+
+
+        echo sizeof($questionsToUpdate);
+        echo sizeof($questionsToAdd);
+        echo sizeof($questionsToDelete);
+
+        // $this->questionsRepository->updateQuestions($questionsToUpdate);
+      } else {
+        $this->questRepository->saveQuest($quest);
+        $this->questionsRepository->saveQuestions($quest->getQuestions());
+
+        foreach ($quest->getQuestions() as $question) {
+          $this->optionsRepository->saveOptions($question->getOptions());
+        }
+      }
     } catch (NotLoggedInException $e) {
-      $this->redirectWithParams('login', ['message' => 'first, you need to log in']);
+      //$this->redirectWithParams('login', ['message' => 'first, you need to log in']);
+    } catch (ValidationException $e) {
+      //$this->redirectWithParams('createQuest/' . $questId, ['messages' => explode(';', $e->getMessage())]);
     }
   }
+
 
   public function enterQuest($questId)
   {

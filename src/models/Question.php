@@ -30,6 +30,12 @@ class Question
 
   private $options = array();
 
+  public function __equals(Question $other): bool {
+    return $this->questionId === $other->getQuestionId()
+    && $this->text === $other->getText()
+    && $this->type === $other->getType();
+  }
+
 
   public function __construct(int $questionId, int $questId, string $text, QuestionType $type)
   {

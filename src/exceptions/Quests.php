@@ -47,3 +47,11 @@ class NotLoggedInException extends Exception
     }
 }
 
+class ValidationException extends Exception
+{
+    public function errorMessage()
+    {
+        return "validation failed";
+    }
+}
+
