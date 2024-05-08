@@ -8,6 +8,15 @@ class Option
   private bool $isCorrect;
   private int $scoreMultiplier;
 
+  public function __equals(Option $other): bool
+  {
+    return $this->optionId === $other->getOptionId() 
+      && $this->questionId === $other->getQuestionId()
+      && $this->text === $other->getText()
+      && $this->isCorrect === $other->getIsCorrect();
+  }
+
+
 
   public function __construct(int $optionId, int $questionId, string $text, bool $isCorrect)
   {

@@ -8,12 +8,26 @@ enum QuestionType
   case UNKNOWN;
 }
 
+class QuestionTypeUtil
+{
+  public static function toString(QuestionType $type): string
+  {
+    return match ($type) {
+      QuestionType::SINGLE_CHOICE => 'single_choice',
+      QuestionType::MULTIPLE_CHOICE => 'multiple_choice',
+      QuestionType::READ_TEXT => 'read_text',
+      default => 'unknown',
+    };
+  }
+}
 
-function getQuestionTypeFromName(string $name): QuestionType {
+
+function getQuestionTypeFromName(string $name): QuestionType
+{
   $lookup = [
-      'single_choice' => QuestionType::SINGLE_CHOICE,
-      'multiple_choice' => QuestionType::MULTIPLE_CHOICE,
-      'read_text' => QuestionType::READ_TEXT,
+    'single_choice' => QuestionType::SINGLE_CHOICE,
+    'multiple_choice' => QuestionType::MULTIPLE_CHOICE,
+    'read_text' => QuestionType::READ_TEXT,
   ];
 
   return $lookup[$name] ?? QuestionType::UNKNOWN;
@@ -30,10 +44,11 @@ class Question
 
   private $options = array();
 
-  public function __equals(Question $other): bool {
+  public function __equals(Question $other): bool
+  {
     return $this->questionId === $other->getQuestionId()
-    && $this->text === $other->getText()
-    && $this->type === $other->getType();
+      && $this->text === $other->getText()
+      && $this->type === $other->getType();
   }
 
 
@@ -50,6 +65,11 @@ class Question
   public function getQuestionId()
   {
     return $this->questionId;
+  }
+
+  public function setQuestId(int $questId)
+  {
+    $this->questId = $questId;
   }
 
   public function getQuestId()

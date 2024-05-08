@@ -27,20 +27,21 @@ class QuestRepository extends Repository
 
   public function updateQuest(Quest $quest)
   {
-    $sql = "UPDATE quests WHERE questid = :questid SET
-    title = :title, 
-    description = :description, 
-    worthknowledge = :worthknowledge, 
-    requiredwallet = :requiredwallet, 
-    expirydate = :expirydate, 
-    participantscount = :participantscount, 
-    participantlimit = :participantlimit, 
-    poolamount = :poolamount, 
-    token = :token, 
-    points = :points, 
-    timerequired_minutes, = :timerequired_minutes,
-    creator = :creator, 
-    approved = :approved";
+    $sql = "UPDATE quests SET
+              title = :title, 
+              description = :description, 
+              worthknowledge = :worthknowledge, 
+              requiredwallet = :requiredwallet, 
+              expirydate = :expirydate, 
+              participantscount = :participantscount, 
+              participantlimit = :participantlimit, 
+              poolamount = :poolamount, 
+              token = :token, 
+              points = :points, 
+              timerequired_minutes = :timerequired_minutes,
+              creator = :creator, 
+              approved = :approved 
+              WHERE questid = :questid";
 
     $stmt = $this->db->connect()->prepare($sql);
 
@@ -58,11 +59,13 @@ class QuestRepository extends Repository
       ':points' => $quest->getPoints(),
       ':timerequired_minutes' => $quest->getTimeRequiredMinutes(),
       ':creator' => $quest->getCreatorId(),
-      ':approved' => $quest->isApproved(),
+      ':approved' => (int) $quest->isApproved(),
     ]);
+
   }
 
-  public function saveQuest(Quest $quest)
+
+  public function saveQuest(Quest $quest): int
   {
     $sql = "INSERT INTO quests (title, description, worthknowledge, requiredwallet, expirydate, participantscount, participantlimit, poolamount, token, points, timerequired_minutes, creator, approved)
     VALUES (:title, :description, :worthknowledge, :requiredwallet, :expirydate, :participantscount, :participantlimit, :poolamount, :token, :points, :timerequired_minutes, :creator, :approved)";
@@ -84,6 +87,9 @@ class QuestRepository extends Repository
       ':creator' => $quest->getCreatorId(),
       ':approved' => $quest->isApproved(),
     ]);
+
+
+    return $this->db->connect()->lastInsertId();
   }
 
 

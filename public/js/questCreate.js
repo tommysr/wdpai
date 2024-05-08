@@ -1,19 +1,24 @@
+const minQuestionId = 0;
+const maxQuestionId = 200;
+
+const minOptionId = 0;
+const maxOptionId = 400;
+
+let currentQuestionId = minQuestionId;
+let currentOptionId = minOptionId;
+
+const questionsDiv = document.getElementById("questions");
+const questions = document.querySelectorAll(".question");
+const optionsDiv = document.querySelectorAll(".options");
+
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("addQuestion").addEventListener("click", function () {
     addQuestion();
   });
 
-  const questionsDiv = document.getElementById("questions");
-  const questions = document.querySelectorAll(".question");
-  const optionsDiv = document.querySelectorAll(".options");
-
   questions.forEach((q) => {
     q.querySelector(".removeQuestion").addEventListener("click", function () {
       questionsDiv.removeChild(q);
-    });
-
-    q.querySelector(".addOption").addEventListener("click", function () {
-      addOption(q);
     });
   });
 
@@ -26,15 +31,16 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
   });
+});
 
-  function addQuestion() {
-    const questionsDiv = document.getElementById("questions");
+function addQuestion() {
+  if (currentQuestionId <= maxQuestionId) {
     const newQuestionDiv = document.createElement("div");
     newQuestionDiv.classList = "question flex-column-center-center gap-1";
 
     newQuestionDiv.innerHTML = `
       <label for="questionText" class="input-description main-text">Question Text:</label>
-      <textarea name="questionText[]" class="questionText" cols="30" rows="10" required> </textarea>
+      <textarea name="questions[${currentQuestionId}][text]" class="questionText main-text" cols="30" rows="10" required> </textarea>
 
       <div class="options"></div>
       <button type="button" class="addOption main-button">Add Option</button><br>
@@ -45,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
     newQuestionDiv
       .querySelector(".addOption")
       .addEventListener("click", function () {
-        addOption(newQuestionDiv);
+        addOption(newQuestionDiv, currentQuestionId);
       });
 
     newQuestionDiv
@@ -53,18 +59,31 @@ document.addEventListener("DOMContentLoaded", function () {
       .addEventListener("click", function () {
         questionsDiv.removeChild(newQuestionDiv);
       });
-  }
 
-  function addOption(questionDiv) {
-    const optionsDiv = questionDiv.querySelector(".options");
+    currentQuestionId++;
+  } else {
+    console.error("Maximum limit for question IDs exceeded.");
+  }
+}
+
+function addOptionRaw(callDiv, questionId) {
+  const questionDiv = callDiv.parentNode;
+
+  addOption(questionDiv, questionId);
+}
+
+function addOption(questionDiv, questionId) {
+  const optionsDiv = questionDiv.querySelector(".options");
+
+  if (currentOptionId <= maxOptionId) {
     const newOptionDiv = document.createElement("div");
     newOptionDiv.classList = "option";
 
     newOptionDiv.innerHTML = `
-      <input type="text" class="optionText" name="optionText[]">
+      <input type="text" class="optionText" name="options[${questionId}][${currentOptionId}][text]" placeholder="new option">
 
       <label class="option-container">
-        <input type="checkbox" name="isCorrect[]"/>
+        <input type="checkbox" name="options[${questionId}][${currentOptionId}][isCorrect]"/>
         <span class="checkmark"></span>
       </label>
       <button type="button" class="removeOption"><i class="fa fa-times-circle"
@@ -77,5 +96,9 @@ document.addEventListener("DOMContentLoaded", function () {
       .addEventListener("click", function () {
         optionsDiv.removeChild(newOptionDiv);
       });
+
+    currentOptionId++;
+  } else {
+    console.error("Maximum limit for option IDs exceeded.");
   }
-});
+}

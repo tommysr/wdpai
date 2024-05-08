@@ -155,39 +155,43 @@ class QuestsController extends AppController
   public function editQuest(?int $questId = null)
   {
     try {
-      $this->questAuthorizationService->authorizeQuestAction(QuestAuthorizeRequest::EDIT, $questId);
+      $requestType = $questId ? QuestAuthorizeRequest::EDIT : QuestAuthorizeRequest::CREATE;
 
+      $this->questAuthorizationService->authorizeQuestAction($requestType, $questId);
       $questions = [];
 
-      foreach ($this->request->post('questions') as $questionId => $questionData) {
-        $options = [];
-        $correctOptionsCount = 0;
-        $questionType = QuestionType::UNKNOWN;
+      if ($this->request->post('questions')) {
+        foreach ($this->request->post('questions') as $questionId => $questionData) {
+          $options = [];
+          $correctOptionsCount = 0;
+          $questionType = QuestionType::UNKNOWN;
 
-        if (isset($this->request->post('options')[$questionId])) {
-          foreach ($this->request->post('options')[$questionId] as $optionIndex => $optionData) {
-            $isCorrect = isset($optionData['isCorrect']);
+          if (isset($this->request->post('options')[$questionId])) {
+            foreach ($this->request->post('options')[$questionId] as $optionIndex => $optionData) {
+              $isCorrect = isset($optionData['isCorrect']);
 
-            if ($isCorrect) {
-              $correctOptionsCount++;
+              if ($isCorrect) {
+                $correctOptionsCount++;
+              }
+
+              $options[] = new Option($optionIndex, $questionId, $optionData['text'], $isCorrect);
             }
 
-            $options[] = new Option($optionIndex, $questionId, $optionData['text'], $isCorrect);
-          }
-
-          if ($correctOptionsCount == 1) {
-            $questionType = QuestionType::SINGLE_CHOICE;
+            if ($correctOptionsCount == 1) {
+              $questionType = QuestionType::SINGLE_CHOICE;
+            } else {
+              $questionType = QuestionType::MULTIPLE_CHOICE;
+            }
           } else {
-            $questionType = QuestionType::MULTIPLE_CHOICE;
+            $questionType = QuestionType::READ_TEXT;
           }
-        } else {
-          $questionType = QuestionType::READ_TEXT;
-        }
 
-        $question = new Question($questionId, $questId, $questionData['text'], $questionType);
-        $question->setOptions($options);
-        $questions[] = $question;
+          $question = new Question($questionId, $questId, $questionData['text'], $questionType);
+          $question->setOptions($options);
+          $questions[] = $question;
+        }
       }
+
 
       $quizData = array(
         "title" => $this->request->post("quizTitle"),
@@ -200,7 +204,7 @@ class QuestsController extends AppController
         "token" => $this->request->post("token"),
       );
 
-      // $this->validateQuizData($quizData);
+      $this->validateQuizData($quizData);
 
       $quest = new Quest(
         $questId ?? 0,
@@ -222,26 +226,14 @@ class QuestsController extends AppController
       $quest->setQuestions($questions);
 
       if ($questId) {
-
-        // $this->questRepository->updateQuest($quest);
+        $this->questRepository->updateQuest($quest);
         $currentQuestions = $this->questionsRepository->getQuestionsByQuestId($questId);
-
-        // usort($questions, 'compareQuestionsId');
-        // usort($currentQuestions, 'compareQuestionsId');
-
-        // $toDelete = array_udiff($currentQuestions, $questions, 'compareQuestions');
-
-        // echo sizeof($toDelete) . ' ';
-        // // $this->questionsRepository->deleteQuestions($toDelete);
-
-        // $toAdd = array_udiff($questions, $currentQuestions, 'compareQuestions');
-
-        // echo sizeof($toAdd) . ' ';
-        // // $this->questionsRepository->saveQuestions($toAdd);
 
         $questionsToUpdate = [];
         $questionsToDelete = [];
         $questionsToAdd = [];
+
+
 
         $currentQuestionMap = array_reduce($currentQuestions, function ($acc, $question) {
           $acc[$question->getQuestionId()] = $question;
@@ -249,42 +241,91 @@ class QuestsController extends AppController
         }, []);
 
         foreach ($questions as $question) {
-          $currentQuestion = $currentQuestionMap[$question->getQuestionId()] ?? null;
-
-          if ($currentQuestion !== null) {
-            if (!$currentQuestion->__equals($question)) {
-              $questionsToUpdate[] = $question;
-            }
-            unset($currentQuestionMap[$question->getQuestionId()]);
-          } else {
+          if ($question->getQuestionId() < 200) {
             $questionsToAdd[] = $question;
+            continue;
+          }
+
+          $currentQuestion = $currentQuestionMap[$question->getQuestionId()] ?? null;
+          unset($currentQuestionMap[$question->getQuestionId()]);
+
+
+          if (!$currentQuestion->__equals($question)) {
+            $questionsToUpdate[] = $question;
           }
         }
 
         $questionsToDelete = array_values($currentQuestionMap);
 
 
+        foreach ($questionsToDelete as $question) {
+          $this->optionsRepository->deleteAllOptions($question->getQuestionId());
+        }
 
-        echo sizeof($questionsToUpdate);
-        echo sizeof($questionsToAdd);
-        echo sizeof($questionsToDelete);
+        $this->questionsRepository->deleteQuestions($questionsToDelete);
+        $this->questionsRepository->updateQuestions($questionsToUpdate);
 
-        // $this->questionsRepository->updateQuestions($questionsToUpdate);
+        foreach ($questionsToAdd as $question) {
+          $options = $question->getOptions();
+          $questionId = $this->questionsRepository->saveQuestion($question);
+
+          $this->optionsRepository->saveNewOptions($questionId, $options);
+        }
+
+        foreach ($questionsToUpdate as $question) {
+          $optionsToAdd = [];
+          $optionsToDelete = [];
+          $optionsToUpdate = [];
+
+          $currentOptions = $this->optionsRepository->getOptionsByQuestionId($question->getQuestionId());
+          $options = $question->getOptions();
+
+          $currentOptionsMap = array_reduce($currentOptions, function ($acc, $option) {
+            $acc[$option->getOptionId()] = $option;
+            return $acc;
+          }, []);
+
+
+          foreach ($options as $option) {
+            $optionId = $option->getOptionId();
+
+            if ($optionId < 400) {
+              $optionsToAdd[] = $option;
+              continue;
+            }
+
+            $currentOption = $currentOptionsMap[$optionId] ?? null;
+            unset($currentOptionsMap[$optionId]);
+
+            if (!$currentOption->__equals($option)) {
+              $optionsToUpdate[] = $option;
+            }
+          }
+
+          $optionsToDelete = array_values($currentOptionsMap);
+
+          $this->optionsRepository->saveNewOptions($questionId, $optionsToAdd);
+          $this->optionsRepository->deleteOptions($optionsToDelete);
+          $this->optionsRepository->updateOptions($optionsToUpdate);
+        }
       } else {
-        $this->questRepository->saveQuest($quest);
-        $this->questionsRepository->saveQuestions($quest->getQuestions());
+        $id = $this->questRepository->saveQuest($quest);
 
         foreach ($quest->getQuestions() as $question) {
-          $this->optionsRepository->saveOptions($question->getOptions());
+          $question->setQuestId($id);
+          $questionId = $this->questionsRepository->saveQuestion($question);
+          $options = $question->getOptions();
+          $this->optionsRepository->saveNewOptions($questionId, $options);
         }
       }
     } catch (NotLoggedInException $e) {
-      //$this->redirectWithParams('login', ['message' => 'first, you need to log in']);
+      $this->redirectWithParams('login', ['message' => 'first, you need to log in']);
     } catch (ValidationException $e) {
-      //$this->redirectWithParams('createQuest/' . $questId, ['messages' => explode(';', $e->getMessage())]);
+      $this->redirectWithParams('createQuest/' . $questId, ['messages' => explode(';', $e->getMessage())]);
     }
-  }
 
+    $this->redirect('createQuest/' . $questId);
+  }
 
   public function enterQuest($questId)
   {

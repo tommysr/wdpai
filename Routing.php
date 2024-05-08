@@ -37,9 +37,10 @@ class Router
     $action = empty($action) ? 'index' : $action;
 
     try {
-      call_user_func_array(array($object, $action), $params);
+      $object->$action(empty($params[0]) ? null : $params[0]);
     } catch (Exception $e) {
       error_log('Error occurred: ' . $e->getMessage());
+
       self::renderErrorPage(500, 'internal server error, try again later');
     }
   }
