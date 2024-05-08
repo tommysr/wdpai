@@ -6,24 +6,61 @@ require_once __DIR__ . '/../exceptions/Quests.php';
 
 
 
+enum QuestRole
+{
+  case GUEST;
+  case NORMAL;
+  case CREATOR;
+  case ADMIN;
+}
+
+function getQuestRoleFromString(string $role): QuestRole
+{
+  switch ($role) {
+    case 'normal':
+      return QuestRole::NORMAL;
+    case 'creator':
+      return QuestRole::CREATOR;
+    case 'admin':
+      return QuestRole::ADMIN;
+  }
+
+  return QuestRole::GUEST;
+}
+
 enum QuestAuthorizeRequest
 {
   case ENTER;
   case CREATE;
   case EDIT;
+  case PUBLISH;
 }
 
 
 class QuestAuthorizationService
 {
   private QuestStatisticsRepository $questStatisticsRepository;
-  private SessionService $sessionService;
   private QuestRepository $questRepository;
 
-  public function __construct(QuestStatisticsRepository $questStatisticsRepository = null, SessionService $sessionService = null, QuestRepository $questRepository = null)
+  private ?int $userId = null;
+  private QuestRole $role = QuestRole::GUEST;
+
+
+  public function __construct(QuestStatisticsRepository $questStatisticsRepository = null, QuestRepository $questRepository = null)
   {
     $this->questStatisticsRepository = $questStatisticsRepository ?: new QuestStatisticsRepository();
-    $this->sessionService = $sessionService ?: new SessionService();
+
+    $user = SessionService::get('user');
+
+    if ($user) {
+      $this->userId = $user['id'];
+      $this->role = getQuestRoleFromString($user['role']);
+    } else {
+      $this->userId = null;
+      $this->role = QuestRole::GUEST;
+    }
+
+
     $this->questRepository = $questRepository ?: new QuestRepository();
   }
 
@@ -42,29 +79,31 @@ class QuestAuthorizationService
         return $this->checkCreateRequest();
       case QuestAuthorizeRequest::EDIT:
         return $this->checkEditRequest($questId);
+      case QuestAuthorizeRequest::PUBLISH:
+        return $this->checkPublishRequest();
     }
   }
 
-  private function getSignedUserId(): ?int
+  public function getSignedUserId(): ?int
   {
-    $userSession = $this->sessionService->get('user');
-    return $userSession ? $userSession['id'] : null;
+    return $this->userId;
   }
 
-  private function getSignedUserRole(): ?string
+  public function getSignedUserRole(): QuestRole
   {
-    $userSession = $this->sessionService->get('user');
-    return $userSession ? $userSession['role'] : null;
+    return $this->role;
   }
 
-  private function canUserCreate(): bool
+  public function checkPublishRequest()
   {
-    return $this->getSignedUserRole() === 'admin';
+    if ($this->role !== QuestRole::ADMIN) {
+      throw new AuthorizationException('You are not admin');
+    }
   }
 
-  private function checkEditRequest(int $questId)
+  public function checkEditRequest(int $questId)
   {
-    $id = $this->getSignedUserId();
+    $id = $this->userId;
     $quest = $this->questRepository->getQuestById($questId);
 
     if ($id === null) {
@@ -75,35 +114,30 @@ class QuestAuthorizationService
       throw new NotFoundException('quest not found');
     }
 
+    if ($quest->isApproved()) {
+      throw new AlreadyApproved('quest cannot be edited');
+    }
+
     if ($quest->getCreatorId() !== $id) {
       throw new AuthorizationException('Quest is not yours.');
     }
   }
 
-  private function checkCreateRequest()
+  public function checkCreateRequest()
   {
-    if ($this->getSignedUserRole() !== 'admin') {
+    if ($this->role !== QuestRole::CREATOR && $this->role !== QuestRole::ADMIN) {
       throw new AuthorizationException('user is not an admin');
     }
   }
 
-  private function checkParticipationRequest(int $questId)
+  public function checkParticipationRequest(int $questId)
   {
-    $id = $this->getSignedUserId();
+    $id = $this->userId;
 
     if ($id === null) {
       throw new NotLoggedInException('you need to log in');
-    } else if ($this->questStatisticsExists($id, $questId)) {
+    } else if ($this->questStatisticsRepository->getQuestStatistic($id, $questId)) {
       throw new AuthorizationException('You can not reenter quest.');
     }
-  }
-
-  public function questStatisticsExists($userId, $questId): bool
-  {
-    if ($this->questStatisticsRepository->getQuestStatistic($userId, $questId)) {
-      return true;
-    }
-
-    return false;
   }
 }

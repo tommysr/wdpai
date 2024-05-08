@@ -93,6 +93,20 @@ class QuestRepository extends Repository
   }
 
 
+  public function approve(int $questId)
+  {
+    $sql = "UPDATE quests SET
+    approved = :approved 
+    WHERE questid = :questid";
+
+    $stmt = $this->db->connect()->prepare($sql);
+
+    $stmt->execute([
+      ':approved' => (int) true,
+      ':questid' => $questId,
+    ]);
+  }
+
   public function getQuestById($questId): ?Quest
   {
     $sql = "SELECT * FROM quests WHERE QuestID = :questId";
@@ -114,6 +128,20 @@ class QuestRepository extends Repository
     $quests = [];
     $stmt = $this->db->connect()->prepare('SELECT * FROM quests');
     $stmt->execute();
+    $fetched = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    foreach ($fetched as $fetched_quest) {
+      $quests[] = $this->constructQuestModel($fetched_quest);
+    }
+
+    return $quests;
+  }
+
+  public function getCreatorQuests(int $creator): array
+  {
+    $quests = [];
+    $stmt = $this->db->connect()->prepare('SELECT * FROM quests WHERE creator = :creator');
+    $stmt->execute([':creator' => $creator]);
     $fetched = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($fetched as $fetched_quest) {

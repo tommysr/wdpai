@@ -6,7 +6,8 @@ $path = parse_url($path, PHP_URL_PATH);
 
 Router::get('', 'QuestsController');
 Router::get('createQuest', 'QuestsController');
-Router::get('editQuest','QuestsController');
+Router::get('editQuest', 'QuestsController');
+Router::get('createdQuests', 'QuestsController');
 
 Router::get('login', 'AuthController');
 Router::get('logout', 'AuthController');

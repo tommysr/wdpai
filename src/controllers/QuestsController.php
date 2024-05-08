@@ -347,6 +347,45 @@ class QuestsController extends AppController
     }
   }
 
+  public function createdQuests()
+  {
+    try {
+      $this->questAuthorizationService->checkCreateRequest();
+
+      $creatorId = $this->questAuthorizationService->getSignedUserId();
+;
+
+      if (!$creatorId) {
+        throw new NotFoundException('temporary');
+      }
+      $quests = $this->questRepository->getCreatorQuests($creatorId);
+
+
+      array_filter($quests, function ($quest) use ($creatorId) {
+        return !$quest->isApproved();
+      });
+
+      $this->render('layout', ['quests' => $quests], 'createdQuests');
+    } catch (NotLoggedInException $e) {
+      $this->redirectWithParams('login', ['message' => 'first, you need to log in']);
+    } catch (Exception $e) {
+      $this->redirectWithParams('error', ['message' => $e->getMessage()]);
+    }
+  }
+
+  public function publish(int $questId)
+  {
+    try {
+      $this->questAuthorizationService->authorizeQuestAction(QuestAuthorizeRequest::PUBLISH, $questId);
+
+      $this->questRepository->approve($questId);
+    } catch (NotLoggedInException $e) {
+      $this->redirectWithParams('login', ['message' => 'first, you need to log in']);
+    } catch (Exception $e) {
+      $this->redirectWithParams('error', ['message' => $e->getMessage()]);
+    }
+  }
+
   private function renderStartQuest($userId, $questId)
   {
     $quest = $this->questRepository->getQuestById($questId);
@@ -377,6 +416,7 @@ class QuestsController extends AppController
 
     $this->startQuestWithWallet($walletId, $questId);
   }
+
 
   private function startQuestWithWallet($walletId, $questId)
   {

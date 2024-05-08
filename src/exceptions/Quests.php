@@ -55,3 +55,11 @@ class ValidationException extends Exception
     }
 }
 
+class AlreadyApproved extends Exception
+{
+    public function errorMessage()
+    {
+        return 'already approved';
+    }
+}
+
