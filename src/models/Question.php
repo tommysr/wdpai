@@ -1,39 +1,38 @@
 <?php
 
-class QuestionType
+enum QuestionType
 {
-  const SINGLE_CHOICE = 'single_choice';
-  const MULTIPLE_CHOICE = 'multiple_choice';
-  const READ_TEXT = 'read_text';
-  const UNKNOWN = 'unknown';
+  case SINGLE_CHOICE;
+  case MULTIPLE_CHOICE;
+  case READ_TEXT;
+  case UNKNOWN;
+}
 
-  protected $value;
-
-  public function __construct($value)
+class QuestionTypeUtil
+{
+  public static function toString(QuestionType $type): string
   {
-    $this->value = $value;
-  }
-
-  // Method to parse a string into a QuestionType instance
-  public static function fromName(string $name): ?self
-  {
-    switch ($name) {
-      case self::SINGLE_CHOICE:
-      case self::MULTIPLE_CHOICE:
-      case self::READ_TEXT:
-      case self::UNKNOWN:
-        return new static($name);
-      default:
-        return null;
-    }
-  }
-
-  // Getter method for the value
-  public function getValue(): string
-  {
-    return $this->value;
+    return match ($type) {
+      QuestionType::SINGLE_CHOICE => 'single_choice',
+      QuestionType::MULTIPLE_CHOICE => 'multiple_choice',
+      QuestionType::READ_TEXT => 'read_text',
+      default => 'unknown',
+    };
   }
 }
+
+
+function getQuestionTypeFromName(string $name): QuestionType
+{
+  $lookup = [
+    'single_choice' => QuestionType::SINGLE_CHOICE,
+    'multiple_choice' => QuestionType::MULTIPLE_CHOICE,
+    'read_text' => QuestionType::READ_TEXT,
+  ];
+
+  return $lookup[$name] ?? QuestionType::UNKNOWN;
+}
+
 
 class Question
 {
@@ -42,6 +41,15 @@ class Question
   private string $text;
   private QuestionType $type;
   private int $score;
+
+  private $options = array();
+
+  public function __equals(Question $other): bool
+  {
+    return $this->questionId === $other->getQuestionId()
+      && $this->text === $other->getText()
+      && $this->type === $other->getType();
+  }
 
 
   public function __construct(int $questionId, int $questId, string $text, QuestionType $type)
@@ -59,6 +67,11 @@ class Question
     return $this->questionId;
   }
 
+  public function setQuestId(int $questId)
+  {
+    $this->questId = $questId;
+  }
+
   public function getQuestId()
   {
     return $this->questId;
@@ -74,4 +87,13 @@ class Question
     return $this->type;
   }
 
+  public function getOptions()
+  {
+    return $this->options;
+  }
+
+  public function setOptions(array $options)
+  {
+    $this->options = $options;
+  }
 }

@@ -1,7 +1,7 @@
 <script type="text/javascript" src="public/js/sidenav.js" defer></script>
 
 <div id="mySidenav" class="sidenav">
-  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()"><img src="public/assets/back_arrow.svg" /></a>
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()"><img src="/public/assets/back_arrow.svg" /></a>
 
   <div class="sidenav-inner">
     <a class="nav-link flex-column-center-center" href="#">
@@ -37,19 +37,19 @@
     <?php endif; ?>
 
     <div class="logo">
-      <img src="public/assets/logo_with_name.svg" />
+      <img src="/public/assets/logo_with_name.svg" />
     </div>
 
     <div class="follow-bar-mobile">
       <div class="follow-row">
         <span class="text-bold-sm">Follow us</span>
-        <img src="public/assets/follow-bar/line.svg" />
+        <img src="/public/assets/follow-bar/line.svg" />
       </div>
       <div class="follow-row">
-        <img src="public/assets/follow-bar/fb.svg" />
-        <img src="public/assets/follow-bar/ig.svg" />
-        <img src="public/assets/follow-bar/linkedin.svg" />
-        <img src="public/assets/follow-bar/arrow_left.svg" />
+        <img src="/public/assets/follow-bar/fb.svg" />
+        <img src="/public/assets/follow-bar/ig.svg" />
+        <img src="/public/assets/follow-bar/linkedin.svg" />
+        <img src="/public/assets/follow-bar/arrow_left.svg" />
       </div>
     </div>
 

@@ -1,3 +1,7 @@
+h1 {
+  text-align: center;
+}
+
 body {
   margin: 0;
   font-family: "Inter";
@@ -110,6 +114,42 @@ body {
   align-items: center;
 }
 
+
+.main-text {
+  font-family: "Lekton";
+  font-style: normal;
+  font-weight: 700;
+text-align: center;
+  letter-spacing: 0.05em;
+  color: #ebf6e5;
+}
+
+.question {
+  min-width: 400px;
+  padding: 1em;
+  background: rgba(41, 112, 80, 0.2);
+  border: 1px solid #297050;
+  border-radius: 10px;
+}
+
+textarea {
+  text-align: left;
+  padding: 1em;
+  border: 0;
+  background: rgba(236, 248, 243, 0.2);
+  box-shadow: inset 0px 5px 6px 2px rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+}
+
+.input-description {
+  font-size: 1em;
+  line-height: 2em;
+}
+
+.gap-1 {
+  gap: 1em;
+}
+
 .gap-1-5 {
   gap: 1.5em;
 }
@@ -216,9 +256,6 @@ form select {
   border: 0;
   border-radius: 10px;
   text-align: center;
-}
-
-.login-input {
   box-shadow: inset 0px 5px 6px 2px rgba(0, 0, 0, 0.12);
   background: rgba(236, 248, 243, 0.2);
   color: #ebf6e5;
@@ -266,13 +303,14 @@ form select {
 
 .option-container {
   display: inline-flex;
-  justify-content: space-between;
-  gap: 2em;
   align-items: center;
 }
 
 .option-container input {
   opacity: 0;
+  /* position: absolute;
+  top: 0;
+  left: 0; */
 }
 
 .checkmark {
@@ -320,6 +358,18 @@ form select {
   display: block;
 }
 
+.removeOption {
+  background: transparent;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  box-sizing: border-box;
+  border: 2px solid #ffffff;
+}
+
 .option-container .checkmark:after {
   width: 5px;
   height: 10px;
@@ -346,6 +396,20 @@ form select {
   letter-spacing: 0.15em;
 }
 
+
+.main-button-style {
+  text-transform: uppercase;
+  background-color: transparent;
+  color: #ebf6e5;
+  border-radius: 10px;
+  border: 2px solid #58c3b5;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.p-1 {
+  padding: 0.5em;
+}
+
 .secondary-button {
   width: 200px;
   height: 65px;
@@ -355,7 +419,7 @@ form select {
   color: #ebf6e5;
   border-radius: 10px;
 
-  border: 2px solid #ebf6e5;
+  border: 2px solid #58c3b5;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 
   font-weight: 700;

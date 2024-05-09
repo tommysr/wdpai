@@ -44,20 +44,32 @@ class AppController
         $this->request = new Request();
     }
 
+
+
     protected function redirect(string $url, int $code = 0): void
     {
-        $url = "http://$_SERVER[HTTP_HOST]/" . $url;
+        $url = "http://$_SERVER[HTTP_HOST]/$url";
         header('Location:' . $url, true, $code);
+        exit();
     }
 
+    protected function redirectWithParams(string $url, array $params = [], int $code = 0): void {
+        $queryString = http_build_query($params);
+        $url = "http://$_SERVER[HTTP_HOST]/". $url . '?' . $queryString;
+        header('Location:' . $url, true, $code);
+        exit();
+    }
 
     public function render(string $template, array $variables = [], string $content = null)
     {
+        parse_str($_SERVER['QUERY_STRING'], $queryParams);
+
         $templatePath = 'public/views/' . $template . '.php';
         $output = 'File not found';
 
         if (file_exists($templatePath)) {
             extract($variables);
+            extract($queryParams);
 
             $user = $this->sessionService->get('user');
 
