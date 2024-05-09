@@ -6,6 +6,7 @@ require_once __DIR__ . '/../repository/QuestRepository.php';
 require_once __DIR__ . '/../repository/QuestStatisticsRepository.php';
 require_once __DIR__ . '/../repository/QuestionsRepository.php';
 require_once __DIR__ . '/../repository/OptionsRepository.php';
+require_once __DIR__ . '/../repository/UserRepository.php';
 require_once __DIR__ . '/../repository/WalletRepository.php';
 require_once __DIR__ . '/../services/QuestAuthorizationService.php';
 require_once __DIR__ . '/../services/QuestService.php';
@@ -39,6 +40,7 @@ class QuestsController extends AppController
   private $questionsRepository;
   private $questService;
   private $optionsRepository;
+  private $userRepository;
 
   public function __construct()
   {
@@ -49,6 +51,7 @@ class QuestsController extends AppController
     $this->walletRepository = new WalletRepository();
     $this->questAuthorizationService = new QuestAuthorizationService();
     $this->questService = new QuestService();
+    $this->userRepository = new UserRepository();
   }
 
 
@@ -332,7 +335,7 @@ class QuestsController extends AppController
     try {
       $this->questAuthorizationService->authorizeQuestAction(QuestAuthorizeRequest::ENTER, $questId);
 
-      $userId = $this->sessionService->get('user')['id'];
+      $userId = $this->questAuthorizationService->getSignedUserId();
 
       if ($this->request->isGet()) {
         $this->renderStartQuest($userId, $questId);
@@ -347,13 +350,35 @@ class QuestsController extends AppController
     }
   }
 
+  public function dashboard()
+  {
+    try {
+      // $this->questAuthorizationService->authorizeQuestAction(QuestAuthorizeRequest::DASHBOARD);
+
+      // $quests = $this->questRepository->getApprovedQuests();
+
+      $id = $this->questAuthorizationService->getSignedUserId();
+      $user = $this->userRepository->getUserById($id);
+
+      $joinDate = DateTime::createFromFormat('Y-m-d', $user->getJoinDate())->format('F Y');
+
+      $this->render('layout', ['title' => 'dashboard', 'username' => $user->getName(), 'joinDate' => $joinDate, 'points' => 4525], 'dashboard');
+
+      $joinDate = $this->userRepository;//->//($id);
+    } catch (NotLoggedInException $e) {
+      $this->redirectWithParams('login', ['message' => 'first, you need to log in']);
+    } catch (Exception $e) {
+      $this->redirectWithParams('error', ['message' => $e->getMessage()]);
+    }
+  }
+
   public function createdQuests()
   {
     try {
-      $this->questAuthorizationService->checkCreateRequest();
+      $this->questAuthorizationService->authorizeQuestAction(QuestAuthorizeRequest::CREATE);
 
       $creatorId = $this->questAuthorizationService->getSignedUserId();
-;
+      ;
 
       if (!$creatorId) {
         throw new NotFoundException('temporary');

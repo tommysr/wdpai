@@ -114,12 +114,11 @@ body {
   align-items: center;
 }
 
-
 .main-text {
   font-family: "Lekton";
   font-style: normal;
   font-weight: 700;
-text-align: center;
+  text-align: center;
   letter-spacing: 0.05em;
   color: #ebf6e5;
 }
@@ -396,7 +395,6 @@ form select {
   letter-spacing: 0.15em;
 }
 
-
 .main-button-style {
   text-transform: uppercase;
   background-color: transparent;
@@ -634,4 +632,110 @@ i {
   .projects {
     justify-content: center;
   }
+}
+
+/* new */
+.profile-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.profile-column {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
+  align-items: center;
+}
+
+.user-welcome {
+  font-family: "Lekton";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 3em;
+  color: #ebf6e5;
+  text-transform: capitalize;
+}
+
+.profile-picture {
+  /* background: url(cuddlyferris.png); */
+  border-radius: 100%;
+  border: 4px solid #b0da99;
+  box-shadow: inset 0px 5px 4px rgba(229, 229, 229, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  width: 200px;
+  height: 200px;
+}
+
+.profile-picture img {
+  flex-shrink: 0;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.join-date {
+  font-family: "Lekton";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 1.5em;
+  color: #ebf6e5;
+  margin-top: 1em;
+  text-align: center;
+}
+
+.information-header {
+  margin-top: 2em;
+  width: 70%;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.information-text {
+  font-family: "Lekton";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 1.5em;
+  color: #ebf6e5;
+}
+
+.view-all {
+  font-family: "Lekton";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 1.5em;
+  text-decoration: none;
+  color: #58c3b5;
+}
+
+.one-line-list {
+  width: 70%;
+  margin-top: 1em;
+
+  display: flex;
+  justify-content: start;
+  gap: 1em;
+}
+
+.information-container {
+  border: 2px solid #b0da99;
+
+  border-radius: 30px;
+  padding: 0.8em;
+
+  display: flex;
+  justify-content: space-around;
+  gap: 1em;
+}
+
+.information-text {
+  font-family: "Lekton";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 1.5em;
+
+  color: #ebf6e5;
 }
