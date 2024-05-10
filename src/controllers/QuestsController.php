@@ -358,6 +358,10 @@ class QuestsController extends AppController
       // $quests = $this->questRepository->getApprovedQuests();
 
       $id = $this->questAuthorizationService->getSignedUserId();
+
+      if (!$id) {
+        throw new NotLoggedInException('');
+      }
       $user = $this->userRepository->getUserById($id);
 
       $joinDate = DateTime::createFromFormat('Y-m-d', $user->getJoinDate())->format('F Y');
