@@ -634,6 +634,27 @@ i {
   }
 }
 
+@media screen and (max-width: 1200px) {
+  /* new */
+  .profile-container {
+    margin-top: 100px;
+    display: flex !important;
+    flex-direction: column;
+  }
+
+  .profile-column {
+    min-width: 400px;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: center; */
+    align-items: center;
+  }
+
+  .quest-info i {
+    margin: 0!important;
+  }
+}
+
 /* new */
 .profile-container {
   display: grid;
@@ -749,6 +770,10 @@ i {
 }
 
 .previous-card {
+  max-height: 200px;
+  margin-top: 1em;
+  min-width: 400px;
+  max-width: 700px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
@@ -761,9 +786,9 @@ i {
 }
 
 .image-background {
+  height: 100%;
   grid-column: 1;
-  grid-row-start: 1;
-  grid-row-end: span 2;
+  grid-row: 1 / span 3;
 
   display: flex;
   justify-content: center;
@@ -798,7 +823,7 @@ i {
 
 .button-container {
   grid-row: 3;
-  grid-column: 1 / span 3;
+  grid-column: 2 / span 3;
 
   display: flex;
   justify-content: center;
