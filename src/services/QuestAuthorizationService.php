@@ -30,10 +30,11 @@ function getQuestRoleFromString(string $role): QuestRole
 
 enum QuestAuthorizeRequest
 {
-  case ENTER;
+  case PLAY;
   case CREATE;
   case EDIT;
   case PUBLISH;
+  case SELECT_WALLET;
 }
 
 
@@ -64,7 +65,16 @@ class QuestAuthorizationService
     $this->questRepository = $questRepository ?: new QuestRepository();
   }
 
-  public function authorizeQuestAction(QuestAuthorizeRequest $request, ?int $questId = null)
+  public function authorizeQuestRole(QuestRole $role): int
+  {
+    if ($this->role !== $role) {
+      throw new AuthorizationException('You are not allowed to do this action');
+    }
+
+    return $this->userId;
+  }
+
+  public function authorizeQuestAction(QuestAuthorizeRequest $request, ?int $questId = null): int
   {
     $userId = $this->getSignedUserId();
 
@@ -73,15 +83,21 @@ class QuestAuthorizationService
     }
 
     switch ($request) {
-      case QuestAuthorizeRequest::ENTER:
-        return $this->checkParticipationRequest($questId);
+      case QuestAuthorizeRequest::PLAY:
+        $this->checkParticipationRequest($questId);
+        break;
       case QuestAuthorizeRequest::CREATE:
-        return $this->checkCreateRequest();
+        $this->checkCreateRequest();
+        break;
       case QuestAuthorizeRequest::EDIT:
-        return $this->checkEditRequest($questId);
+        $this->checkEditRequest($questId);
+        break;
       case QuestAuthorizeRequest::PUBLISH:
-        return $this->checkPublishRequest();
+        $this->checkPublishRequest();
+        break;
     }
+
+    return $userId;
   }
 
   public function getSignedUserId(): ?int
@@ -136,8 +152,17 @@ class QuestAuthorizationService
 
     if ($id === null) {
       throw new NotLoggedInException('you need to log in');
-    } else if ($this->questStatisticsRepository->getQuestStatistic($id, $questId)) {
-      throw new AuthorizationException('You can not reenter quest.');
+    }
+
+    $questStats = $this->questStatisticsRepository->getQuestStatistic($id, $questId);
+
+    // check if user already participated in quest, maybe need to somehow redirect to current gameplay 
+    if ($questStats) {
+      if ($questStats->getCompletionDate()) {
+        throw new AuthorizationException('You can not reenter quest.');
+      } else {
+        throw new GameplayInProgressException('You are already in game');
+      }
     }
   }
 }

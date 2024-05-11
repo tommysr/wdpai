@@ -120,7 +120,6 @@ class GameController extends AppController
 
   private function renderQuestion(Question $question)
   {
-    session_start();
     $question_type = $question->getType();
     $options = $this->optionsRepository->getOptionsByQuestionId($question->getQuestionId());
     $_SESSION['awaiting_response'] = true;
