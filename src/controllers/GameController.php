@@ -5,6 +5,7 @@ require_once __DIR__ . '/../services/GameService.php';
 require_once __DIR__ . '/../services/QuestAuthorizationService.php';
 require_once __DIR__ . '/../services/SessionService.php';
 require_once __DIR__ . '/../repository/QuestionsRepository.php';
+require_once __DIR__ . '/../repository/QuestStatisticsRepository.php';
 require_once __DIR__ . '/../repository/OptionsRepository.php';
 require_once __DIR__ . '/../exceptions/Quests.php';
 
@@ -15,7 +16,7 @@ class GameController extends AppController
   private $questionsRepository;
   private $optionsRepository;
   private $questAuthorizationService;
-
+  private $questStatisticsRepository;
 
   public function __construct()
   {
@@ -24,37 +25,98 @@ class GameController extends AppController
     $this->questionsRepository = new QuestionsRepository();
     $this->questAuthorizationService = new QuestAuthorizationService();
     $this->optionsRepository = new OptionsRepository();
+    $this->questStatisticsRepository = new QuestStatisticsRepository();
   }
 
-  public function gameplay()
+  private function getStateFromSession(): ?QuestStatistics
   {
-    if (!AuthInterceptor::isLoggedIn()) {
-      $this->redirect('login');
+    $stateFromSession = SessionService::get('gameplayState');
+
+    if (!$stateFromSession) {
+      return null;
     }
 
-    $questId = SessionService::get('questId');
-
-    if (!$questId) {
-      return $this->redirect("unauthorized");
-    }
-
-    $currentQuestionId = SessionService::get("currentQuestion") ?? 0;
-    SessionService::set("currentQuestion", $currentQuestionId);
-
-    $questions = $this->questionsRepository->getQuestionsByQuestId($questId);
-    $questions_count = count($questions);
-
-    if ($questions_count === 0) {
-      throw new NoQuestionsException('no questions in database');
-    }
-
-    $this->renderQuestion($questions[$currentQuestionId]);
+    return QuestStatistics::fromArray($stateFromSession);
   }
+
+  private function getUserGameplayState(int $userId, int $questId): ?QuestStatistics
+  {
+    $sessionState = $this->getStateFromSession();
+
+    if ($sessionState) {
+      return $sessionState;
+    }
+
+    return $this->questStatisticsRepository->getQuestStatistic($userId, $questId);
+  }
+
+  public function gameplay(int $questId)
+  {
+    try {
+      $userId = $this->questAuthorizationService->authorizeQuestAction(QuestAuthorizeRequest::PLAY, $questId);
+
+      $gameplayState = $this->getUserGameplayState($userId, $questId);
+
+      if ($gameplayState) {
+        $this->resumeGameplay($userId, $gameplayState);
+      } else {
+        $walletId = $this->request->query('walletId');
+
+        if (!$walletId) {
+          throw new Exception('Wallet ID is required to start a new gameplay');
+        }
+
+        $this->startNewGameplay($userId, $questId, $walletId);
+      }
+    } catch (NotLoggedInException $e) {
+      $this->redirectWithParams('login', ['message' => 'You need to be logged in to play']);
+    } catch (GameplayInProgressException $id) {
+      $this->redirect('gameplay/' . $id->getMessage());
+    } catch (Exception $e) {
+      $this->redirectWithParams('error', ['message' => $e->getMessage()]);
+    }
+  }
+
+  private function resumeGameplay(int $userId, QuestStatistics $gameplayState)
+  {
+    $questId = $gameplayState->getQuestId();
+    $lastQuestionId = $gameplayState->getLastQuestionId();
+    $questions = $this->questionsRepository->getQuestionsByQuestId($questId);
+
+    $this->renderQuestion($questions[$lastQuestionId]);
+  }
+
+  private function startNewGameplay(int $userId, int $questId, int $walletId)
+  {
+    $this->questStatisticsRepository->addParticipation($userId, $questId, $walletId);
+    $this->redirect('gameplay/' . $questId);
+  }
+
+  public function updateGameplayState(int $userId, int $questId, int $lastQuestionId, int $score)
+  {
+    // $this->questStatisticsRepository->updateGameplayState($userId, $questId, $lastQuestionId, $score);
+
+    // Update user gameplay state in the database
+    // Example query: UPDATE user_gameplay_state SET last_question_id = $lastQuestionId, score = $score WHERE user_id = $userId AND quest_id = $questId
+  }
+
+
+
+  //   $currentQuestionId = SessionService::get("currentQuestion") ?? 0;
+  //   SessionService::set("currentQuestion", $currentQuestionId);
+
+  //   $questions = $this->questionsRepository->getQuestionsByQuestId($questId);
+  //   $questions_count = count($questions);
+
+  //   if ($questions_count === 0) {
+  //     throw new NoQuestionsException('no questions in database');
+  //   }
+
+  //   $this->renderQuestion($questions[$currentQuestionId]);
+  // }
 
   public function processUserResponse($questionId)
   {
-    session_start();
-
     if (!$_SESSION['awaiting_response']) {
       return;
     }
@@ -99,30 +161,30 @@ class GameController extends AppController
     ]);
   }
 
-  public function nextQuestion()
-  {
-    $questId = SessionService::get('questId');
-    $currentQuestion = SessionService::get('currentQuestion');
-    $nextQuestion = $currentQuestion + 1;
+  // public function nextQuestion()
+  // {
+  //   $questId = SessionService::get('questId');
+  //   $currentQuestion = SessionService::get('currentQuestion');
+  //   $nextQuestion = $currentQuestion + 1;
 
 
-    $questions = $this->questionsRepository->getQuestionsByQuestId($questId);
-    $questions_count = count($questions);
+  //   $questions = $this->questionsRepository->getQuestionsByQuestId($questId);
+  //   $questions_count = count($questions);
 
-    if ($nextQuestion === $questions_count) {
-      return $this->render('questSummary');
-    }
+  //   if ($nextQuestion === $questions_count) {
+  //     return $this->render('questSummary');
+  //   }
 
-    SessionService::set('currentQuestion', $nextQuestion);
-    $this->renderQuestion($questions[$nextQuestion]);
-  }
+  //   SessionService::set('currentQuestion', $nextQuestion);
+  //   $this->renderQuestion($questions[$nextQuestion]);
+  // }
 
 
   private function renderQuestion(Question $question)
   {
     $question_type = $question->getType();
     $options = $this->optionsRepository->getOptionsByQuestionId($question->getQuestionId());
-    $_SESSION['awaiting_response'] = true;
+    // $_SESSION['awaiting_response'] = true;
 
 
     switch ($question_type) {
@@ -133,7 +195,7 @@ class GameController extends AppController
         $this->renderMultipleChoiceQuestion($question, $options);
         break;
       default:
-        $_SESSION['awaiting_response'] = false;
+        // $_SESSION['awaiting_response'] = false;
         $this->renderReadTextQuestion($question);
     }
   }

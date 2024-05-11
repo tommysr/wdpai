@@ -5,6 +5,23 @@ require_once __DIR__ . '/../models/QuestStatistics.php';
 
 class QuestStatisticsRepository extends Repository
 {
+  public function getQuestIdToFinish(int $userId): ?int {
+    $sql = "SELECT questid FROM QuestStatistics WHERE userid = :user_id AND state = 'STATE_IN_PROGRESS'";
+
+    $stmt = $this->db->connect()->prepare($sql);
+    $stmt->execute([':user_id' => $userId]);
+
+    $questId = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+
+    $len = sizeof($questId);
+    if ($len > 1) {
+      throw new Exception("User has more than one quest in progress");
+    }
+    
+    return sizeof($questId) > 0 ? $questId[0]['questid'] : null;
+  }
+
   public function getQuestStatistic(int $userId, int $questId): ?QuestStatistics
   {
     $sql = "SELECT *
@@ -21,7 +38,7 @@ class QuestStatisticsRepository extends Repository
       return null;
     }
 
-    return new QuestStatistics($statistics['completiondate'], $statistics['score'], $statistics['userid'], $statistics['questid'], $statistics['walletid']);
+    return new QuestStatistics($statistics['completiondate'], $statistics['score'], $statistics['userid'], $statistics['questid'], $statistics['walletid'], $statistics['last_question_index'], $statistics['state']);
   }
 
   public function addParticipation(int $userId, int $questId, int $walletId): void

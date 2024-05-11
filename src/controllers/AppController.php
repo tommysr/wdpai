@@ -6,10 +6,13 @@ require_once __DIR__ . '/../services/SessionService.php';
 class Request
 {
     private $requestMethod;
+    private array $queries;
 
     public function __construct()
     {
         $this->requestMethod = $_SERVER['REQUEST_METHOD'];
+        $this->queries = array();
+        parse_str($_SERVER['QUERY_STRING'], $this->queries);
     }
 
     public function isGet()
@@ -30,6 +33,11 @@ class Request
     public function post(string $key)
     {
         return $_POST[$key] ?? null;
+    }
+
+    public function query(string $key)
+    {
+        return $this->queries[$key] ?? null;
     }
 }
 
@@ -53,9 +61,10 @@ class AppController
         exit();
     }
 
-    protected function redirectWithParams(string $url, array $params = [], int $code = 0): void {
+    protected function redirectWithParams(string $url, array $params = [], int $code = 0): void
+    {
         $queryString = http_build_query($params);
-        $url = "http://$_SERVER[HTTP_HOST]/". $url . '?' . $queryString;
+        $url = "http://$_SERVER[HTTP_HOST]/" . $url . '?' . $queryString;
         header('Location:' . $url, true, $code);
         exit();
     }

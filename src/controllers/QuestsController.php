@@ -354,8 +354,6 @@ class QuestsController extends AppController
       $joinDate = DateTime::createFromFormat('Y-m-d', $user->getJoinDate())->format('F Y');
 
       $this->render('layout', ['title' => 'dashboard', 'username' => $user->getName(), 'joinDate' => $joinDate, 'points' => 4525], 'dashboard');
-
-      $joinDate = $this->userRepository;//->//($id);
     } catch (NotLoggedInException $e) {
       $this->redirectWithParams('login', ['message' => 'first, you need to log in']);
     } catch (Exception $e) {
@@ -397,7 +395,7 @@ class QuestsController extends AppController
   public function showQuestWallets(int $questId)
   {
     try {
-      $userId = $this->questAuthorizationService->authorizeQuestAction(QuestAuthorizeRequest::PLAY, $questId);
+      $userId = $this->questAuthorizationService->authorizeQuestAction(QuestAuthorizeRequest::ENTER, $questId);
       $quest = $this->questRepository->getQuestById($questId);
       $blockchain = $quest->getRequiredWallet();
       $wallets = $this->walletRepository->getBlockchainWallets($userId, $blockchain);
@@ -405,8 +403,8 @@ class QuestsController extends AppController
       $this->render('showWallets', ['title' => 'enter quest', 'questId' => $questId, 'wallets' => $wallets, 'blockchain' => $blockchain]);
     } catch (NotLoggedInException $e) {
       $this->redirectWithParams('login', ['message' => 'first, you need to log in']);
-    } catch (GameplayInProgressException $e) {
-      $this->redirectWithParams('gameplay', ['message' => 'you are already playing a quest']);
+    } catch (GameplayInProgressException $id) {
+      $this->redirectWithParams('gameplay/' . $id->getMessage(), ['message' => 'finish or abandon the quest']);
     } catch (Exception $e) {
       $this->redirectWithParams('error', ['message' => $e->getMessage()]);
     }
@@ -415,7 +413,7 @@ class QuestsController extends AppController
   public function startQuest(int $questId)
   {
     try {
-      $userId = $this->questAuthorizationService->authorizeQuestAction(QuestAuthorizeRequest::PLAY, $questId);
+      $userId = $this->questAuthorizationService->authorizeQuestAction(QuestAuthorizeRequest::ENTER, $questId);
       $walletSelect = $this->request->post('walletSelect');
       $walletId = $walletSelect;
 
@@ -429,14 +427,14 @@ class QuestsController extends AppController
         $walletId = $this->addNewWallet($userId, $questId, $newWalletAddress);
       }
 
-      // set user id, quest id, wallet id and score to 0
-      $this->questStatisticsRepository->addParticipation($userId, $questId, $walletId);
+      // // set user id, quest id, wallet id and score to 0
+      // $this->questStatisticsRepository->addParticipation($userId, $questId, $walletId);
 
-      $this->redirect('gameplay');
+      $this->redirectWithParams('gameplay/' . $questId, ['walletId' => $walletId]);
     } catch (NotLoggedInException $e) {
       $this->redirectWithParams('login', ['message' => 'first, you need to log in']);
-    } catch (GameplayInProgressException $e) {
-      $this->redirectWithParams('gameplay', ['message' => 'you are already playing a quest']);
+    } catch (GameplayInProgressException $id) {
+      $this->redirectWithParams('gameplay/' . $id->getMessage(), ['message' => 'finish or abandon the quest']);
     } catch (Exception $e) {
       $this->redirectWithParams('error', ['message' => $e->getMessage()]);
     }
