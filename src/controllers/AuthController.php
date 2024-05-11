@@ -44,7 +44,8 @@ class AuthController extends AppController
         'user',
         [
           'id' => $result->getId(),
-          'role' => $result->getRole()
+          'role' => $result->getRole(),
+          'username' => $result->getName(),
         ]
       );
       $this->redirect('/');

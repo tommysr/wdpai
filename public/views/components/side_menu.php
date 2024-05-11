@@ -4,14 +4,14 @@
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()"><img src="/public/assets/back_arrow.svg" /></a>
 
   <div class="sidenav-inner">
-    <a class="nav-link flex-column-center-center" href="#">
+    <a class="nav-link flex-column-center-center" href="/">
       Quests
       <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />
       </svg>
     </a>
 
-    <a class="nav-link flex-column-center-center" href="#">
+    <a class="nav-link flex-column-center-center" href="/profile">
       Profile
       <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />
@@ -20,8 +20,8 @@
 
 
     <?php if ($user && $user['role'] == 'admin'): ?>
-      <a class="nav-link flex-column-center-center" href="#">
-        Add quest
+      <a class="nav-link flex-column-center-center" href="/dashboard">
+        Dashboard
         <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />
         </svg>

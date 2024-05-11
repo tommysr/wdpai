@@ -37,7 +37,7 @@ class Router
     $action = empty($action) ? 'index' : $action;
 
     try {
-      $object->$action(empty($params[0]) ? null : $params[0]);
+      $object->$action(isset($params[0]) ? $params[0] : '');
     } catch (Exception $e) {
       error_log('Error occurred: ' . $e->getMessage());
 

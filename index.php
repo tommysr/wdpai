@@ -8,6 +8,7 @@ Router::get('', 'QuestsController');
 Router::get('createQuest', 'QuestsController');
 Router::get('editQuest', 'QuestsController');
 Router::get('createdQuests', 'QuestsController');
+Router::get('dashboard', 'QuestsController');
 
 Router::get('login', 'AuthController');
 Router::get('logout', 'AuthController');
