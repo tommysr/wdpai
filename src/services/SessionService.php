@@ -1,16 +1,33 @@
 <?php
 
-class SessionService
+
+interface ISessionService
 {
-  public function __construct()
+  public static function start();
+  public static function set($key, $value);
+  public static function has($key);
+  public static function get($key);
+  public static function delete($key);
+  public static function end();
+}
+
+
+class SessionService implements ISessionService
+{
+  private static $started = false;
+
+  private static function startSession()
   {
-    $this->start();
+    if (session_status() == PHP_SESSION_NONE) {
+      session_start();
+    }
   }
 
   public static function start()
   {
-    if (session_status() == PHP_SESSION_NONE) {
-      session_start();
+    if (!self::$started) {
+      self::$started = true;
+      self::startSession();
     }
   }
 

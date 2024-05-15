@@ -3,9 +3,19 @@
 require_once 'Repository.php';
 require_once __DIR__ . '/../models/QuestStatistics.php';
 
-class QuestStatisticsRepository extends Repository
+interface IQuestStatisticsRepository
 {
-  public function getQuestIdToFinish(int $userId): ?int {
+  public function getQuestIdToFinish(int $userId): ?int;
+  public function getQuestStatistic(int $userId, int $questId): ?QuestStatistics;
+  public function addParticipation(int $userId, int $questId, int $walletId): void;
+  // public function getParticipated(int $userId): array;
+
+}
+
+class QuestStatisticsRepository extends Repository implements IQuestStatisticsRepository
+{
+  public function getQuestIdToFinish(int $userId): ?int
+  {
     $sql = "SELECT questid FROM QuestStatistics WHERE userid = :user_id AND state = 'STATE_IN_PROGRESS'";
 
     $stmt = $this->db->connect()->prepare($sql);
@@ -18,7 +28,7 @@ class QuestStatisticsRepository extends Repository
     if ($len > 1) {
       throw new Exception("User has more than one quest in progress");
     }
-    
+
     return sizeof($questId) > 0 ? $questId[0]['questid'] : null;
   }
 

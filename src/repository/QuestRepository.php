@@ -3,6 +3,19 @@
 require_once 'Repository.php';
 require_once __DIR__ . '/../models/Quest.php';
 
+interface IQuestRepository
+{
+  public function saveQuest(Quest $quest): int;
+  public function getQuestById($questId): ?Quest;
+  public function getQuests(): array;
+  public function getCreatorQuests(int $creator): array;
+  public function getApprovedQuests(): array;
+  public function getQuestToApprove(): array;
+  public function approve(int $questId);
+  public function updateQuest(Quest $quest);
+
+}
+
 class QuestRepository extends Repository
 {
   private function constructQuestModel(array $data): Quest

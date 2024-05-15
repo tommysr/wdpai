@@ -3,9 +3,23 @@
 require_once 'Repository.php';
 require_once __DIR__ . '/../models/User.php';
 
-class UserRepository extends Repository
+interface IUserRepository
 {
-  public function addUser(User $user)
+  public function addUser(User $user): void;
+  public function getUser(string $email): ?User;
+  public function getUserById(int $id): ?User;
+  public function userExists($email): bool;
+  public function userNameExists($username): bool;
+}
+
+class UserRepository extends Repository implements IUserRepository
+{
+  public function __construct(IDatabase $db = null, IDatabaseConfig $config = null)
+  {
+    parent::__construct($db, $config);
+  }
+
+  public function addUser(User $user): void
   {
     $stmt = $this->db->connect()->prepare('
       INSERT INTO Users (Email, Username, Password, JoinDate)
@@ -20,7 +34,8 @@ class UserRepository extends Repository
     ]);
   }
 
-  public function getUserById(int $id): ?User {
+  public function getUserById(int $id): ?User
+  {
     $stmt = $this->db->connect()->prepare('
       SELECT * FROM Users WHERE UserID = :id
     ');

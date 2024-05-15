@@ -1,47 +1,48 @@
 <?php
 
-require_once 'src/controllers/QuestsController.php';
-require_once 'src/controllers/ErrorController.php';
-require_once 'src/controllers/AuthController.php';
-require_once 'src/controllers/GameController.php';
-
-
 class Router
 {
   public static $routes;
 
-  public static function get($url, $view)
+  public static function get(string $url, Middleware $middleware, $view)
   {
-    self::$routes[$url] = $view;
+    self::$routes[$url] = ['middleware' => $middleware, 'view' => $view];
   }
 
-  public static function post($url, $view)
+  public static function post(string $url, Middleware $middleware, $view)
   {
-    self::$routes[$url] = $view;
+    self::$routes[$url] = ['middleware' => $middleware, 'view' => $view];
   }
 
   public static function run($url)
   {
     $urlParts = explode("/", $url);
-    $action = array_shift($urlParts);
+    $routeName = array_shift($urlParts);
     $params = $urlParts;
 
-
-    if (!array_key_exists($action, self::$routes)) {
-      self::renderErrorPage(404, "path not found");
+    if (!array_key_exists($routeName, self::$routes)) {
+      self::renderErrorPage(404, "Path not found");
       return;
     }
 
-    $controller = self::$routes[$action];
-    $object = new $controller;
-    $action = empty($action) ? 'index' : $action;
+    $route = self::$routes[$routeName];
+    $middleware = $route['middleware'];
+    $controllerAction = $route['action'];
+
+    // Execute middleware
+    if ($middleware !== null) {
+      $middleware->handle();
+    }
+
+    list($controllerName, $actionName) = explode('@', $controllerAction);
+    $controller = new $controllerName();
+    $action = empty($actionName) ? 'index' : $actionName;
 
     try {
-      $object->$action(isset($params[0]) ? $params[0] : '');
+      $controller->$action(isset($params[0]) ? $params[0] : '');
     } catch (Exception $e) {
       error_log('Error occurred: ' . $e->getMessage());
-
-      self::renderErrorPage(500, 'internal server error, try again later');
+      self::renderErrorPage(500, 'Internal server error, try again later');
     }
   }
 
