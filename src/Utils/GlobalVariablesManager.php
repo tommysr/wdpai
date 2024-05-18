@@ -1,4 +1,7 @@
 <?php
+namespace App\Utils;
+
+use App\Services\ISessionService;
 
 interface IGlobalVariablesManager
 {
