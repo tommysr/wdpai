@@ -1,5 +1,10 @@
 <?php
-require "Routing.php";
+require_once __DIR__ . '/vendor/autoload.php';
+
+use App\Routing\Router;
+use App\Request\Request;
+
+// require_once 'src/services/AuthorizationService.php';
 
 $path = trim($_SERVER['REQUEST_URI'], '/');
 $path = parse_url($path, PHP_URL_PATH);
@@ -32,15 +37,19 @@ $path = parse_url($path, PHP_URL_PATH);
 // Router::get('processUserResponse', 'GameController');
 // Router::get('nextQuestion', 'GameController');
 
-$middleware = new RoleAuthorizationMiddleware(new UserAuthorizationService(new SessionService()), Role::USER);
-$middleware->setNext(new QuestAuthorizationMiddleware(new QuestAuthorizeService(new QuestStatisticsRepository()), QuestRequest::PLAY));
+// $user_authorization_service = new RoleAuthorizationService(new SessionService());
+// $user_middleware = new RoleAuthorizationMiddleware($user_authorization_service, Role::USER);
+// $middleware->setNext(new QuestAuthorizationMiddleware(new QuestAuthorizeService(new QuestStatisticsRepository()), QuestRequest::PLAY));
 
-Router::get('/admin', $middleware, 'AdminController@index');
+// $userLoggedInMiddleware = new RoleAuthorizationMiddleware(new UserAuthorizationService(new SessionService()), Role::USER);
 
-$userLoggedInMiddleware = new RoleAuthorizationMiddleware(new UserAuthorizationService(new SessionService()), Role::USER);
+// Router::get('login', 'AuthController');
+// Router::get('logout', 'AuthController');
+// Router::get('register', 'AuthController');
 
-Router::get('login', 'AuthController');
-Router::get('logout', 'AuthController');
-Router::get('register', 'AuthController');
 
-Router::run($path);
+Router::get('/error/{code}', 'ErrorController@error');
+Router::get('', 'ErrorController@index');
+
+$request = new Request($_SERVER, $_GET, $_POST);
+Router::dispatch($request);
