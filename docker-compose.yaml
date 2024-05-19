@@ -9,8 +9,6 @@ services:
       - "8080:80"
     volumes:
       - .:/app/
-    links:
-      - php
     networks:
       - pg-network
   
@@ -29,6 +27,7 @@ services:
       dockerfile: docker/php/Dockerfile
     volumes:
       - .:/app
+    working_dir: /app
     networks:
       - pg-network
   
