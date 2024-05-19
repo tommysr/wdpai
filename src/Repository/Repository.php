@@ -1,7 +1,12 @@
 <?php
 
-require_once __DIR__ . '/../../Database.php';
-require_once __DIR__ . '/../../DBConfig.php';
+namespace App\Repository;
+
+use App\Database\IDatabase;
+use App\Database\IDatabaseConfig;
+
+use App\Database\DefaultDBConfig;
+use App\Database\Database;
 
 class Repository
 {

@@ -1,24 +1,14 @@
 <?php
 
-require_once 'Repository.php';
-require_once __DIR__ . '/../models/User.php';
+namespace App\Repository;
 
-interface IUserRepository
-{
-  public function addUser(User $user): void;
-  public function getUser(string $email): ?User;
-  public function getUserById(int $id): ?User;
-  public function userExists($email): bool;
-  public function userNameExists($username): bool;
-}
+use App\Repository\IUserRepository;
+use App\Models\User;
+use App\Repository\Repository;
+use PDO;
 
 class UserRepository extends Repository implements IUserRepository
 {
-  public function __construct(IDatabase $db = null, IDatabaseConfig $config = null)
-  {
-    parent::__construct($db, $config);
-  }
-
   public function addUser(User $user): void
   {
     $stmt = $this->db->connect()->prepare('
