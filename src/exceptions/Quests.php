@@ -63,3 +63,11 @@ class AlreadyApproved extends Exception
     }
 }
 
+class GameplayInProgressException extends Exception
+{
+    public function errorMessage()
+    {
+        return 'gameplay in progress';
+    }
+}
+

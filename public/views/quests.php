@@ -41,7 +41,7 @@
           <?= $quest->getPoolAmount(); ?>
         </span>
 
-        <a href="/enterQuest/<?= $quest->getQuestId(); ?>" class="enter-button" style="text-decoration: none;">ENTER</a>
+        <a href="/showQuestWallets/<?= $quest->getQuestId(); ?>" class="enter-button" style="text-decoration: none;">ENTER</a>
       </div>
     </div>
   <?php endforeach; ?>

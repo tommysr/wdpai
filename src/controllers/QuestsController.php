@@ -41,6 +41,7 @@ class QuestsController extends AppController
   private $questService;
   private $optionsRepository;
   private $userRepository;
+  private $questStatisticsRepository;
 
   public function __construct()
   {
@@ -52,14 +53,30 @@ class QuestsController extends AppController
     $this->questAuthorizationService = new QuestAuthorizationService();
     $this->questService = new QuestService();
     $this->userRepository = new UserRepository();
+    $this->questStatisticsRepository = new QuestStatisticsRepository();
   }
 
+
+  public function quests()
+  {
+    $quests = $this->questRepository->getApprovedQuests();
+
+    // TODO:
+    // if logged in show only not participated
+    // if ($this->questAuthorizationService->getSignedUserId()) {
+    //   $quests = $this->questRepository->getApprovedQuests();
+    //   $participated = $this->quest
+    //   $this->redirect('dashboard');
+    // } else {
+    // }
+
+    $this->render('layout', ['title' => 'quest list', 'quests' => $quests], 'quests');
+  }
 
   // returns quests which are approved by some general admin
   public function index()
   {
-    $quests = $this->questRepository->getApprovedQuests();
-    $this->render('layout', ['title' => 'quest list', 'quests' => $quests], 'quests');
+    $this->quests();
   }
 
   // create quest returns quest data given by questId param and checks access to given route
@@ -67,15 +84,14 @@ class QuestsController extends AppController
   {
     try {
       $requestType = $questId ? QuestAuthorizeRequest::EDIT : QuestAuthorizeRequest::CREATE;
-
       $this->questAuthorizationService->authorizeQuestAction($requestType, $questId);
-
       $quest = $this->questService->getQuestWithQuestionsAndOptions($questId);
 
       $this->render('layout', [
         'title' => 'quest add',
         'quest' => $quest
       ], 'createQuest');
+
     } catch (NotLoggedInException $e) {
       $this->redirectWithParams('login', ['message' => 'first, you need to log in']);
     } catch (Exception $e) {
@@ -330,45 +346,14 @@ class QuestsController extends AppController
     $this->redirect('createQuest/' . $questId);
   }
 
-  public function enterQuest($questId)
-  {
-    try {
-      $this->questAuthorizationService->authorizeQuestAction(QuestAuthorizeRequest::ENTER, $questId);
-
-      $userId = $this->questAuthorizationService->getSignedUserId();
-
-      if ($this->request->isGet()) {
-        $this->renderStartQuest($userId, $questId);
-      } else {
-        $this->startQuest($userId, $questId);
-      }
-
-    } catch (NotLoggedInException $e) {
-      $this->redirectWithParams('login', ['message' => 'first, you need to log in']);
-    } catch (Exception $e) {
-      $this->redirectWithParams('error', ['message' => $e->getMessage()]);
-    }
-  }
-
   public function dashboard()
   {
     try {
-      // $this->questAuthorizationService->authorizeQuestAction(QuestAuthorizeRequest::DASHBOARD);
-
-      // $quests = $this->questRepository->getApprovedQuests();
-
-      $id = $this->questAuthorizationService->getSignedUserId();
-
-      if (!$id) {
-        throw new NotLoggedInException('');
-      }
+      $id = $this->questAuthorizationService->authorizeQuestRole(QuestRole::NORMAL);
       $user = $this->userRepository->getUserById($id);
-
       $joinDate = DateTime::createFromFormat('Y-m-d', $user->getJoinDate())->format('F Y');
 
       $this->render('layout', ['title' => 'dashboard', 'username' => $user->getName(), 'joinDate' => $joinDate, 'points' => 4525], 'dashboard');
-
-      $joinDate = $this->userRepository;//->//($id);
     } catch (NotLoggedInException $e) {
       $this->redirectWithParams('login', ['message' => 'first, you need to log in']);
     } catch (Exception $e) {
@@ -379,18 +364,10 @@ class QuestsController extends AppController
   public function createdQuests()
   {
     try {
-      $this->questAuthorizationService->authorizeQuestAction(QuestAuthorizeRequest::CREATE);
-
-      $creatorId = $this->questAuthorizationService->getSignedUserId();
-      ;
-
-      if (!$creatorId) {
-        throw new NotFoundException('temporary');
-      }
+      $creatorId = $this->questAuthorizationService->authorizeQuestRole(QuestRole::CREATOR);
       $quests = $this->questRepository->getCreatorQuests($creatorId);
 
-
-      array_filter($quests, function ($quest) use ($creatorId) {
+      array_filter($quests, function ($quest) {
         return !$quest->isApproved();
       });
 
@@ -415,47 +392,52 @@ class QuestsController extends AppController
     }
   }
 
-  private function renderStartQuest($userId, $questId)
+  public function showQuestWallets(int $questId)
   {
-    $quest = $this->questRepository->getQuestById($questId);
-    $wallets = $this->walletRepository->getBlockchainWallets($userId, $quest->getRequiredWallet());
+    try {
+      $userId = $this->questAuthorizationService->authorizeQuestAction(QuestAuthorizeRequest::ENTER, $questId);
+      $quest = $this->questRepository->getQuestById($questId);
+      $blockchain = $quest->getRequiredWallet();
+      $wallets = $this->walletRepository->getBlockchainWallets($userId, $blockchain);
 
-    $this->render('enterQuest', ['title' => 'enter quest', 'wallets' => $wallets]);
+      $this->render('showWallets', ['title' => 'enter quest', 'questId' => $questId, 'wallets' => $wallets, 'blockchain' => $blockchain]);
+    } catch (NotLoggedInException $e) {
+      $this->redirectWithParams('login', ['message' => 'first, you need to log in']);
+    } catch (GameplayInProgressException $id) {
+      $this->redirectWithParams('gameplay/' . $id->getMessage(), ['message' => 'finish or abandon the quest']);
+    } catch (Exception $e) {
+      $this->redirectWithParams('error', ['message' => $e->getMessage()]);
+    }
   }
 
-  private function startQuest($userId, $questId)
+  public function startQuest(int $questId)
   {
-    $walletSelect = $this->request->post('walletSelect');
+    try {
+      $userId = $this->questAuthorizationService->authorizeQuestAction(QuestAuthorizeRequest::ENTER, $questId);
+      $walletSelect = $this->request->post('walletSelect');
+      $walletId = $walletSelect;
 
-    if (!$walletSelect) {
-      $this->redirectWithParams('error', ['message' => 'something went wrong', 'code' => 404]);
-    }
+      if ($walletSelect === 'new') {
+        $newWalletAddress = $this->request->post('newWalletAddress');
 
-    $walletId = $walletSelect;
+        if (!$newWalletAddress) {
+          $this->redirectWithParams('error', ['message' => 'something went wrong', 'code' => 404]);
+        }
 
-    if ($walletSelect === 'new') {
-      $newWalletAddress = $this->request->post('newWalletAddress');
-
-      if (!$newWalletAddress) {
-        $this->redirectWithParams('error', ['message' => 'something went wrong', 'code' => 404]);
+        $walletId = $this->addNewWallet($userId, $questId, $newWalletAddress);
       }
 
-      $walletId = $this->addNewWallet($userId, $questId, $newWalletAddress);
+      // // set user id, quest id, wallet id and score to 0
+      // $this->questStatisticsRepository->addParticipation($userId, $questId, $walletId);
+
+      $this->redirectWithParams('gameplay/' . $questId, ['walletId' => $walletId]);
+    } catch (NotLoggedInException $e) {
+      $this->redirectWithParams('login', ['message' => 'first, you need to log in']);
+    } catch (GameplayInProgressException $id) {
+      $this->redirectWithParams('gameplay/' . $id->getMessage(), ['message' => 'finish or abandon the quest']);
+    } catch (Exception $e) {
+      $this->redirectWithParams('error', ['message' => $e->getMessage()]);
     }
-
-    $this->startQuestWithWallet($walletId, $questId);
-  }
-
-
-  private function startQuestWithWallet($walletId, $questId)
-  {
-    $quest = $this->questRepository->getQuestById($questId);
-
-    SessionService::set('walletId', $walletId);
-    SessionService::set('questId', $questId);
-    SessionService::set('questPoints', $quest->getPoints());
-
-    $this->redirect('gameplay');
   }
 
   private function addNewWallet($userId, $questId, $walletAddress): int

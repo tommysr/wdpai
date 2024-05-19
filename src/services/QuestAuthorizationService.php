@@ -30,6 +30,7 @@ function getQuestRoleFromString(string $role): QuestRole
 
 enum QuestAuthorizeRequest
 {
+  case PLAY;
   case ENTER;
   case CREATE;
   case EDIT;
@@ -64,7 +65,16 @@ class QuestAuthorizationService
     $this->questRepository = $questRepository ?: new QuestRepository();
   }
 
-  public function authorizeQuestAction(QuestAuthorizeRequest $request, ?int $questId = null)
+  public function authorizeQuestRole(QuestRole $role): int
+  {
+    if ($this->role !== $role) {
+      throw new AuthorizationException('You are not allowed to do this action');
+    }
+
+    return $this->userId;
+  }
+
+  public function authorizeQuestAction(QuestAuthorizeRequest $request, ?int $questId = null): int
   {
     $userId = $this->getSignedUserId();
 
@@ -73,15 +83,24 @@ class QuestAuthorizationService
     }
 
     switch ($request) {
+      case QuestAuthorizeRequest::PLAY:
+        $this->checkGameplayRequest($questId);
+        break;
       case QuestAuthorizeRequest::ENTER:
-        return $this->checkParticipationRequest($questId);
+        $this->checkParticipationRequest($questId);
+        break;
       case QuestAuthorizeRequest::CREATE:
-        return $this->checkCreateRequest();
+        $this->checkCreateRequest();
+        break;
       case QuestAuthorizeRequest::EDIT:
-        return $this->checkEditRequest($questId);
+        $this->checkEditRequest($questId);
+        break;
       case QuestAuthorizeRequest::PUBLISH:
-        return $this->checkPublishRequest();
+        $this->checkPublishRequest();
+        break;
     }
+
+    return $userId;
   }
 
   public function getSignedUserId(): ?int
@@ -130,14 +149,48 @@ class QuestAuthorizationService
     }
   }
 
+  public function checkGameplayRequest(int $questId)
+  {
+    $id = $this->userId;
+
+    if ($id === null) {
+      throw new NotLoggedInException('you need to log in');
+    }
+
+    $gameplayToResume = $this->questStatisticsRepository->getQuestIdToFinish($id);
+
+    if ($gameplayToResume === null) {
+      return;
+    }
+
+    if ($gameplayToResume !== $questId) {
+      throw new GameplayInProgressException($gameplayToResume);
+    }
+  }
+
   public function checkParticipationRequest(int $questId)
   {
     $id = $this->userId;
 
     if ($id === null) {
       throw new NotLoggedInException('you need to log in');
-    } else if ($this->questStatisticsRepository->getQuestStatistic($id, $questId)) {
-      throw new AuthorizationException('You can not reenter quest.');
     }
+
+    $gameplayToResume = $this->questStatisticsRepository->getQuestIdToFinish($id);
+
+    if ($gameplayToResume) {
+      throw new GameplayInProgressException($gameplayToResume);
+    }
+
+    // $questStats = $this->questStatisticsRepository->getQuestStatistic($id, $questId);
+
+    // // check if user already participated in quest, maybe need to somehow redirect to current gameplay 
+    // if ($questStats) {
+    //   if ($questStats->getCompletionDate()) {
+    //     throw new AuthorizationException('You can not reenter quest.');
+    //   } else {
+    //     throw new GameplayInProgressException('You are already in game');
+    //   }
+    // }
   }
 }
