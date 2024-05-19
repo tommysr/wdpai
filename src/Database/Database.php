@@ -1,13 +1,6 @@
 <?php
-require_once "DBConfig.php";
-require_once "Config.php";
-require_once "Singleton.php";
-
-interface IDatabase
-{
-    public function connect(): PDO;
-}
-
+namespace App\Database;
+use PDO;
 
 class Database implements IDatabase
 {

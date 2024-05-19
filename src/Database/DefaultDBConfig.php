@@ -1,16 +1,7 @@
 <?php
-
-require_once "Config.php";
-
-
-interface IDatabaseConfig
-{
-  public function getUsername(): string;
-  public function getPassword(): string;
-  public function getHost(): string;
-  public function getDatabase(): string;
-  public function getPort(): string;
-}
+namespace App\Database;
+use App\Config\Config;
+use App\Database\IDatabaseConfig;
 
 class DefaultDBConfig extends Config implements IDatabaseConfig
 {
