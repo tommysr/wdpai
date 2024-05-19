@@ -1,5 +1,8 @@
 <?php
 
+namespace App\Models;
+use DateTime;
+
 class User
 {
   private string $email;

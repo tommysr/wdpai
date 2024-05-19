@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Controllers;
+
 class Redirector
 {
   public static function redirectTo(string $url, int $code = 0): void

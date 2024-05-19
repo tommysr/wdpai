@@ -1,15 +1,18 @@
 <?php
 
-interface IAuthenticateController
-{
-  public function login(): void;
-  public function logout(): void;
-}
+namespace App\Controllers;
 
-class LoginControllerImpl extends AppController implements IAuthenticateController
+
+use App\Services\Session\ISessionService;
+use App\Services\Session\SessionService;
+use App\Services\Authenticate\IAuthenticate;
+use App\Services\Authenticate\Authenticator;
+
+
+class LoginControllerImpl extends AppController implements ILoginController
 {
   private IAuthenticate $authenticator;
-  private SessionService $sessionService;
+  private ISessionService $sessionService;
 
   public function __construct(IAuthenticate $authenticator = null, ISessionService $sessionService = null)
   {

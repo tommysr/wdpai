@@ -1,13 +1,15 @@
 <?php
-require_once __DIR__ . '/../models/User.php';
-require_once __DIR__ . '/../repository/UserRepository.php';
-require_once __DIR__ . '/../validators/Validator.php';
-require_once __DIR__ . '/../exceptions/User.php';
+namespace App\Services\Authenticate;
 
-interface IAuthenticate
-{
-  public function login(string $email, string $password): User;
-}
+use App\Models\User;
+use App\Services\Authenticate\IAuthenticate;
+use App\Repository\IUserRepository;
+use App\Validator\IValidationChain;
+use App\Repository\UserRepository;
+use App\Validator\Validator;
+use App\Validator\EmailValidationRule;
+use App\Validator\PasswordLengthValidationRule;
+
 
 class Authenticator implements IAuthenticate
 {
@@ -31,11 +33,11 @@ class Authenticator implements IAuthenticate
   {
 
     if (!$this->validationChain->validateField('email', $email)) {
-      throw new ValidationException('Invalid login data');
+      throw new \Exception('Invalid login data');
     }
 
     if (!$this->validationChain->validateField('password', $password)) {
-      throw new ValidationException('Invalid login data');
+      throw new \Exception('Invalid login data');
     }
   }
 
@@ -46,7 +48,7 @@ class Authenticator implements IAuthenticate
     $user = $this->userRepository->getUser($email);
 
     if (!$user || !password_verify($password, $user->getPassword())) {
-      throw new ValidationException('Invalid login data');
+      throw new \Exception('Invalid login data');
     }
 
     return $user;

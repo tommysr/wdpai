@@ -1,24 +1,7 @@
 <?php
 
-interface Middleware
-{
-  /**
-   * Handle the middleware logic.
-   *
-   * @return void
-   */
-  public function handle(): void;
 
-  /**
-   * Set the next middleware in the chain.
-   *
-   * @param Middleware $middleware The next middleware in the chain.
-   * @return Middleware Returns the next middleware.
-   */
-  public function setNext(Middleware $middleware): Middleware;
-}
-
-class UserAuthorizationMiddleware implements Middleware
+class RoleAuthorizationMiddleware implements Middleware
 {
   private UserAuthorizer $authorizer;
   protected Role $role;

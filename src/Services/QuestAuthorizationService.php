@@ -17,7 +17,7 @@ interface QuestAuthorizer
    * @param int|null $questId The ID of the quest (if applicable).
    * @throws AuthorizationException If authorization fails.
    */
-  public function authorizeQuest(QuestRequest $request, int $questId = null): void;
+  public function authorizeQuest(QuestRequest $request, ?int $questId = null): void;
 }
 
 /**
@@ -58,7 +58,7 @@ class QuestAuthorizationMiddleware implements Middleware
     try {
       $this->questAuthorizer->authorizeQuest($this->questRequest, $this->questId);
     } catch (AuthorizationException $e) {
-      Redirector::redirectTo('/login');
+      Redirector::redirectTo('/unathorized');
     }
 
     if ($this->next !== null) {
@@ -87,7 +87,7 @@ class QuestAuthorizeService extends RoleAuthorizationService implements QuestAut
    * @param int|null $questId The ID of the quest (if applicable).
    * @throws AuthorizationException If authorization fails.
    */
-  public function authorizeQuest(QuestRequest $request, int $questId = null): void
+  public function authorizeQuest(QuestRequest $request, ?int $questId = null): void
   {
     switch ($request) {
       case QuestRequest::PLAY:
