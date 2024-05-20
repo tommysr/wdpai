@@ -3,16 +3,17 @@ namespace App\Controllers;
 
 use App\Controllers\IRootController;
 use App\Request\IRequest;
+use App\Middleware\IResponse;
 
 class ErrorController extends AppController implements IRootController
 {
-  public function index(IRequest $request)
+  public function index(IRequest $request): IResponse
   {
     $content = $this->render('error', ['message' => 'unknown', 'code' => 500]);
     print $content;
   }
 
-  public function error(IRequest $request, int $code)
+  public function error(IRequest $request, int $code): IResponse
   {
     $content = $this->render('error', ['code' => $code, 'message' => '']);
     print $content;

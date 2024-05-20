@@ -1,4 +1,4 @@
-<?php 
+<?php
 namespace App\Routing;
 
 use App\Request\IRequest;
@@ -16,11 +16,26 @@ class Route implements IRoute
     private ?IMiddleware $middleware;
     private array $paramNames = [];
 
-    public function __construct(string $method, string $path, string $controller, string $action, ?IMiddleware $middleware = null)
+    private function setMiddlewares(?array $middlewares): void
     {
+        foreach ($middlewares as $middleware) {
+            if (!$middleware instanceof IMiddleware) {
+                throw new \Exception('Middleware must implement IMiddleware');
+            }
+
+            if ($this->middleware) {
+                $middleware->setNext($this->middleware);
+            } else {
+                $this->middleware = $middleware;
+            }
+        }
+    }
+
+    public function __construct(string $method, string $path, string $controller, string $action, ?array $middlewares = null)
+    {
+        $this->setMiddlewares($middlewares);
         $this->method = $method;
         $this->path = $path;
-        $this->middleware = $middleware;
         $this->controller = $controller;
         $this->action = $action;
         $this->paramNames = $this->extractParamNames($path);

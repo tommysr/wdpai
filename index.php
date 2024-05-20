@@ -57,8 +57,7 @@ $authService = new AuthenticateService($sessionService);
 $authAdapterFactory = new AuthAdapterFactory();
 $authMiddleware = new AuthenticationMiddleware($authService, $authAdapterFactory);
 //, $authMiddleware
-Router::get('/error/{code}', 'ErrorController@error');
-// Router::get('', 'ErrorController@index');
+Router::get('/error/{code}', 'ErrorController@error', [$authMiddleware]);
 
 $request = new Request($_SERVER, $_GET, $_POST);
 Router::dispatch($request);

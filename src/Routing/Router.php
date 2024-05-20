@@ -3,60 +3,69 @@ namespace App\Routing;
 
 // declare(strict_types=1);
 
+use App\Middleware\IHandler;
 use Exception;
-use App\Request\IRequest;
+use App\Request\IFullRequest;
 use App\Middleware\IMiddleware;
 use App\Routing\IRouter;
 use App\Controllers\IRootController;
+use App\Middleware\IResponse;
 
 
 class Router implements IRouter
 {
   private static array $routes = [];
 
-  public static function get(string $path, string $controllerAction, ?IMiddleware $middleware = null)
+  public static function get(string $path, string $controllerAction, ?array $middlewares = null)
   {
-    self::addRoute('GET', $path, $controllerAction, $middleware);
+    self::addRoute('GET', $path, $controllerAction, $middlewares);
   }
 
-  public static function post(string $path, string $controllerAction, ?IMiddleware $middleware = null)
+  public static function post(string $path, string $controllerAction, ?array $middlewares = null)
   {
-    self::addRoute('POST', $path, $controllerAction, $middleware);
+    self::addRoute('POST', $path, $controllerAction, $middlewares);
   }
 
-  private static function addRoute(string $method, string $path, string $controllerAction, ?IMiddleware $middleware = null)
+  private static function addRoute(string $method, string $path, string $controllerAction, ?array $middlewares = null)
   {
     list($controller, $action) = explode('@', $controllerAction);
-    self::$routes[] = new Route($method, $path, $controller, $action, $middleware);
+    self::$routes[] = new Route($method, $path, $controller, $action, $middlewares);
   }
 
-  public static function dispatch(IRequest $request)
+  public static function dispatch(IFullRequest $request): IResponse
   {
     foreach (self::$routes as $route) {
       $params = [];
 
       if ($route->matches($request, $params)) {
-        $middleware = $route->getMiddleware();
-
-        if ($middleware) {
-          $middleware->process($request);
-        }
-
         $controllerName = $route->getController();
         $actionName = $route->getAction();
+        $middleware = $route->getMiddleware();
 
         $controllerClassName = "App\\Controllers\\" . $controllerName;
+        $action = empty($actionName) ? 'index' : $actionName;
+        $request = $request->withAttribute('action', $action);
         $controllerInstance = new $controllerClassName($request);
 
         if (!$controllerInstance instanceof IRootController) {
           throw new Exception('Controller must implement RouteInterface');
         }
 
-        $action = empty($actionName) ? 'index' : $actionName;
+        if (!$controllerInstance instanceof IHandler) {
+          throw new Exception('Controller must implement IHandler');
+        }
 
-        call_user_func_array([$controllerInstance, $action], array_merge([$request], $params));
+        if ($middleware) {
+          return $middleware->process($request, $controllerInstance);
+        }
+
+        return call_user_func_array([$controllerInstance, $action], array_merge([$request], $params));
       }
     }
+
+
+    // maybe return some response with raw code, but how do i handle it later
+    throw new Exception('Route not found');
   }
 }
 
