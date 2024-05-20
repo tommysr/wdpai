@@ -39,7 +39,7 @@ class Router implements IRouter
         $middleware = $route->getMiddleware();
 
         if ($middleware) {
-          $middleware->handle($request);
+          $middleware->process($request);
         }
 
         $controllerName = $route->getController();

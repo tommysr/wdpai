@@ -1,13 +1,17 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 
+use App\Middleware\AuthenticationMiddleware;
 use App\Routing\Router;
 use App\Request\Request;
+use App\Services\Authenticate\AuthenticateService;
+use App\Services\Session\SessionService;
+use App\Services\Authenticate\AuthAdapterFactory;
 
-// require_once 'src/services/AuthorizationService.php';
+// // require_once 'src/services/AuthorizationService.php';
 
-$path = trim($_SERVER['REQUEST_URI'], '/');
-$path = parse_url($path, PHP_URL_PATH);
+// $path = trim($_SERVER['REQUEST_URI'], '/');
+// $path = parse_url($path, PHP_URL_PATH);
 
 
 // // QUESTS
@@ -48,8 +52,13 @@ $path = parse_url($path, PHP_URL_PATH);
 // Router::get('register', 'AuthController');
 
 
-Router::get('/error/{code}', 'ErrorController@error');
-Router::get('', 'ErrorController@index');
+$sessionService = new SessionService();
+$authService = new AuthenticateService($sessionService);
+$authAdapterFactory = new AuthAdapterFactory();
+$authMiddleware = new AuthenticationMiddleware($authService, $authAdapterFactory);
+
+// Router::get('/error/{code}', 'ErrorController@error', $authMiddleware);
+// Router::get('', 'ErrorController@index');
 
 $request = new Request($_SERVER, $_GET, $_POST);
 Router::dispatch($request);
