@@ -8,12 +8,14 @@ class ErrorController extends AppController implements IRootController
 {
   public function index(IRequest $request)
   {
-    $this->render('error', ['message' => 'unknown', 'code' => 500]);
+    $content = $this->render('error', ['message' => 'unknown', 'code' => 500]);
+    print $content;
   }
 
   public function error(IRequest $request, int $code)
   {
-    $this->render('error', ['code' => $code, 'message' => '']);
+    $content = $this->render('error', ['code' => $code, 'message' => '']);
+    print $content;
   }
 
   private function default_error($code, $message)
