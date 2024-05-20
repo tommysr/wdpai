@@ -16,8 +16,10 @@ class Route implements IRoute
     private ?IMiddleware $middleware;
     private array $paramNames = [];
 
-    private function setMiddlewares(?array $middlewares): void
-    {
+    private function setMiddlewares(array $middlewares): void
+    {   
+        $this->middleware = null;
+
         foreach ($middlewares as $middleware) {
             if (!$middleware instanceof IMiddleware) {
                 throw new \Exception('Middleware must implement IMiddleware');
@@ -31,7 +33,7 @@ class Route implements IRoute
         }
     }
 
-    public function __construct(string $method, string $path, string $controller, string $action, ?array $middlewares = null)
+    public function __construct(string $method, string $path, string $controller, string $action, array $middlewares = [])
     {
         $this->setMiddlewares($middlewares);
         $this->method = $method;

@@ -2,6 +2,7 @@
 namespace App\Controllers;
 
 // interfaces
+use App\Middleware\BaseResponse;
 use App\Middleware\IHandler;
 use App\Request\IFullRequest;
 use App\Request\IRequest;
@@ -39,10 +40,11 @@ class AppController implements IHandler
         return $this->request->getAttribute('action', 'index');
     }
 
-    public function render(string $template, array $variables = [], string $content = null): string
+    public function render(string $template, array $variables = [], string $content = null): IResponse
     {
         $globalVariables = GlobalVariablesManager::getGlobalVariables($this->sessionService);
         $variables = array_merge($variables, $globalVariables);
-        return $this->viewRenderer->render($template, $variables, $content);
+        $content = $this->viewRenderer->render($template, $variables, $content);
+        return new BaseResponse(200, body: $content);
     }
 }

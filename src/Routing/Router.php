@@ -16,17 +16,17 @@ class Router implements IRouter
 {
   private static array $routes = [];
 
-  public static function get(string $path, string $controllerAction, ?array $middlewares = null)
+  public static function get(string $path, string $controllerAction, array $middlewares = [])
   {
     self::addRoute('GET', $path, $controllerAction, $middlewares);
   }
 
-  public static function post(string $path, string $controllerAction, ?array $middlewares = null)
+  public static function post(string $path, string $controllerAction, array $middlewares = [])
   {
     self::addRoute('POST', $path, $controllerAction, $middlewares);
   }
 
-  private static function addRoute(string $method, string $path, string $controllerAction, ?array $middlewares = null)
+  private static function addRoute(string $method, string $path, string $controllerAction, array $middlewares = [])
   {
     list($controller, $action) = explode('@', $controllerAction);
     self::$routes[] = new Route($method, $path, $controller, $action, $middlewares);

@@ -7,7 +7,7 @@ use App\Request\Request;
 use App\Services\Authenticate\AuthenticateService;
 use App\Services\Session\SessionService;
 use App\Services\Authenticate\AuthAdapterFactory;
-
+use App\Emitter\Emitter;
 // // require_once 'src/services/AuthorizationService.php';
 
 // $path = trim($_SERVER['REQUEST_URI'], '/');
@@ -57,7 +57,10 @@ $authService = new AuthenticateService($sessionService);
 $authAdapterFactory = new AuthAdapterFactory();
 $authMiddleware = new AuthenticationMiddleware($authService, $authAdapterFactory);
 //, $authMiddleware
-Router::get('/error/{code}', 'ErrorController@error', [$authMiddleware]);
+Router::get('/error/{code}', 'ErrorController@error');
 
 $request = new Request($_SERVER, $_GET, $_POST);
-Router::dispatch($request);
+$response = Router::dispatch($request);
+$emitter = new Emitter();
+$emitter->emit($response);
+

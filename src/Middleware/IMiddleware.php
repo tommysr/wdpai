@@ -1,18 +1,18 @@
 <?php
 
 namespace App\Middleware;
-use App\Request\IRequest;
+use App\Request\IFullRequest;
 use App\Middleware\IResponse;
 
 interface IMiddleware
 {
   /**
    * Handle the middleware logic.
-   * @param IRequest $request The request object.
+   * @param IFullRequest $request The request object.
    * @param IHandler $handler The handler object.
    * @return IResponse The response object.
    */
-  public function process(IRequest $request, IHandler $handler): IResponse;
+  public function process(IFullRequest $request, IHandler $handler): IResponse;
 
   /**
    * Set the next middleware in the chain.
