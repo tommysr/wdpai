@@ -31,4 +31,7 @@ interface IQuestStatisticsRepository
    * @param IQuestStatistics $questStatistics The quest statistics.
    */
   public function updateQuestStatistics(IQuestStatistics $questStatistics);
+
+  public function getQuestIdToFinish(int $userId): ?int;
+
 }

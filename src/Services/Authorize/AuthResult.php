@@ -10,12 +10,13 @@ use App\Services\Authorize\IAuthResult;
 class AuthResult implements IAuthResult
 {
   private bool $valid;
-  private string $identity;
+  private array $messages;
 
-  public function __construct(bool $valid, string $identity)
+
+  public function __construct(bool $valid, array $messages = [])
   {
     $this->valid = $valid;
-    $this->identity = $identity;
+    $this->messages = $messages;
   }
 
   public function isValid(): bool
@@ -23,8 +24,8 @@ class AuthResult implements IAuthResult
     return $this->valid;
   }
 
-  public function getIdentity(): string
+  public function getMessages(): array
   {
-    return $this->identity;
+    return $this->messages;
   }
 }

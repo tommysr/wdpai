@@ -15,10 +15,6 @@ interface IAuthResult
    */
   public function isValid(): bool;
 
-  /**
-   * Get the identity of the result.
-   * 
-   * @return string The identity of the result.
-   */
-  public function getIdentity(): string;
+  public function getMessages(): array;
+
 }
