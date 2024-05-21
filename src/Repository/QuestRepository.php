@@ -1,24 +1,16 @@
 <?php
 
-require_once 'Repository.php';
-require_once __DIR__ . '/../models/Quest.php';
+namespace App\Repository;
 
-interface IQuestRepository
+use App\Repository\Repository;
+use App\Models\IQuest;
+use App\Models\Quest;
+
+
+
+class QuestRepository extends Repository implements IQuestRepository
 {
-  public function saveQuest(Quest $quest): int;
-  public function getQuestById($questId): ?Quest;
-  public function getQuests(): array;
-  public function getCreatorQuests(int $creator): array;
-  public function getApprovedQuests(): array;
-  public function getQuestToApprove(): array;
-  public function approve(int $questId);
-  public function updateQuest(Quest $quest);
-
-}
-
-class QuestRepository extends Repository
-{
-  private function constructQuestModel(array $data): Quest
+  private function constructQuestModel(array $data): IQuest
   {
     return new Quest(
       $data['questid'],
@@ -38,7 +30,7 @@ class QuestRepository extends Repository
     );
   }
 
-  public function updateQuest(Quest $quest)
+  public function updateQuest(IQuest $quest)
   {
     $sql = "UPDATE quests SET
               title = :title, 
@@ -72,13 +64,13 @@ class QuestRepository extends Repository
       ':points' => $quest->getPoints(),
       ':timerequired_minutes' => $quest->getTimeRequiredMinutes(),
       ':creator' => $quest->getCreatorId(),
-      ':approved' => (int) $quest->isApproved(),
+      ':approved' => (int) $quest->getIsApproved(),
     ]);
 
   }
 
 
-  public function saveQuest(Quest $quest): int
+  public function saveQuest(IQuest $quest): int
   {
     $sql = "INSERT INTO quests (title, description, worthknowledge, requiredwallet, expirydate, participantscount, participantlimit, poolamount, token, points, timerequired_minutes, creator, approved)
     VALUES (:title, :description, :worthknowledge, :requiredwallet, :expirydate, :participantscount, :participantlimit, :poolamount, :token, :points, :timerequired_minutes, :creator, :approved)";
@@ -98,7 +90,7 @@ class QuestRepository extends Repository
       ':points' => $quest->getPoints(),
       ':timerequired_minutes' => $quest->getTimeRequiredMinutes(),
       ':creator' => $quest->getCreatorId(),
-      ':approved' => $quest->isApproved(),
+      ':approved' => $quest->getIsApproved(),
     ]);
 
 
@@ -120,13 +112,13 @@ class QuestRepository extends Repository
     ]);
   }
 
-  public function getQuestById($questId): ?Quest
+  public function getQuestById($questId): ?IQuest
   {
     $sql = "SELECT * FROM quests WHERE QuestID = :questId";
 
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute(['questId' => $questId]);
-    $questFetched = $stmt->fetch(PDO::FETCH_ASSOC);
+    $questFetched = $stmt->fetch(\PDO::FETCH_ASSOC);
 
 
     if ($questFetched === false) {
@@ -141,7 +133,7 @@ class QuestRepository extends Repository
     $quests = [];
     $stmt = $this->db->connect()->prepare('SELECT * FROM quests');
     $stmt->execute();
-    $fetched = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $fetched = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     foreach ($fetched as $fetched_quest) {
       $quests[] = $this->constructQuestModel($fetched_quest);
@@ -155,7 +147,7 @@ class QuestRepository extends Repository
     $quests = [];
     $stmt = $this->db->connect()->prepare('SELECT * FROM quests WHERE creator = :creator');
     $stmt->execute([':creator' => $creator]);
-    $fetched = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $fetched = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     foreach ($fetched as $fetched_quest) {
       $quests[] = $this->constructQuestModel($fetched_quest);
@@ -179,7 +171,7 @@ class QuestRepository extends Repository
     $quests = [];
     $stmt = $this->db->connect()->prepare('SELECT * FROM quests WHERE approved = :approved');
     $stmt->execute(['approved' => $isApproved]);
-    $fetched = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $fetched = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     foreach ($fetched as $fetched_quest) {
       $quests[] = $this->constructQuestModel($fetched_quest);

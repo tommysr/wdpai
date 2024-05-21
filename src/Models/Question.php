@@ -1,40 +1,12 @@
 <?php
 
-enum QuestionType
-{
-  case SINGLE_CHOICE;
-  case MULTIPLE_CHOICE;
-  case READ_TEXT;
-  case UNKNOWN;
-}
+namespace App\Models;
 
-class QuestionTypeUtil
-{
-  public static function toString(QuestionType $type): string
-  {
-    return match ($type) {
-      QuestionType::SINGLE_CHOICE => 'single_choice',
-      QuestionType::MULTIPLE_CHOICE => 'multiple_choice',
-      QuestionType::READ_TEXT => 'read_text',
-      default => 'unknown',
-    };
-  }
-}
+use App\Models\QuestionType;
+use App\Models\IQuestion;
 
 
-function getQuestionTypeFromName(string $name): QuestionType
-{
-  $lookup = [
-    'single_choice' => QuestionType::SINGLE_CHOICE,
-    'multiple_choice' => QuestionType::MULTIPLE_CHOICE,
-    'read_text' => QuestionType::READ_TEXT,
-  ];
-
-  return $lookup[$name] ?? QuestionType::UNKNOWN;
-}
-
-
-class Question
+class Question implements IQuestion
 {
   private int $questionId;
   private int $questId;
@@ -44,7 +16,7 @@ class Question
 
   private $options = array();
 
-  public function __equals(Question $other): bool
+  public function __equals(IQuestion $other): bool
   {
     return $this->questionId === $other->getQuestionId()
       && $this->text === $other->getText()
@@ -52,17 +24,17 @@ class Question
   }
 
 
-  public function __construct(int $questionId, int $questId, string $text, QuestionType $type)
+  public function __construct(int $questionId, int $questId, string $text, QuestionType $type, int $score = 0)
   {
     $this->questionId = $questionId;
     $this->questId = $questId;
     $this->text = $text;
     $this->type = $type;
-    $this->score = 2;
+    $this->score = $score;
   }
 
 
-  public function getQuestionId()
+  public function getQuestionId(): int
   {
     return $this->questionId;
   }
@@ -72,22 +44,22 @@ class Question
     $this->questId = $questId;
   }
 
-  public function getQuestId()
+  public function getQuestId(): int
   {
     return $this->questId;
   }
 
-  public function getText()
+  public function getText(): string
   {
     return $this->text;
   }
 
-  public function getType()
+  public function getType(): QuestionType
   {
     return $this->type;
   }
 
-  public function getOptions()
+  public function getOptions(): array
   {
     return $this->options;
   }

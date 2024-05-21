@@ -1,5 +1,9 @@
 <?php
 
+namespace App\Models;
+
+use App\Models\IQuestStatistics;
+
 class QuestStateMachine
 {
   const STATE_IN_PROGRESS = 'STATE_IN_PROGRESS';
@@ -19,15 +23,13 @@ class QuestStateMachine
   public function transition(string $currentState, string $action): string
   {
     if (!isset($this->transitions[$currentState][$action])) {
-      throw new Exception("Invalid transition from state '{$currentState}' with action '{$action}'");
+      throw new \Exception("Invalid transition from state '{$currentState}' with action '{$action}'");
     }
     return $this->transitions[$currentState][$action];
   }
 }
 
-
-
-class QuestStatistics
+class QuestStatistics implements IQuestStatistics
 {
   private string|null $completion_date;
   private int $score;
@@ -62,39 +64,39 @@ class QuestStatistics
     $this->state = $state;
   }
 
-  public function getCompletionDate()
+  public function getCompletionDate(): ?string
   {
     return $this->completion_date;
   }
 
-  public function getScore()
+  public function getScore(): int
   {
     return $this->score;
   }
 
-  public function getUserId()
+  public function getUserId(): int
   {
     return $this->user_id;
   }
 
-  public function getQuestId()
+  public function getQuestId(): int
   {
     return $this->quest_id;
   }
 
 
-  public function getWalletId()
+  public function getWalletId(): int
   {
     return $this->wallet_id;
   }
 
-  public function getState()
+  public function getState(): string
   {
     return $this->state;
   }
 
 
-  public function getLastQuestionId()
+  public function getLastQuestionId(): int
   {
     return $this->last_question_id;
   }

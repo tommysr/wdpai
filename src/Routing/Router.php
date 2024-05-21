@@ -46,8 +46,6 @@ class Router implements IRouter
         $request = $request->withAttribute('action', $action)->withAttribute('params', $params);
         $controllerInstance = new $controllerClassName($request);
 
-
-
         if (!$controllerInstance instanceof IRootController) {
           throw new Exception('Controller must implement RouteInterface');
         }

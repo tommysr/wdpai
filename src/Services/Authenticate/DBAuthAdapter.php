@@ -32,7 +32,8 @@ class DBAuthAdapter implements IAuthAdapter
             throw new \Exception('Invalid login data');
         }
 
-        // Authenticate the user
-        return new DBAuthResult($this->email, ['Authenticated'], true);
+        $identity = new UserIdentity($user->getId(), $user->getRole());
+ 
+        return new DBAuthResult($identity, ['Authenticated'], true);
     }
 }

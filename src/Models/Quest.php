@@ -1,8 +1,10 @@
 <?php
 
-require_once 'Question.php';
+namespace App\Models;
 
-class Quest
+use App\Models\IQuest;
+
+class Quest implements IQuest
 {
 
     private int $questID;
@@ -54,82 +56,101 @@ class Quest
         $this->approved = $approved;
     }
 
-    public function getQuestID()
+    public function getQuestID(): int
     {
         return $this->questID;
     }
 
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function getDescription()
+    public function getDescription(): string
     {
         return $this->description;
     }
 
-    public function getWorthKnowledge()
+    public function getWorthKnowledge(): int
     {
         return $this->worthKnowledge;
     }
 
-    public function getRequiredWallet()
+    public function getRequiredWallet(): string
     {
         return $this->requiredWallet;
     }
 
-    public function getTimeRequiredMinutes()
+    public function getTimeRequiredMinutes(): int
     {
         return $this->timeRequiredMinutes;
     }
 
-    public function getExpiryDateString()
+    public function getExpiryDateString(): string
     {
         return $this->expiryDate;
     }
 
-    public function getParticipantsCount()
+    public function getParticipantsCount(): int
     {
         return $this->participantsCount;
     }
 
-    public function getParticipantLimit()
+    public function getParticipantLimit(): int
     {
         return $this->participantLimit;
     }
 
-    public function getPoolAmount()
+    public function getPoolAmount(): float
     {
         return $this->poolAmount;
     }
 
-    public function getPoints()
+    public function getPoints(): int
     {
         return $this->points;
     }
 
-    public function getToken()
+    public function getToken(): string
     {
         return $this->token;
     }
 
-    public function getCreatorId()
+    public function getCreatorId(): int
     {
         return $this->creatorId;
     }
 
-    public function isApproved()
+    public function getIsApproved(): bool
     {
         return $this->approved;
     }
 
-    public function getQuestions() {
+    public function getQuestions(): array
+    {
         return $this->questions;
     }
 
-    public function setQuestions(array $questions) 
+    public function setQuestions(array $questions)
     {
         $this->questions = $questions;
+    }
+
+    public function __equals(IQuest $other): bool
+    {
+        return $this->questID === $other->getQuestID()
+            && $this->title === $other->getTitle()
+            && $this->description === $other->getDescription()
+            && $this->worthKnowledge === $other->getWorthKnowledge()
+            && $this->requiredWallet === $other->getRequiredWallet()
+            && $this->timeRequiredMinutes === $other->getTimeRequiredMinutes()
+            && $this->expiryDate === $other->getExpiryDateString()
+            && $this->participantsCount === $other->getParticipantsCount()
+            && $this->participantLimit === $other->getParticipantLimit()
+            && $this->poolAmount === $other->getPoolAmount()
+            && $this->points === $other->getPoints()
+            && $this->token === $other->getToken()
+            && $this->creatorId === $other->getCreatorId()
+            && $this->approved === $other->getIsApproved();
     }
 }

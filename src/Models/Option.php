@@ -1,6 +1,10 @@
 <?php
 
-class Option
+namespace App\Models;
+
+use App\Models\IOption;
+
+class Option implements IOption
 {
   private int $optionId;
   private int $questionId;
@@ -8,15 +12,13 @@ class Option
   private bool $isCorrect;
   private int $scoreMultiplier;
 
-  public function __equals(Option $other): bool
+  public function __equals(IOption $other): bool
   {
-    return $this->optionId === $other->getOptionId() 
+    return $this->optionId === $other->getOptionId()
       && $this->questionId === $other->getQuestionId()
       && $this->text === $other->getText()
       && $this->isCorrect === $other->getIsCorrect();
   }
-
-
 
   public function __construct(int $optionId, int $questionId, string $text, bool $isCorrect)
   {
