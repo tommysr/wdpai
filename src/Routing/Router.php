@@ -7,7 +7,7 @@ use App\Middleware\IHandler;
 use Exception;
 use App\Request\IFullRequest;
 use App\Routing\IRouter;
-use App\Controllers\IRootController;
+use App\Controllers\Interfaces\IRootController;
 use App\Middleware\IResponse;
 use App\Middleware\BaseResponse;
 
@@ -45,6 +45,8 @@ class Router implements IRouter
         $action = empty($actionName) ? 'index' : $actionName;
         $request = $request->withAttribute('action', $action)->withAttribute('params', $params);
         $controllerInstance = new $controllerClassName($request);
+
+
 
         if (!$controllerInstance instanceof IRootController) {
           throw new Exception('Controller must implement RouteInterface');
