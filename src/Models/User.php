@@ -1,7 +1,11 @@
 <?php
 
 namespace App\Models;
+
+use App\Services\Authorize\IRole;
+use App\Services\Authorize\Role;
 use DateTime;
+
 
 class User
 {
@@ -10,21 +14,21 @@ class User
   private string $name;
   private string $joinDate;
   private int $id;
-  private string $role;
+  private IRole $role;
 
   public function __construct(
     int $id,
     string $email,
     string $password,
     string $name,
-    string $role = 'normal',
+    string $roleName,
     string $joinDate = null
   ) {
     $this->id = $id;
     $this->email = $email;
     $this->password = $password;
     $this->name = $name;
-    $this->role = $role;
+    $this->role = Role::fromName($roleName);
 
     if ($joinDate !== null) {
       $this->joinDate = DateTime::createFromFormat('Y-m-d', $joinDate)->format('Y-m-d');
@@ -58,7 +62,7 @@ class User
     return $this->joinDate;
   }
 
-  public function getRole(): string
+  public function getRole(): IRole
   {
     return $this->role;
   }
