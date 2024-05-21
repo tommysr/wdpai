@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\AppController;
-use App\Controllers\IRegisterController;
+use App\Controllers\Interfaces\IRegisterController;
 use App\Middleware\JsonResponse;
 use App\Middleware\RedirectResponse;
 use App\Request\IRequest;

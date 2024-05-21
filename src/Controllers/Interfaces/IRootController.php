@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\Interfaces;
 
 use App\Request\IRequest;
 use App\Middleware\IResponse;

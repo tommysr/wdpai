@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Controllers;
+namespace App\Controllers\Interfaces;
 
 use App\Request\IRequest;
 use App\Middleware\IResponse;
-use App\Controllers\IRootController;
+use App\Controllers\Interfaces\IRootController;
 
 interface ILoginController extends IRootController
 {

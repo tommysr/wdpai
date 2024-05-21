@@ -7,7 +7,6 @@ use App\Services\Authenticate\IAuthAdapter;
 use App\Services\Authenticate\IAuthAdapterFactory;
 
 
-
 class AuthAdapterFactory implements IAuthAdapterFactory
 {
     public function createAuthAdapter(IFullRequest $request): ?IAuthAdapter

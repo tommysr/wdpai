@@ -2,13 +2,24 @@
 
 namespace App\Controllers;
 
+use App\Request\IFullRequest;
 use App\Request\IRequest;
 use App\Middleware\IResponse;
 use App\Middleware\RedirectResponse;
+use App\Controllers\Interfaces\ILoginController;
+use App\Services\Authenticate\IAuthService;
 
 
 class LoginController extends AppController implements ILoginController
 {
+  private IAuthService $authService;
+
+  public function __construct(IFullRequest $request, IAuthService $authService)
+  {
+    parent::__construct($request);
+    $this->authService = $authService;
+  }
+
   public function index(IRequest $request): IResponse
   {
     return $this->render('login', ['title' => 'Sign in', 'message' => '']);
@@ -20,35 +31,8 @@ class LoginController extends AppController implements ILoginController
   }
 
   public function logout(IRequest $request): IResponse
-  {
+  { 
+    $this->authService->clearIdentity();
     return new RedirectResponse('/login');
   }
 }
-
-
-
-//   $email = $this->request->post('email');
-//   $password = $this->request->post('password');
-//   $result = $this->authenticator->login($email, $password);
-
-//   if ($result instanceof User) {
-//     $this->sessionService->set(
-//       'user',
-//       [
-//         'id' => $result->getId(),
-//         'role' => $result->getRole(),
-//         'username' => $result->getName(),
-//       ]
-//     );
-
-//     Redirector::redirectTo('/');
-//   } else {
-//     $this->renderLoginView("incorrect email or password");
-//   }
-// }
-
-// public function logout(): void
-// {
-//   $this->sessionService->end();
-//   Redirector::redirectTo('/');
-// }
