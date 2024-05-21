@@ -10,7 +10,7 @@ class Database implements IDatabase
 
     protected function __construct(IDatabaseConfig $config)
     {
-        $this->$config = $config;
+        $this->config = $config;
     }
 
     public static function getInstance(IDatabaseConfig $config): self

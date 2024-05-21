@@ -1,35 +1,19 @@
 <?php
 namespace App\Controllers;
 
-use App\Controllers\IRootController;
+use App\Controllers\Interfaces\IErrorController;
 use App\Request\IRequest;
+use App\Middleware\IResponse;
 
-class ErrorController extends AppController implements IRootController
+class ErrorController extends AppController implements IErrorController
 {
-  public function index(IRequest $request)
+  public function getIndex(IRequest $request): IResponse
   {
-    $this->render('error', ['message' => 'unknown', 'code' => 500]);
+    return $this->render('error', ['code' => 404, 'message' => '']);
   }
 
-  public function error(IRequest $request, int $code)
+  public function error(IRequest $request, int $code): IResponse
   {
-    $this->render('error', ['code' => $code, 'message' => '']);
-  }
-
-  private function default_error($code, $message)
-  {
-    $this->render('error', ['title' => 'Error', 'code' => $code, 'message' => $message]);
-  }
-
-  public function notFound($message = '')
-  {
-    http_response_code(404);
-    $this->default_error(404, $message);
-  }
-
-  public function serverError($message = '')
-  {
-    http_response_code(500);
-    $this->default_error(500, $message);
+    return $this->render('error', ['code' => $code, 'message' => '']);
   }
 }

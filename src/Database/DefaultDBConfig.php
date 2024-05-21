@@ -11,7 +11,7 @@ class DefaultDBConfig extends Config implements IDatabaseConfig
   const DATABASE_KEY = 'database';
   const PORT_KEY = 'port';
 
-  protected function __construct()
+  public function __construct()
   {
     parent::__construct();
     $this->initialize();

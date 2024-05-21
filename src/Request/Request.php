@@ -1,51 +1,119 @@
 <?php
 namespace App\Request;
 
+use App\Request\IFullRequest;
 
-use App\Request\IRequest;
-
-enum RequestMethod
-{
-    case GET;
-    case POST;
-}
-
-class Request implements IRequest
+class Request implements IFullRequest
 {
     private array $query;
     private array $body;
     private array $server;
+    private array $cookies;
+    private array $files;
 
-
-    public function __construct(?array $server = null, ?array $query = null, ?array $body = null)
+    public function __construct(?array $server = null, ?array $query = null, ?array $body = null, ?array $cookies = null, ?array $files = null)
     {
         $this->query = $query ?: $_GET;
         $this->body = $body ?: $_POST;
         $this->server = $server ?: $_SERVER;
-    }
-
-    public function get(string $key)
-    {
-        return $this->query[$key] ?? null;
-    }
-
-    public function post(string $key)
-    {
-        return $this->body[$key] ?? null;
-    }
-
-    public function server(string $key)
-    {
-        return $this->server[$key] ?? null;
+        $this->cookies = $cookies ?: $_COOKIE;
+        $this->files = $files ?: $_FILES;
     }
 
     public function getPath(): string
     {
-        return parse_url($this->server('REQUEST_URI'), PHP_URL_PATH) ?? '/';
+        return parse_url($this->getServerParam('REQUEST_URI'), PHP_URL_PATH) ?? '/';
     }
 
     public function getMethod(): string
     {
-        return $this->server('REQUEST_METHOD');
+        return $this->getServerParam('REQUEST_METHOD');
+    }
+
+    public function withAttribute(string $key, $value): IFullRequest
+    {
+        $this->query[$key] = $value;
+        return $this;
+    }
+
+    public function getAttributes(): array
+    {
+        return $this->query;
+    }
+
+    public function getAttribute(string $key, $default = null)
+    {
+        return $this->query[$key] ?? $default;
+    }
+
+    public function getQuery(string $key, $default = null)
+    {
+        return $this->query[$key] ?? $default;
+    }
+
+    public function getParsedBodyParam(string $key, $default = null)
+    {
+        return $this->body[$key] ?? $default;
+    }
+
+    public function getCookie(string $key, $default = null)
+    {
+        return $this->cookies[$key] ?? $default;
+    }
+
+    public function getServerParam(string $key, $default = null)
+    {
+        return $this->server[$key] ?? $default;
+    }
+
+    public function getServerParams(): array
+    {
+        return $this->server;
+    }
+
+    public function getCookieParams(): array
+    {
+        return $this->cookies;
+    }
+
+    public function getQueryParams(): array
+    {
+        return $this->query;
+    }
+
+    public function getUploadedFiles(): array
+    {
+        return $this->files;
+    }
+
+    public function getParsedBody(): array
+    {
+        return $this->body;
+    }
+
+    public function getHeaders(): array
+    {
+        $headers = [];
+        foreach ($this->server as $key => $value) {
+            if (strpos($key, 'HTTP_') === 0) {
+                $headers[str_replace('HTTP_', '', $key)] = $value;
+            }
+        }
+        return $headers;
+    }
+
+    public function getHeader(string $name): string
+    {
+        return $this->getHeaders()[$name] ?? '';
+    }
+
+    public function getBody(): string
+    {
+        return file_get_contents('php://input');
+    }
+
+    public function getStatusCode(): int
+    {
+        return http_response_code();
     }
 }

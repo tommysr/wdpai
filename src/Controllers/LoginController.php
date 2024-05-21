@@ -2,58 +2,38 @@
 
 namespace App\Controllers;
 
+use App\Request\IFullRequest;
+use App\Request\IRequest;
+use App\Middleware\IResponse;
+use App\Middleware\RedirectResponse;
+use App\Controllers\Interfaces\ILoginController;
+use App\Services\Authenticate\IAuthService;
+use App\Services\Authenticate\AuthenticateService;
 
-use App\Services\Session\ISessionService;
-use App\Services\Session\SessionService;
-use App\Services\Authenticate\IAuthenticate;
-use App\Services\Authenticate\Authenticator;
 
-
-class LoginControllerImpl extends AppController implements ILoginController
+class LoginController extends AppController implements ILoginController
 {
-  private IAuthenticate $authenticator;
-  private ISessionService $sessionService;
+  private IAuthService $authService;
 
-  public function __construct(IAuthenticate $authenticator = null, ISessionService $sessionService = null)
+  public function __construct(IFullRequest $request, IAuthService $authService = null)
   {
-    $this->authenticator = $authenticator ?: new Authenticator();
-    $this->sessionService = $sessionService ?: new SessionService();
+    parent::__construct($request);
+    $this->authService = $authService ?: new AuthenticateService($this->sessionService);
   }
 
-  private function renderLoginView(string $message = '')
+  public function getIndex(IRequest $request): IResponse
   {
-    return $this->render('login', ['title' => 'Sign in', 'message' => $message]);
+    return $this->getLogin($request);
   }
 
-  public function login(): void
+  public function getLogin(IRequest $request): IResponse
   {
-    if (!$this->request->isPost()) {
-      return $this->renderLoginView();
-    }
-
-    $email = $this->request->post('email');
-    $password = $this->request->post('password');
-    $result = $this->authenticator->login($email, $password);
-
-    if ($result instanceof User) {
-      $this->sessionService->set(
-        'user',
-        [
-          'id' => $result->getId(),
-          'role' => $result->getRole(),
-          'username' => $result->getName(),
-        ]
-      );
-
-      Redirector::redirectTo('/');
-    } else {
-      $this->renderLoginView("incorrect email or password");
-    }
+    return $this->render('login', ['title' => 'Sign in', 'message' => '']);
   }
 
-  public function logout(): void
+  public function getLogout(IRequest $request): IResponse
   {
-    $this->sessionService->end();
-    Redirector::redirectTo('/');
+    $this->authService->clearIdentity();
+    return new RedirectResponse('/login');
   }
 }
