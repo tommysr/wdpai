@@ -2,58 +2,53 @@
 
 namespace App\Controllers;
 
-
-use App\Services\Session\ISessionService;
-use App\Services\Session\SessionService;
-use App\Services\Authenticate\IAuthenticate;
-use App\Services\Authenticate\Authenticator;
+use App\Request\IRequest;
+use App\Middleware\IResponse;
+use App\Middleware\RedirectResponse;
 
 
-class LoginControllerImpl extends AppController implements ILoginController
+class LoginController extends AppController implements ILoginController
 {
-  private IAuthenticate $authenticator;
-  private ISessionService $sessionService;
-
-  public function __construct(IAuthenticate $authenticator = null, ISessionService $sessionService = null)
+  public function index(IRequest $request): IResponse
   {
-    $this->authenticator = $authenticator ?: new Authenticator();
-    $this->sessionService = $sessionService ?: new SessionService();
+    return $this->render('login', ['title' => 'Sign in', 'message' => '']);
   }
 
-  private function renderLoginView(string $message = '')
+  public function login(IRequest $request): IResponse
   {
-    return $this->render('login', ['title' => 'Sign in', 'message' => $message]);
+    return $this->render('login', ['title' => 'Sign in', 'message' => '']);
   }
 
-  public function login(): void
+  public function logout(IRequest $request): IResponse
   {
-    if (!$this->request->isPost()) {
-      return $this->renderLoginView();
-    }
-
-    $email = $this->request->post('email');
-    $password = $this->request->post('password');
-    $result = $this->authenticator->login($email, $password);
-
-    if ($result instanceof User) {
-      $this->sessionService->set(
-        'user',
-        [
-          'id' => $result->getId(),
-          'role' => $result->getRole(),
-          'username' => $result->getName(),
-        ]
-      );
-
-      Redirector::redirectTo('/');
-    } else {
-      $this->renderLoginView("incorrect email or password");
-    }
-  }
-
-  public function logout(): void
-  {
-    $this->sessionService->end();
-    Redirector::redirectTo('/');
+    return new RedirectResponse('/login');
   }
 }
+
+
+
+//   $email = $this->request->post('email');
+//   $password = $this->request->post('password');
+//   $result = $this->authenticator->login($email, $password);
+
+//   if ($result instanceof User) {
+//     $this->sessionService->set(
+//       'user',
+//       [
+//         'id' => $result->getId(),
+//         'role' => $result->getRole(),
+//         'username' => $result->getName(),
+//       ]
+//     );
+
+//     Redirector::redirectTo('/');
+//   } else {
+//     $this->renderLoginView("incorrect email or password");
+//   }
+// }
+
+// public function logout(): void
+// {
+//   $this->sessionService->end();
+//   Redirector::redirectTo('/');
+// }

@@ -2,9 +2,9 @@
 
 namespace App\Services\Authenticate;
 
-use App\Request\IRequest;
+use App\Request\IFullRequest;
 
 interface IAuthAdapterFactory
 {
-    public function createAuthAdapter(IRequest $request): ?IAuthAdapter;
+    public function createAuthAdapter(IFullRequest $request): ?IAuthAdapter;
 }

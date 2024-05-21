@@ -1,47 +1,41 @@
 <?php
 
-require_once "AppController.php";
-require_once __DIR__ . '/../models/User.php';
-require_once __DIR__ . '/../services/AuthService.php';
-require_once __DIR__ . '/../validators/Validator.php';
-require_once __DIR__ . '/../middleware/AuthInterceptor.php';
+namespace App\Controllers;
 
-interface IRegisterController
-{
-  public function register(): void;
-}
-
+use App\Controllers\AppController;
+use App\Controllers\IRegisterController;
+use App\Middleware\JsonResponse;
+use App\Middleware\RedirectResponse;
+use App\Request\IRequest;
+use App\Middleware\IResponse;
+use App\Services\Register\IRegisterService;
+use App\Services\Register\RegisterService;
+use App\Request\IFullRequest;
 
 class RegisterController extends AppController implements IRegisterController
 {
-  private IRegister $registerer;
+  private IRegisterService $registerService;
 
-
-  public function __construct(IRegister $registerer = null)
+  public function __construct(IFullRequest $request, IRegisterService $registerer = null)
   {
-    parent::__construct();
-    $this->registerer = $registerer ?: new Registerer();
+    parent::__construct($request);
+    $this->registerer = $registerer ?: new RegisterService($this->request);
   }
 
-
-  public function register(): void
+  public function index(IRequest $request): IResponse
   {
-    if (!$this->request->isPost()) {
-      return $this->renderRegisterView();
+    return $this->renderRegisterView();
+  }
+
+  public function register(IRequest $request): IResponse
+  {
+    $result = $this->registerService->register($this->request->getParsedBody());
+
+    if ($result->isValid()) {
+      return new RedirectResponse('/login');
     }
 
-    $email = $this->request->post('email');
-    $username = $this->request->post('username');
-    $password = $this->request->post('password');
-    $confirmedPassword = $this->request->post('confirmedPassword');
-
-    $result = $this->registerer->register($email, $username, $password, $confirmedPassword);
-
-    if (is_string($result)) {
-      return $this->renderRegisterView($result);
-    }
-
-    Redirector::redirectTo('/login');
+    return new JsonResponse($result->getMessages());
   }
 
   private function renderRegisterView(string $message = '')

@@ -22,9 +22,9 @@ class AppController implements IHandler
     protected ISessionService $sessionService;
     protected IViewRenderer $viewRenderer;
 
-    public function __construct(IFullRequest $request = null, ISessionService $sessionService = null, IViewRenderer $viewRenderer = null)
+    public function __construct(IFullRequest $request, ISessionService $sessionService = null, IViewRenderer $viewRenderer = null)
     {
-        $this->request = $request ?: new Request();
+        $this->request = $request;
         $this->sessionService = $sessionService ?: new SessionService();
         $this->viewRenderer = $viewRenderer ?: new ViewRenderer('public/views');
     }

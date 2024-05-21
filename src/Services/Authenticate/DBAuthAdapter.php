@@ -33,6 +33,6 @@ class DBAuthAdapter implements IAuthAdapter
         }
 
         // Authenticate the user
-        return new DBAuthResult($this->email, ['Authenticated']);
+        return new DBAuthResult($this->email, ['Authenticated'], true);
     }
 }

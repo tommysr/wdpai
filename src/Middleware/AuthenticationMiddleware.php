@@ -12,12 +12,14 @@ use App\Services\Authenticate\IAuthAdapterFactory;
 class AuthenticationMiddleware extends BaseMiddleware
 {
     private string $loginPath;
+    private string $redirectUrl;
     private array $allowedPaths;
     private IAuthService $authService;
     private IAuthAdapterFactory $authAdapterFactory;
 
-    public function __construct(IAuthService $authService, IAuthAdapterFactory $authAdapterFactory, string $loginPath = '/login', array $allowedPaths = ['/login', '/register'])
+    public function __construct(IAuthService $authService, IAuthAdapterFactory $authAdapterFactory, string $loginPath = '/login', array $allowedPaths = ['/login', '/register'], string $redirectUrl)
     {
+        $this->redirectUrl = $redirectUrl;
         $this->authService = $authService;
         $this->authAdapterFactory = $authAdapterFactory;
         $this->loginPath = $loginPath;
@@ -33,7 +35,7 @@ class AuthenticationMiddleware extends BaseMiddleware
         $authenticated = $result->isValid();
 
         if ($authenticated && in_array($path, $this->allowedPaths)) {
-            return new RedirectResponse('/quests');
+            return new RedirectResponse($this->redirectUrl);
         }
 
         if (!$authenticated && !in_array($path, $this->allowedPaths)) {

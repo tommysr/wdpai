@@ -13,6 +13,7 @@ class DBAuthResult implements IAuthResult
     {
         $this->identity = $identity;
         $this->messages = $messages;
+        $this->isValid = $isValid;
     }
 
     public function getIdentity()
