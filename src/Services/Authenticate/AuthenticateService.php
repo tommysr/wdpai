@@ -3,6 +3,8 @@ namespace App\Services\Authenticate;
 
 use App\Services\Session\ISessionService;
 use App\Services\Authenticate\IAuthService;
+use App\Services\Authenticate\IIdentity;
+use App\Services\Authenticate\UserIdentity;
 
 class AuthenticateService implements IAuthService
 {
@@ -16,8 +18,15 @@ class AuthenticateService implements IAuthService
   public function authenticate(IAuthAdapter $adapter): IAuthResult
   {
     $result = $adapter->authenticate();
-    $this->session->set('identity', $result->getIdentity());
+    if ($result->isValid()) {
+      $this->saveIdentity($result->getIdentity());
+    }
     return $result;
+  }
+
+  public function saveIdentity(IIdentity $identity)
+  {
+    $this->session->set('identity', $identity->toString());
   }
 
   public function hasIdentity(): bool
@@ -25,9 +34,11 @@ class AuthenticateService implements IAuthService
     return $this->session->has('identity');
   }
 
-  public function getIdentity(): string
+  public function getIdentity(): IIdentity
   {
-    return $this->session->get('identity');
+    $identityString = $this->session->get('identity');
+    
+    return UserIdentity::fromString($identityString);
   }
 
   public function clearIdentity()

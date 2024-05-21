@@ -58,10 +58,7 @@ class AuthenticationMiddleware extends BaseMiddleware
             return new RedirectResponse($this->redirectUrl);
         }
 
-        if ($this->next) {
-            return $this->next->process($request, $handler);
-        } else {
-            return $handler->handle($request);
-        }
+        
+        return $this->next ? $this->next->process($request, $handler) : $handler->handle($request);
     }
 }
