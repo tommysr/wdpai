@@ -6,11 +6,10 @@ namespace App\Routing;
 use App\Middleware\IHandler;
 use Exception;
 use App\Request\IFullRequest;
-use App\Middleware\IMiddleware;
 use App\Routing\IRouter;
 use App\Controllers\IRootController;
 use App\Middleware\IResponse;
-
+use App\Middleware\BaseResponse;
 
 class Router implements IRouter
 {
@@ -44,7 +43,7 @@ class Router implements IRouter
 
         $controllerClassName = "App\\Controllers\\" . $controllerName;
         $action = empty($actionName) ? 'index' : $actionName;
-        $request = $request->withAttribute('action', $action);
+        $request = $request->withAttribute('action', $action)->withAttribute('params', $params);
         $controllerInstance = new $controllerClassName($request);
 
         if (!$controllerInstance instanceof IRootController) {
@@ -59,12 +58,10 @@ class Router implements IRouter
           return $middleware->process($request, $controllerInstance);
         }
 
-        return call_user_func_array([$controllerInstance, $action], array_merge([$request], $params));
+        return $controllerInstance->handle($request);
       }
     }
 
-
-    // maybe return some response with raw code, but how do i handle it later
-    throw new Exception('Route not found');
+    return new BaseResponse(404, [], 'Route not found');
   }
 }

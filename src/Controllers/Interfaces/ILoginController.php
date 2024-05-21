@@ -8,6 +8,6 @@ use App\Controllers\Interfaces\IRootController;
 
 interface ILoginController extends IRootController
 {
-  public function login(IRequest $request): IResponse;
-  public function logout(IRequest $request): IResponse;
+  public function getLogin(IRequest $request): IResponse;
+  public function getLogout(IRequest $request): IResponse;
 }

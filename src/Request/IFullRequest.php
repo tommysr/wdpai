@@ -17,7 +17,7 @@ interface IFullRequest extends IRequest
   public function getUploadedFiles(): array;
   public function getParsedBody(): array;
 
-  public function withAttribute(string $key, $value): IRequest;
+  public function withAttribute(string $key, $value): IFullRequest;
   public function getAttributes(): array;
   public function getAttribute(string $key, $default = null);
 }

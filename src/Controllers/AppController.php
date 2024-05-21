@@ -32,12 +32,18 @@ class AppController implements IHandler
     public function handle(IRequest $request): IResponse
     {
         $actionMethod = $this->getActionMethod();
-        return $this->$actionMethod($request);
+        if (!method_exists($this, $actionMethod)) {
+            return new BaseResponse('Action not found', [], 404);
+        }
+        $params = $this->request->getAttribute('params', []);
+        return call_user_func_array([$this, $actionMethod], array_merge([$request], $params));
     }
 
     private function getActionMethod(): string
     {
-        return $this->request->getAttribute('action', 'index');
+        $action = $this->request->getAttribute('action', 'index');
+        $method = strtolower($this->request->getMethod());
+        return $method . ucfirst($action);
     }
 
     public function render(string $template, array $variables = [], string $content = null): IResponse
@@ -45,6 +51,6 @@ class AppController implements IHandler
         $globalVariables = GlobalVariablesManager::getGlobalVariables($this->sessionService);
         $variables = array_merge($variables, $globalVariables);
         $content = $this->viewRenderer->render($template, $variables, $content);
-        return new BaseResponse(200, body: $content);
+        return new BaseResponse(200, [], $content);
     }
 }

@@ -4,7 +4,6 @@ namespace App\Validator;
 
 use App\Validator\IValidationChain;
 use App\Validator\IValid;
-use Exception;
 
 
 class ValidationChain implements IValidationChain
@@ -24,7 +23,7 @@ class ValidationChain implements IValidationChain
   public function validateField(string $key, $value): bool|string
   {
     if (!isset($this->rules[$key])) {
-      throw new Exception("No validation rules defined for field $key.");
+      throw new \Exception("No validation rules defined for field $key.");
     }
 
     $rules = $this->getRules($key);

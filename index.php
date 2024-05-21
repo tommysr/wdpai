@@ -2,16 +2,46 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Middleware\AuthenticationMiddleware;
+use App\Middleware\InputValidationMiddleware;
 use App\Routing\Router;
 use App\Request\Request;
 use App\Services\Authenticate\AuthenticateService;
 use App\Services\Session\SessionService;
 use App\Services\Authenticate\AuthAdapterFactory;
 use App\Emitter\Emitter;
-// // require_once 'src/services/AuthorizationService.php';
+use App\Validator\EmailValidationRule;
+use App\Validator\MinLengthValidationRule;
+use App\Validator\RequiredValidationRule;
+use App\Validator\ValidationChain;
 
-// $path = trim($_SERVER['REQUEST_URI'], '/');
-// $path = parse_url($path, PHP_URL_PATH);
+
+$sessionService = new SessionService();
+$authService = new AuthenticateService($sessionService);
+$authAdapterFactory = new AuthAdapterFactory();
+$authMiddleware = new AuthenticationMiddleware($authService, $authAdapterFactory, '/quests');
+
+$validationChain = new ValidationChain();
+$validationChain->addRule('email', new RequiredValidationRule());
+$validationChain->addRule('email', new EmailValidationRule());
+$validationChain->addRule('password', new RequiredValidationRule());
+$validationChain->addRule('password', new MinLengthValidationRule(8));
+
+$loginValidationMiddleware = new InputValidationMiddleware($validationChain);
+
+Router::get('/error/{code}', 'ErrorController@error');
+
+Router::get('/login', 'LoginController@login', [$authMiddleware, $loginValidationMiddleware]);
+Router::post('/login', 'LoginController@login', [$authMiddleware, $loginValidationMiddleware]);
+
+Router::get('/logout', 'LoginController@logout', [$authMiddleware]);
+
+Router::get('/register', 'RegisterController@register', [$authMiddleware]);
+Router::post('/register', 'RegisterController@register', [$authMiddleware]);
+
+$request = new Request($_SERVER, $_GET, $_POST);
+$response = Router::dispatch($request);
+$emitter = new Emitter();
+$emitter->emit($response);
 
 
 // // QUESTS
@@ -29,21 +59,10 @@ use App\Emitter\Emitter;
 // // PROFILE
 // Router::get('dashboard', 'QuestsController');
 
-
-// // AUTH
-// Router::get('login', 'AuthController');
-// Router::get('logout', 'AuthController');
-// Router::get('register', 'AuthController');
-
-
 // // GAMEPLAY
 // Router::get('gameplay', 'GameController');
 // Router::get('processUserResponse', 'GameController');
 // Router::get('nextQuestion', 'GameController');
-
-// $user_authorization_service = new RoleAuthorizationService(new SessionService());
-// $user_middleware = new RoleAuthorizationMiddleware($user_authorization_service, Role::USER);
-// $middleware->setNext(new QuestAuthorizationMiddleware(new QuestAuthorizeService(new QuestStatisticsRepository()), QuestRequest::PLAY));
 
 // $userLoggedInMiddleware = new RoleAuthorizationMiddleware(new UserAuthorizationService(new SessionService()), Role::USER);
 
@@ -51,19 +70,4 @@ use App\Emitter\Emitter;
 // Router::get('logout', 'AuthController');
 // Router::get('register', 'AuthController');
 
-
-$sessionService = new SessionService();
-$authService = new AuthenticateService($sessionService);
-$authAdapterFactory = new AuthAdapterFactory();
-$authMiddleware = new AuthenticationMiddleware($authService, $authAdapterFactory);
-//, $authMiddleware
-// Router::get('/error/{code}', 'ErrorController@error');
-
-Router::get('/login', 'AuthController@login');
-Router::post('/register', 'LoginController@register');
-
-$request = new Request($_SERVER, $_GET, $_POST);
-$response = Router::dispatch($request);
-$emitter = new Emitter();
-$emitter->emit($response);
 

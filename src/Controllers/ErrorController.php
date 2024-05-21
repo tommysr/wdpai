@@ -7,7 +7,7 @@ use App\Middleware\IResponse;
 
 class ErrorController extends AppController implements IErrorController
 {
-  public function index(IRequest $request): IResponse
+  public function getIndex(IRequest $request): IResponse
   {
     return $this->render('error', ['code' => 404, 'message' => '']);
   }

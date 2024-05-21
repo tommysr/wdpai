@@ -16,18 +16,23 @@ class RegisterController extends AppController implements IRegisterController
 {
   private IRegisterService $registerService;
 
-  public function __construct(IFullRequest $request, IRegisterService $registerer = null)
+  public function __construct(IFullRequest $request, IRegisterService $registerService = null)
   {
     parent::__construct($request);
-    $this->registerer = $registerer ?: new RegisterService($this->request);
+    $this->registerService = $registerService ?: new RegisterService($this->request);
   }
 
-  public function index(IRequest $request): IResponse
+  public function getIndex(IRequest $request): IResponse
   {
-    return $this->renderRegisterView();
+    return $this->getRegister($request);
   }
 
-  public function register(IRequest $request): IResponse
+  public function getRegister(IRequest $request): IResponse
+  {
+    return $this->render('register', ['title' => 'Sign up', 'message' => '']);
+  }
+
+  public function postRegister(IRequest $request): IResponse
   {
     $result = $this->registerService->register($this->request->getParsedBody());
 
@@ -36,10 +41,5 @@ class RegisterController extends AppController implements IRegisterController
     }
 
     return new JsonResponse($result->getMessages());
-  }
-
-  private function renderRegisterView(string $message = '')
-  {
-    return $this->render('register', ['title' => 'Sign up', 'message' => $message]);
   }
 }

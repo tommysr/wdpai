@@ -15,6 +15,7 @@ use App\Validator\RequiredValidationRule;
 use App\Request\IFullRequest;
 use App\Services\Register\DBRegisterResult;
 use App\Models\User;
+use App\Validator\ValidationChain;
 
 class RegisterService implements IRegisterService
 {
@@ -30,7 +31,7 @@ class RegisterService implements IRegisterService
     if ($validationChain) {
       $this->validationChain = $validationChain;
     } else {
-      $this->validationChain = new $validationChain();
+      $this->validationChain = new ValidationChain();
       $this->validationChain->addRule('email', new EmailValidationRule());
       $this->validationChain->addRule('email', new RequiredValidationRule());
 
@@ -39,8 +40,6 @@ class RegisterService implements IRegisterService
 
       $this->validationChain->addRule('username', new RequiredValidationRule());
       $this->validationChain->addRule('username', new UsernameFormatValidationRule());
-
-      $this->validationChain->addRule('confirmedPassword', new ConfirmedPasswordValidationRule($this->request->getParsedBodyParam('password')));
     }
   }
 
@@ -55,6 +54,11 @@ class RegisterService implements IRegisterService
     $email = $this->request->getParsedBodyParam('email');
     $password = $this->request->getParsedBodyParam('password');
     $username = $this->request->getParsedBodyParam('username');
+    $confirmedPassword = $this->request->getParsedBodyParam('confirmedPassword');
+
+    if ($password !== $confirmedPassword) {
+      return new DBRegisterResult(['Passwords do not match'], false);
+    }
 
     if ($this->userRepository->userExists($email)) {
       return new DBRegisterResult(['Email already exists'], false);

@@ -8,5 +8,6 @@ use App\Controllers\Interfaces\IRootController;
 
 interface IRegisterController extends IRootController
 {
-  public function register(IRequest $request): IResponse;
+  public function getRegister(IRequest $request): IResponse;
+  public function postRegister(IRequest $request): IResponse;
 }

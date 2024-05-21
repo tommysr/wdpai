@@ -7,5 +7,5 @@ use App\Middleware\IResponse;
 
 interface IRootController
 {
-    public function index(IRequest $request): IResponse;
+    public function getIndex(IRequest $request): IResponse;
 }
