@@ -33,7 +33,7 @@ class AppController implements IHandler
     {
         $actionMethod = $this->getActionMethod();
         if (!method_exists($this, $actionMethod)) {
-            return new BaseResponse('Action not found', [], 404);
+            return new BaseResponse(404, [], 'Not Found');
         }
         $params = $this->request->getAttribute('params', []);
         return call_user_func_array([$this, $actionMethod], array_merge([$request], $params));

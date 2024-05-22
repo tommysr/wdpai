@@ -26,6 +26,17 @@ class AuthenticationMiddleware extends BaseMiddleware
         $this->allowedPaths = $allowedPaths;
     }
 
+    private function attemptAuthenticate(IFullRequest $request): IResponse
+    {
+        $authAdapter = $this->authAdapterFactory->createAuthAdapter($request);
+        $result = $this->authService->authenticate($authAdapter);
+
+        if (!$result->isValid()) {
+            return new RedirectResponse($this->loginPath);
+        }
+
+        return new RedirectResponse($this->redirectUrl);
+    }
 
     public function process(IFullRequest $request, IHandler $handler): IResponse
     {
@@ -35,30 +46,25 @@ class AuthenticationMiddleware extends BaseMiddleware
         $authenticated = $this->authService->hasIdentity();
 
         // Allow access to login form if not authenticated and requesting the login form
-        if (!$authenticated && $path === $this->loginPath && $request->getMethod() === 'GET') {
+        if (!$authenticated && $path === $this->loginPath && $method === 'GET') {
             return $handler->handle($request);
         }
 
-        // Redirect authenticated users away from login page
+        // Redirect authenticated users away from login page and register page if authenticated
         if ($authenticated && in_array($path, $this->allowedPaths)) {
             return new RedirectResponse($this->redirectUrl);
         }
 
         // If not authenticated and not accessing an allowed path, attempt to authenticate
         if (!$authenticated && !in_array($path, $this->allowedPaths)) {
-            $authAdapter = $this->authAdapterFactory->createAuthAdapter($request);
-            $result = $this->authService->authenticate($authAdapter);
-
-            if (!$result->isValid()) {
-                // Authentication failed, redirect to login
-                return new RedirectResponse($this->loginPath);
-            }
-
-            // Authentication succeeded, redirect to home
-            return new RedirectResponse($this->redirectUrl);
+            return $this->attemptAuthenticate($request);
         }
 
-        
+        // If not authenticated and attempting to login, attempt to authenticate   
+        if (!$authenticated && $path === $this->loginPath && $method === 'POST') {
+            return $this->attemptAuthenticate($request);
+        }
+
         return $this->next ? $this->next->process($request, $handler) : $handler->handle($request);
     }
 }
