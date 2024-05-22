@@ -1,25 +1,61 @@
 <?php
 
-require_once 'Repository.php';
-require_once __DIR__ . '/../models/Question.php';
+namespace App\Repository;
 
-class QuestionsRepository extends Repository
+use App\Repository\Repository;
+use App\Models\IQuestion;
+use App\Models\Question;
+use App\Models\QuestionTypeUtil;
+
+interface IQuestionsRepository
 {
-  private function constructQuestionModel(array $question): Question
+  public function getById(int $questionId): ?IQuestion;
+  public function getQuestionsByQuestId(int $questId);
+  public function deleteQuestions(array $questions): void;
+  public function deleteAllQuestions(int $questId): void;
+  public function updateQuestions(array $questions): void;
+  public function saveQuestion(IQuestion $question): int;
+  public function saveQuestions(array $questions): void;
+}
+
+class QuestionsRepository extends Repository implements IQuestionsRepository
+{
+  private function constructQuestionModel(array $question): IQuestion
   {
-    $type = getQuestionTypeFromName($question['type']);
+    $type = QuestionTypeUtil::getQuestionTypeFromName($question['type']);
     return new Question($question['questionid'], $question['questid'], $question['text'], $type);
   }
 
+  public function deleteAllQuestions(int $questId): void
+  {
+    $pdo = $this->db->connect();
+    $pdo->beginTransaction();
 
-  public function getById($questionId): ?Question
+    try {
+      $sql = 'DELETE FROM questions WHERE questid = :questid';
+      $stmt = $pdo->prepare($sql);
+
+      $stmt->execute([
+        ':questid' => $questId,
+      ]);
+
+      $pdo->commit();
+    } catch (\PDOException $e) {
+      $pdo->rollBack();
+
+      throw new \Exception("Transaction failed: " . $e->getMessage());
+    }
+  }
+
+
+  public function getById(int $questionId): ?IQuestion
   {
     $sql = "SELECT * FROM Questions where QuestionID = :questionId";
 
     $stmt = $this->db->connect()->prepare($sql);
-    $stmt->bindParam(":questionId", $questionId, PDO::PARAM_INT);
+    $stmt->bindParam(":questionId", $questionId, \PDO::PARAM_INT);
     $stmt->execute();
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
     if (empty($result)) {
       return null;
@@ -29,14 +65,14 @@ class QuestionsRepository extends Repository
   }
 
 
-  public function getQuestionsByQuestId($questId)
+  public function getQuestionsByQuestId($questId): array
   {
 
     $sql = "SELECT * FROM Questions WHERE QuestID = :questId";
 
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute(['questId' => $questId]);
-    $questionsFetched = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $questionsFetched = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     $questions = [];
 
@@ -47,7 +83,7 @@ class QuestionsRepository extends Repository
     return $questions;
   }
 
-  public function deleteQuestions(array $questions)
+  public function deleteQuestions(array $questions): void
   {
     $pdo = $this->db->connect();
     $pdo->beginTransaction();
@@ -63,14 +99,14 @@ class QuestionsRepository extends Repository
       }
 
       $pdo->commit();
-    } catch (PDOException $e) {
+    } catch (\PDOException $e) {
       $pdo->rollBack();
 
-      throw new Exception("Transaction failed: " . $e->getMessage());
+      throw new \Exception("Transaction failed: " . $e->getMessage());
     }
   }
 
-  public function deleteAllQuestions(int $questId)
+  public function deleteAllQuestionsForQuest(int $questId): void
   {
     $pdo = $this->db->connect();
     $pdo->beginTransaction();
@@ -84,14 +120,14 @@ class QuestionsRepository extends Repository
       ]);
 
       $pdo->commit();
-    } catch (PDOException $e) {
+    } catch (\PDOException $e) {
       $pdo->rollBack();
 
-      throw new Exception("Transaction failed: " . $e->getMessage());
+      throw new \Exception("Transaction failed: " . $e->getMessage());
     }
   }
 
-  public function updateQuestions(array $questions)
+  public function updateQuestions(array $questions): void
   {
     $pdo = $this->db->connect();
     $pdo->beginTransaction();
@@ -109,14 +145,14 @@ class QuestionsRepository extends Repository
       }
 
       $pdo->commit();
-    } catch (PDOException $e) {
+    } catch (\PDOException $e) {
       $pdo->rollBack();
 
-      throw new Exception("Transaction failed: " . $e->getMessage());
+      throw new \Exception("Transaction failed: " . $e->getMessage());
     }
   }
 
-  public function saveQuestion(Question $question): int
+  public function saveQuestion(IQuestion $question): int
   {
     $pdo = $this->db->connect();
     $pdo->beginTransaction();
@@ -134,14 +170,14 @@ class QuestionsRepository extends Repository
       $pdo->commit();
 
       return $pdo->lastInsertId();
-    } catch (PDOException $e) {
+    } catch (\PDOException $e) {
       $pdo->rollBack();
 
-      throw new Exception("Transaction failed: " . $e->getMessage());
+      throw new \Exception("Transaction failed: " . $e->getMessage());
     }
   }
 
-  public function saveQuestions(array $questions)
+  public function saveQuestions(array $questions): void
   {
     $pdo = $this->db->connect();
     $pdo->beginTransaction();
@@ -159,10 +195,10 @@ class QuestionsRepository extends Repository
       }
 
       $pdo->commit();
-    } catch (PDOException $e) {
+    } catch (\PDOException $e) {
       $pdo->rollBack();
 
-      throw new Exception("Transaction failed: " . $e->getMessage());
+      throw new \Exception("Transaction failed: " . $e->getMessage());
     }
   }
 }
