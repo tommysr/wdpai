@@ -1,12 +1,13 @@
 <?php
 
-require_once 'Repository.php';
-require_once __DIR__ . '/../models/Option.php';
+namespace App\Repository;
 
+use App\Repository\Repository;
+use App\Models\Option;
+use App\Repository\IOptionsRepository;
 
-class OptionsRepository extends Repository
+class OptionsRepository extends Repository implements IOptionsRepository
 {
-
   public function getCorrectOptionsIdsForQuestionId(int $questionId): array
   {
     $options = [];
@@ -15,7 +16,7 @@ class OptionsRepository extends Repository
 
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute(['questionId' => $questionId]);
-    $optionsFetched = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $optionsFetched = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     foreach ($optionsFetched as $option) {
       $options[] = $option['optionid'];
@@ -32,19 +33,16 @@ class OptionsRepository extends Repository
 
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute(['questionId' => $questionId]);
-    $optionsFetched = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $optionsFetched = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     foreach ($optionsFetched as $option) {
       $options[] = new Option($option['optionid'], $option['questionid'], $option['text'], $option['iscorrect']);
     }
 
-
     return $options;
   }
 
-
-
-  public function updateOptions(array $options)
+  public function updateOptions(array $options): void
   {
     $pdo = $this->db->connect();
     $pdo->beginTransaction();
@@ -62,13 +60,13 @@ class OptionsRepository extends Repository
       }
 
       $pdo->commit();
-    } catch (PDOException $e) {
+    } catch (\PDOException $e) {
       $pdo->rollBack();
 
-      throw new Exception("Transaction failed: " . $e->getMessage());
+      throw new \Exception("Transaction failed: " . $e->getMessage());
     }
   }
-  public function deleteOptions(array $options)
+  public function deleteOptions(array $options): void
   {
     $pdo = $this->db->connect();
     $pdo->beginTransaction();
@@ -84,14 +82,14 @@ class OptionsRepository extends Repository
       }
 
       $pdo->commit();
-    } catch (PDOException $e) {
+    } catch (\PDOException $e) {
       $pdo->rollBack();
 
-      throw new Exception("Transaction failed: " . $e->getMessage());
+      throw new \Exception("Transaction failed: " . $e->getMessage());
     }
   }
 
-  public function saveNewOptions(int $questionId, array $options)
+  public function saveNewOptions(int $questionId, array $options): void
   {
     $pdo = $this->db->connect();
     $pdo->beginTransaction();
@@ -109,14 +107,14 @@ class OptionsRepository extends Repository
       }
 
       $pdo->commit();
-    } catch (PDOException $e) {
+    } catch (\PDOException $e) {
       $pdo->rollBack();
 
-      throw new Exception("Transaction failed: " . $e->getMessage());
+      throw new \Exception("Transaction failed: " . $e->getMessage());
     }
   }
 
-  public function saveOptions(array $options)
+  public function saveOptions(array $options): void
   {
     $pdo = $this->db->connect();
     $pdo->beginTransaction();
@@ -134,14 +132,14 @@ class OptionsRepository extends Repository
       }
 
       $pdo->commit();
-    } catch (PDOException $e) {
+    } catch (\PDOException $e) {
       $pdo->rollBack();
 
-      throw new Exception("Transaction failed: " . $e->getMessage());
+      throw new \Exception("Transaction failed: " . $e->getMessage());
     }
   }
 
-  public function deleteAllOptions(int $questionId)
+  public function deleteAllOptions(int $questionId): void
   {
     $pdo = $this->db->connect();
     $pdo->beginTransaction();
@@ -156,10 +154,10 @@ class OptionsRepository extends Repository
 
 
       $pdo->commit();
-    } catch (PDOException $e) {
+    } catch (\PDOException $e) {
       $pdo->rollBack();
 
-      throw new Exception("Transaction failed: " . $e->getMessage());
+      throw new \Exception("Transaction failed: " . $e->getMessage());
     }
   }
 }

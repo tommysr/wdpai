@@ -1,14 +1,15 @@
 <?php
 
 namespace App\Repository;
+use App\Models\IQuestion;
 
-use App\Models\IQuest;
-
-interface IQuestRepository
+interface IQuestionsRepository
 {
-  public function getQuests(): array;
-  public function getQuest(int $id): IQuest;
-  public function createQuest(IQuest $quest): void;
-  public function updateQuest(IQuest $quest): void;
-  public function deleteQuest(int $id): void;
+  public function getById(int $questionId): ?IQuestion;
+  public function getQuestionsByQuestId(int $questId);
+  public function deleteQuestions(array $questions): void;
+  public function deleteAllQuestions(int $questId): void;
+  public function updateQuestions(array $questions): void;
+  public function saveQuestion(IQuestion $question): int;
+  public function saveQuestions(array $questions): void;
 }
