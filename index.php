@@ -19,9 +19,10 @@ use App\Validator\ValidationChain;
 
 
 $sessionService = new SessionService();
+SessionService::start();
 $authService = new AuthenticateService($sessionService);
 $authAdapterFactory = new AuthAdapterFactory();
-$authMiddleware = new AuthenticationMiddleware($authService, $authAdapterFactory, '/quests');
+$authMiddleware = new AuthenticationMiddleware($authService, $authAdapterFactory, '/showQuests');
 
 $validationChain = new ValidationChain();
 $validationChain->addRule('email', new RequiredValidationRule());
@@ -41,10 +42,10 @@ Router::get('/logout', 'LoginController@logout', [$authMiddleware]);
 Router::get('/register', 'RegisterController@register', [$authMiddleware]);
 Router::post('/register', 'RegisterController@register', [$authMiddleware]);
 
-// Router::get('/showQuests', 'QuestsController@index', [$authMiddleware]);
+Router::get('/showQuests', 'QuestsController@index', [$authMiddleware]);
+
+
 // Router::get('/showCreatedQuests', 'QuestsController@showCreatedQuests', [$authMiddleware]);
-
-
 $acl = new Acl();
 
 $admin = new Role('admin');
