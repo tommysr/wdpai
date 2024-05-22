@@ -19,7 +19,7 @@
     </a>
 
 
-    <?php if ($user && $user['role'] == 'admin'): ?>
+    <?php if (isset($userRole) && $userRole == 'admin'): ?>
       <a class="nav-link flex-column-center-center" href="/dashboard">
         Dashboard
         <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -30,7 +30,7 @@
 
 
     <!-- Check if user is logged in to render appropriate link -->
-    <?php if ($user): ?>
+    <?php if (isset($userId)): ?>
       <a href="/logout" class="main-button">Sign out</a>
     <?php else: ?>
       <a href="/login" class="main-button">Sign in</a>

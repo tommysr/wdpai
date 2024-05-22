@@ -36,16 +36,14 @@ Router::get('/error/{code}', 'ErrorController@error');
 
 Router::get('/login', 'LoginController@login', [$authMiddleware, $loginValidationMiddleware]);
 Router::post('/login', 'LoginController@login', [$authMiddleware]);
-
 Router::get('/logout', 'LoginController@logout', [$authMiddleware]);
 
 Router::get('/register', 'RegisterController@register', [$authMiddleware]);
 Router::post('/register', 'RegisterController@register', [$authMiddleware]);
 
-Router::get('/showQuests', 'QuestsController@index', [$authMiddleware]);
+Router::get('/showQuests', 'QuestsController@index');
+Router::get('/showCreatedQuests', 'QuestsController@showCreatedQuests', [$authMiddleware]);
 
-
-// Router::get('/showCreatedQuests', 'QuestsController@showCreatedQuests', [$authMiddleware]);
 $acl = new Acl();
 
 $admin = new Role('admin');
@@ -61,8 +59,8 @@ $acl->addRole($creator);
 $acl->allow($creator, 'QuestsController', 'createQuest');
 $authorizeMiddleware = new RoleAuthorizationMiddleware($acl, $authService);
 
-Router::post('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $authorizeMiddleware]);
-Router::get('/editQuest/{id}', 'QuestsController@editQuest', [$authMiddleware, $authorizeMiddleware]);
+Router::get('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $authorizeMiddleware]);
+Router::get('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddleware, $authorizeMiddleware]);
 
 $request = new Request($_SERVER, $_GET, $_POST);
 $response = Router::dispatch($request);
@@ -70,18 +68,9 @@ $emitter = new Emitter();
 $emitter->emit($response);
 
 
-// // QUESTS
-// Router::get('', 'QuestsController');
 
 // Router::get('showQuestWallets', 'QuestsController');
 // Router::get('startQuest', 'QuestsController');
-
-
-// // QUESTS MANAGEMENT
-// Router::get('createQuest', 'QuestsController');
-// Router::get('editQuest', 'QuestsController');
-// Router::get('createdQuests', 'QuestsController');
-
 // // PROFILE
 // Router::get('dashboard', 'QuestsController');
 
@@ -89,11 +78,4 @@ $emitter->emit($response);
 // Router::get('gameplay', 'GameController');
 // Router::get('processUserResponse', 'GameController');
 // Router::get('nextQuestion', 'GameController');
-
-// $userLoggedInMiddleware = new RoleAuthorizationMiddleware(new UserAuthorizationService(new SessionService()), Role::USER);
-
-// Router::get('login', 'AuthController');
-// Router::get('logout', 'AuthController');
-// Router::get('register', 'AuthController');
-
 

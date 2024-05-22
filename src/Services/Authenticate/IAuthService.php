@@ -10,6 +10,6 @@ interface IAuthService {
     public function authenticate(IAuthAdapter $adapter): IAuthResult;
     public function saveIdentity(IIdentity $identity);
     public function hasIdentity(): bool;
-    public function getIdentity(): IIdentity;
+    public function getIdentity(): ?IIdentity;
     public function clearIdentity();
 }

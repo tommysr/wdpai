@@ -8,6 +8,9 @@ use App\Services\Quests\IQuestService;
 use App\Repository\IQuestRepository;
 use App\Repository\IQuestionsRepository;
 use App\Models\IQuest;
+use App\Repository\OptionsRepository;
+use App\Repository\QuestRepository;
+use App\Repository\QuestionsRepository;
 
 class QuestService implements IQuestService
 {
@@ -15,55 +18,79 @@ class QuestService implements IQuestService
   private IQuestionsRepository $questionRepository;
   private IOptionsRepository $optionRepository;
 
+  public function __construct(
+    IQuestRepository $questRepository = null,
+    IQuestionsRepository $questionRepository = null,
+    IOptionsRepository $optionRepository = null
+  ) {
+    $this->questRepository = $questRepository ?: new QuestRepository();
+    $this->questionRepository = $questionRepository ?: new QuestionsRepository();
+    $this->optionRepository = $optionRepository ?: new OptionsRepository();
+  }
+
+  
+  public function getQuestsToApproval(): array
+  {
+    $quests = $this->questRepository->getQuests();
+
+    array_filter($quests, function ($quest) {
+      return $quest->getIsApproved();
+    });
+
+    return $quests;
+  }
+
+  public function getQuestsToPlay(): array
+  {
+    $quests = $this->questRepository->getApprovedQuests();
+
+    array_filter($quests, function ($quest) {
+      return $quest->getParticipantsCount() < $quest->getParticipantLimit() &&
+        $quest->getExpiryDateString() > date('Y-m-d H:i:s', time());
+    });
+
+    return $quests;
+  }
+
+
+  public function getCreatorQuests(IIdentity $identity): array
+  {
+    $quests = $this->questRepository->getCreatorQuests($identity->getId());
+
+    array_filter($quests, function ($quest) {
+      return !$quest->getIsApproved();
+    });
+
+    return $quests;
+  }
+
   public function getQuests(IIdentity $identity): array
   {
-    $role = $identity->getRole();
+    $roleString = $identity->getRole()->getName();
     $id = $identity->getId();
 
-    if ($role === 'admin') {
-      return $this->getAdminQuests();
-    } else if ($role === 'user') {
+    if ($roleString === 'admin') {
+      return $this->getAllQuests();
+    } else if ($roleString === 'user') {
       return $this->getUserQuests();
-    } else {
+    } else if ($roleString === 'creator') {
       return $this->getAllQuests();
     }
+
+    return [];
   }
 
   private function getAdminQuests(): array
   {
-    return [
-      [
-        'id' => 1,
-        'name' => 'Admin Quest 1',
-        'description' => 'This is an admin quest.',
-        'reward' => 100
-      ],
-      [
-        'id' => 2,
-        'name' => 'Admin Quest 2',
-        'description' => 'This is another admin quest.',
-        'reward' => 200
-      ]
-    ];
+    return $this->questRepository->getQuests();
   }
 
   private function getUserQuests(): array
   {
-    return [
-      [
-        'id' => 3,
-        'name' => 'User Quest 1',
-        'description' => 'This is a user quest.',
-        'reward' => 50
-      ],
-      [
-        'id' => 4,
-        'name' => 'User Quest 2',
-        'description' => 'This is another user quest.',
-        'reward' => 75
-      ]
-    ];
+    return $this->questRepository->getApprovedQuests();
   }
+
+
 
   // private function getCreatorQuests(): array
   // {
@@ -112,16 +139,6 @@ class QuestService implements IQuestService
     return $quest;
   }
 
-  public function getCreatorQuests(IIdentity $identity): array
-  {
-    $quests = $this->questRepository->getCreatorQuests($identity->getId());
-
-    array_filter($quests, function ($quest) {
-      return !$quest->isApproved();
-    });
-
-    return $quests;
-  }
 
   public function publishQuest(int $questId): void
   {

@@ -34,6 +34,7 @@ class LoginController extends AppController implements ILoginController
   public function getLogout(IRequest $request): IResponse
   {
     $this->authService->clearIdentity();
+
     return new RedirectResponse('/login');
   }
 }

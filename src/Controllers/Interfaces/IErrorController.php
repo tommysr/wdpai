@@ -8,5 +8,5 @@ use App\Controllers\Interfaces\IRootController;
 
 interface IErrorController extends IRootController
 {
-  public function error(IRequest $request, int $code): IResponse;
+  public function getError(IRequest $request, int $code): IResponse;
 }

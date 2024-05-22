@@ -29,6 +29,11 @@ class AuthenticationMiddleware extends BaseMiddleware
     private function attemptAuthenticate(IFullRequest $request): IResponse
     {
         $authAdapter = $this->authAdapterFactory->createAuthAdapter($request);
+
+        if (!$authAdapter) {
+            return new RedirectResponse($this->loginPath);
+        }
+
         $result = $this->authService->authenticate($authAdapter);
 
         if (!$result->isValid()) {
@@ -44,6 +49,7 @@ class AuthenticationMiddleware extends BaseMiddleware
         $method = $request->getMethod();
         // check if the user is authenticated (in the session)
         $authenticated = $this->authService->hasIdentity();
+
 
         // Allow access to login form if not authenticated and requesting the login form
         if (!$authenticated && $path === $this->loginPath && $method === 'GET') {
