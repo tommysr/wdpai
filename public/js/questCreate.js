@@ -177,6 +177,21 @@ function submitForm(event) {
 
   const formData = serializeForm(event.target);
 
+  // let questions = formData["questions"];
+  // if (questions != undefined) {
+  //   questions = questions.filter((question) => question !== null);
+
+  //   questions.forEach((q) => {
+  //     const options = q["options"];
+
+  //     if (options != undefined) {
+  //       options = options.filter((option) => option !== null);
+  //     }
+  //   });
+  // }
+  // formData.q
+  // console.log(formData);
+
   const path = window.location.pathname;
   let apiUrl = "";
   if (path.startsWith("/createQuest")) {
@@ -196,6 +211,17 @@ function submitForm(event) {
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
+      document.querySelectorAll(".error").forEach((errorDiv) => {
+        errorDiv.textContent = "";
+      });
+
+      if (data.messages) {
+        document.querySelectorAll(".error").forEach((errorDiv) => {
+          errorDiv.textContent = data.messages;
+        });
+      } else {
+        console.log("some error");
+      }
     })
     .catch((error) => {
       console.error("Error:", error);

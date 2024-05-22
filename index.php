@@ -62,6 +62,9 @@ $authorizeMiddleware = new RoleAuthorizationMiddleware($acl, $authService);
 Router::get('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $authorizeMiddleware]);
 Router::get('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddleware, $authorizeMiddleware]);
 
+Router::post('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $authorizeMiddleware]);
+Router::post('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddleware, $authorizeMiddleware]);
+
 $request = new Request($_SERVER, $_GET, $_POST);
 $response = Router::dispatch($request);
 $emitter = new Emitter();

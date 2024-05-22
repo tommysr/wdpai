@@ -51,7 +51,6 @@ class QuestsController extends AppController implements IQuestsController
       User actions
 
    */
-
   public function getIndex(IRequest $request): IResponse
   {
     return $this->getShowQuests($request);
@@ -70,8 +69,6 @@ class QuestsController extends AppController implements IQuestsController
     Creator actions
 
  */
-
-
   private function renderEditAndCreateView(IQuest $quest = null): IResponse
   {
     return $this->render('layout', ['title' => 'quest add', 'quest' => $quest], 'createQuest');
@@ -104,25 +101,30 @@ class QuestsController extends AppController implements IQuestsController
     return $this->render('layout', ['title' => 'created quests', 'quests' => $quests], 'createdQuests');
   }
 
-  // public function postCreateQuest(IRequest $request): IResponse
-  // {
-  //   $questData = $this->request->getParsedBodyParam('quest');
-  //   $questionsData = $this->request->getParsedBodyParam('questions');
+  public function postCreateQuest(IRequest $request): IResponse
+  {
+    $questData = $this->request->getParsedBodyParam('quest');
+    $questionsData = $this->request->getParsedBodyParam('questions');
 
-  //   $quest = $this->createQuest($questData, $questionsData);
+    $quest = $this->createQuest($questData, $questionsData);
 
-  //   return new JsonResponse(['message' => 'quest created', 'questId' => $quest->getQuestID()]);
-  // }
+    return new JsonResponse(['message' => 'quest created', 'questId' => $quest->getQuestID()]);
+  }
 
-  // public function postEditQuest(IRequest $request, int $questId): IResponse
-  // {
-  //   $questData = $this->request->getParsedBodyParam('quest');
-  //   $questionsData = $this->request->getParsedBodyParam('questions');
+  public function postEditQuest(IRequest $request, int $questId): IResponse
+  {
+    $formData = $this->request->getParsedBody();
 
-  //   $quest = $this->createQuest($questData, $questionsData, $questId);
+    // var_dump($formData);
+    // $formData = json_decode($jsonData, true);
+    // {
+    // $questData = $this->request->getParsedBodyParam('quest');
+    // $questionsData = $this->request->getParsedBodyParam('questions');
 
-  //   return new JsonResponse(['message' => 'quest updated', 'questId' => $quest->getQuestID()]);
-  // }
+    // $quest = $this->createQuest($questData, $questionsData, $questId);
+
+    return new JsonResponse(['messages' => ['quest updated', 'something else'], 'questId' => 1]);
+  }
 
 
   // public function editQuest(?int $questId = null)

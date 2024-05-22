@@ -2,13 +2,7 @@
 
 <form id="questForm" action="" class="flex-column-center-center gap-1">
 
-
-  <?php
-  if (isset($messages)):
-    foreach ($messages as $m):
-      ?>
-      <span class="error-message"><?= $m; ?></span>
-    <?php endforeach; endif; ?>
+  <div id="error" class="error"></div>
 
   <label for="quizTitle" class="input-description main-text">Quiz Title:</label>
 
