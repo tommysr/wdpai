@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Models\IOption;
 use App\Repository\Repository;
 use App\Models\Option;
 use App\Repository\IOptionsRepository;
@@ -114,30 +115,30 @@ class OptionsRepository extends Repository implements IOptionsRepository
     }
   }
 
-  public function saveOptions(array $options): void
-  {
-    $pdo = $this->db->connect();
-    $pdo->beginTransaction();
+  // public function saveOptions(array $options): void
+  // {
+  //   $pdo = $this->db->connect();
+  //   $pdo->beginTransaction();
 
-    try {
-      $sql = 'INSERT INTO options (questionid, text, iscorrect) VALUES (:questionid, :text, :iscorrect)';
-      $stmt = $pdo->prepare($sql);
+  //   try {
+  //     $sql = 'INSERT INTO options (questionid, text, iscorrect) VALUES (:questionid, :text, :iscorrect)';
+  //     $stmt = $pdo->prepare($sql);
 
-      foreach ($options as $option) {
-        $stmt->execute([
-          ':questionid' => $option->getOptionId(),
-          ':text' => $option->getText(),
-          ':iscorrect' => $option->getIsCorrect(),
-        ]);
-      }
+  //     foreach ($options as $option) {
+  //       $stmt->execute([
+  //         ':questionid' => $option->getOptionId(),
+  //         ':text' => $option->getText(),
+  //         ':iscorrect' => $option->getIsCorrect(),
+  //       ]);
+  //     }
 
-      $pdo->commit();
-    } catch (\PDOException $e) {
-      $pdo->rollBack();
+  //     $pdo->commit();
+  //   } catch (\PDOException $e) {
+  //     $pdo->rollBack();
 
-      throw new \Exception("Transaction failed: " . $e->getMessage());
-    }
-  }
+  //     throw new \Exception("Transaction failed: " . $e->getMessage());
+  //   }
+  // }
 
   public function deleteAllOptions(int $questionId): void
   {
@@ -159,5 +160,17 @@ class OptionsRepository extends Repository implements IOptionsRepository
 
       throw new \Exception("Transaction failed: " . $e->getMessage());
     }
+  }
+
+  public function saveOption(IOption $option): void
+  {
+    $sql = 'INSERT INTO options (questionid, text, iscorrect) VALUES (:questionid, :text, :iscorrect)';
+    $stmt = $this->db->connect()->prepare($sql);
+
+    $stmt->execute([
+      ':questionid' => $option->getQuestionId(),
+      ':text' => $option->getText(),
+      ':iscorrect' => $option->getIsCorrect(),
+    ]);
   }
 }

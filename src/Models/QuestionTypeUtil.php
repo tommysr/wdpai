@@ -17,7 +17,7 @@ class QuestionTypeUtil
     };
   }
 
-  public static function getQuestionTypeFromName(string $name): QuestionType
+  public static function fromString(string $name): QuestionType
   {
     $lookup = [
       'single_choice' => QuestionType::SINGLE_CHOICE,

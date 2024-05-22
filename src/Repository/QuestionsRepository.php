@@ -12,7 +12,7 @@ class QuestionsRepository extends Repository implements IQuestionsRepository
 {
   private function constructQuestionModel(array $question): IQuestion
   {
-    $type = QuestionTypeUtil::getQuestionTypeFromName($question['type']);
+    $type = QuestionTypeUtil::fromString($question['type']);
     return new Question($question['questionid'], $question['questid'], $question['text'], $type);
   }
 

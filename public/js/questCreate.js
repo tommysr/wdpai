@@ -9,25 +9,25 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("questForm").addEventListener("submit", submitForm);
 });
 
-function removeQuestion(callDiv, questionid) {
+function removeQuestion(callDiv, questionId) {
   const questionDiv = callDiv.parentNode;
 
   const input = document.createElement("input");
   input.type = "hidden";
   input.value = "remove";
-  input.name = `questions[${questionid}][flag]`;
+  input.name = `questions[${questionId}][flag]`;
   questionDiv.appendChild(input);
 
   questionDiv.style.display = "none";
 }
 
-function removeOption(callDiv, questionid, optionid) {
+function removeOption(callDiv, questionId, optionId) {
   const optionDiv = callDiv.parentNode;
 
   const input = document.createElement("input");
   input.type = "hidden";
   input.value = "remove";
-  input.name = `questions[${questionid}][options][${optionid}][flag]`;
+  input.name = `questions[${questionId}][options][${optionId}][flag]`;
   optionDiv.appendChild(input);
 
   optionDiv.style.display = "none";
@@ -42,9 +42,8 @@ function addQuestion(questionId) {
   newQuestionDiv.innerHTML = `
       <label for="questionText" class="input-description main-text">Question Text:</label>
       <textarea name="questions[${questionId}][text]" class="questionText main-text" cols="30" rows="10" required> </textarea>
-
+      <input type="number" name="questions[${questionId}][points]" class="questionPoints" placeholder="points" required>
       <input type="hidden" name="questions[${questionId}][flag]" value="added">
-
 
       <div class="options"></div>
       <button type="button" class="addOption main-button">Add Option</button><br>
@@ -176,21 +175,6 @@ function submitForm(event) {
   event.preventDefault();
 
   const formData = serializeForm(event.target);
-
-  // let questions = formData["questions"];
-  // if (questions != undefined) {
-  //   questions = questions.filter((question) => question !== null);
-
-  //   questions.forEach((q) => {
-  //     const options = q["options"];
-
-  //     if (options != undefined) {
-  //       options = options.filter((option) => option !== null);
-  //     }
-  //   });
-  // }
-  // formData.q
-  // console.log(formData);
 
   const path = window.location.pathname;
   let apiUrl = "";

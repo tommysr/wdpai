@@ -10,14 +10,17 @@ class Request implements IFullRequest
     private array $server;
     private array $cookies;
     private array $files;
+    private string $rawBody;
 
-    public function __construct(?array $server = null, ?array $query = null, ?array $body = null, ?array $cookies = null, ?array $files = null)
+    public function __construct(array $server = null, array $query = null, array $body = null, array $cookies = null, array $files = null, string $rawBody = null)
     {
         $this->query = $query ?: $_GET;
         $this->body = $body ?: $_POST;
         $this->server = $server ?: $_SERVER;
         $this->cookies = $cookies ?: $_COOKIE;
         $this->files = $files ?: $_FILES;
+        // TODO: handle failure
+        $this->rawBody = $rawBody ?: (file_get_contents("php://input") ?: '');
     }
 
     public function getPath(): string
@@ -44,6 +47,11 @@ class Request implements IFullRequest
     public function getAttribute(string $key, $default = null)
     {
         return $this->query[$key] ?? $default;
+    }
+
+    public function getBody(): string
+    {
+        return $this->rawBody;
     }
 
     public function getQuery(string $key, $default = null)
@@ -105,11 +113,6 @@ class Request implements IFullRequest
     public function getHeader(string $name): string
     {
         return $this->getHeaders()[$name] ?? '';
-    }
-
-    public function getBody(): string
-    {
-        return file_get_contents('php://input');
     }
 
     public function getStatusCode(): int

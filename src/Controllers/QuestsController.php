@@ -103,27 +103,29 @@ class QuestsController extends AppController implements IQuestsController
 
   public function postCreateQuest(IRequest $request): IResponse
   {
-    $questData = $this->request->getParsedBodyParam('quest');
-    $questionsData = $this->request->getParsedBodyParam('questions');
+    $formData = $this->request->getBody();
+    $parsedData = json_decode($formData, true);
+    $creatorId = $this->authService->getIdentity()->getId();
+    $questResult = $this->questService->createQuest($parsedData, $creatorId);
 
-    $quest = $this->createQuest($questData, $questionsData);
-
-    return new JsonResponse(['message' => 'quest created', 'questId' => $quest->getQuestID()]);
+    if (!$questResult->isSuccess()) {
+      return new JsonResponse(['messages' => $questResult->getMessages()]);
+    } else {
+      return new RedirectResponse('/showCreatedQuests');
+    }
   }
 
   public function postEditQuest(IRequest $request, int $questId): IResponse
   {
-    $formData = $this->request->getParsedBody();
-
-    // var_dump($formData);
-    // $formData = json_decode($jsonData, true);
+    $formData = $this->request->getBody();
+    $parsedData = json_decode($formData, true);
     // {
     // $questData = $this->request->getParsedBodyParam('quest');
     // $questionsData = $this->request->getParsedBodyParam('questions');
 
     // $quest = $this->createQuest($questData, $questionsData, $questId);
 
-    return new JsonResponse(['messages' => ['quest updated', 'something else'], 'questId' => 1]);
+    return new JsonResponse(['messages' => ['quest updated', 'something else'], 'data' => $parsedData]);
   }
 
 
