@@ -55,13 +55,12 @@ function addQuestion(questionId) {
   newQuestionDiv
     .querySelector(".addOption")
     .addEventListener("click", function () {
-    
       if (questionsOption[questionId] != undefined) {
         questionsOption[questionId] += 1;
       } else {
         questionsOption[questionId] = 0;
       }
-    
+
       addOption(newQuestionDiv, questionId, questionsOption[questionId]);
     });
 
@@ -154,6 +153,9 @@ function update(data, keys, value) {
   return data;
 }
 
+//credits
+// https://stackoverflow.com/questions/41431322/how-to-convert-formdata-html5-object-to-json
+// author: Joyce Babu
 function serializeForm(form) {
   return Array.from(new FormData(form).entries()).reduce(
     (data, [field, value]) => {
@@ -175,18 +177,27 @@ function submitForm(event) {
 
   const formData = serializeForm(event.target);
 
-  console.log(JSON.stringify(formData, null, 2));
-  // fetch("your-php-controller-url", {
-  //     method: "POST",
-  //     body: formData
-  // }).then(response => {
-  //     if (!response.ok) {
-  //         throw new Error("Network response was not ok");
-  //     }
-  //     return response.text();
-  // }).then(data => {
-  //     console.log(data);
-  // }).catch(error => {
-  //     console.error("There was a problem with the fetch operation:", error);
-  // });
+  const path = window.location.pathname;
+  let apiUrl = "";
+  if (path.startsWith("/createQuest")) {
+    apiUrl = "/createQuest";
+  } else if (path.startsWith("/editQuest")) {
+    const parts = path.split("/");
+    const questId = parts[2];
+    apiUrl = `/editQuest/${questId}`;
+  }
+  fetch(apiUrl, {
+    method: "POST",
+    body: JSON.stringify(formData),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
 }
