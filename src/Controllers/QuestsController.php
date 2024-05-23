@@ -119,8 +119,8 @@ class QuestsController extends AppController implements IQuestsController
   {
     $formData = $this->request->getBody();
     $parsedData = json_decode($formData, true);
-
-    $questResult = $this->questService->editQuest($parsedData);
+    $creatorId = $this->authService->getIdentity()->getId();
+    $questResult = $this->questService->editQuest($parsedData, $creatorId, $questId);
 
     if (!$questResult->isSuccess()) {
       return new JsonResponse(['messages' => $questResult->getMessages()]);
