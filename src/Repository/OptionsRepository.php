@@ -140,6 +140,32 @@ class OptionsRepository extends Repository implements IOptionsRepository
   //   }
   // }
 
+
+  public function deleteOptionById(int $optionId)
+  {
+    $pdo = $this->db->connect();
+
+    $sql = 'DELETE FROM options WHERE optionid = :optionId';
+    $stmt = $pdo->prepare($sql);
+
+    $stmt->execute([
+      ':optionId' => $optionId,
+    ]);
+  }
+
+
+  public function deleteOption(IOption $option)
+  {
+    $pdo = $this->db->connect();
+
+    $sql = 'DELETE FROM options WHERE optionid = :optionId';
+    $stmt = $pdo->prepare($sql);
+
+    $stmt->execute([
+      ':optionId' => $option->getOptionId(),
+    ]);
+  }
+
   public function deleteAllOptions(int $questionId): void
   {
     $pdo = $this->db->connect();
@@ -162,7 +188,7 @@ class OptionsRepository extends Repository implements IOptionsRepository
     }
   }
 
-  public function saveOption(IOption $option): void
+  public function saveOption(IOption $option): int
   {
     $sql = 'INSERT INTO options (questionid, text, iscorrect) VALUES (:questionid, :text, :iscorrect)';
     $stmt = $this->db->connect()->prepare($sql);
@@ -172,5 +198,9 @@ class OptionsRepository extends Repository implements IOptionsRepository
       ':text' => $option->getText(),
       ':iscorrect' => $option->getIsCorrect(),
     ]);
+
+    return $this->db->connect()->lastInsertId();
   }
+
+
 }

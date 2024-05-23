@@ -10,6 +10,7 @@ interface IQuestion
   public function getQuestId(): int;
   public function getText(): string;
   public function getType(): QuestionType;
+  public function setQuestionId(int $id);
   public function getOptions(): array;
   public function __equals(IQuestion $other): bool;
 }

@@ -2,8 +2,11 @@
 
 namespace App\Services\Quests;
 
+use App\Models\IOption;
+use App\Models\IQuestion;
 use App\Models\Option;
 use App\Models\Question;
+use App\Models\QuestionType;
 use App\Models\QuestionTypeUtil;
 use App\Repository\IOptionsRepository;
 use App\Services\Authenticate\IIdentity;
@@ -107,7 +110,7 @@ class QuestService implements IQuestService
     return $this->validationChain->validateFields($data);
   }
 
-  private function saveQuestion(array $data, int $questId): int
+  private function saveQuestion(array $data, int $questId): IQuestion
   {
     $question = new Question(
       0,
@@ -117,7 +120,33 @@ class QuestService implements IQuestService
       $data['score'],
     );
 
-    return $this->questionRepository->saveQuestion($question);
+    $id = $this->questionRepository->saveQuestion($question);
+
+    $question->setQuestionId($id);
+
+    return $question;
+  }
+
+  private function updateQuestFromData(array $data, int $creatorId, int $questId)
+  {
+    $quest = new Quest(
+      $questId,
+      $data['title'],
+      $data['description'],
+      $data['worthKnowledge'],
+      $data['requiredWallet'],
+      $data['timeRequired'],
+      $data['expiryDate'],
+      0,
+      $data['participantsLimit'],
+      $data['poolAmount'],
+      $data['token'],
+      $data['points'],
+      $creatorId,
+      false
+    );
+
+    $this->questRepository->updateQuest($quest);
   }
 
   private function saveQuest(array $data, int $creatorId): int
@@ -142,7 +171,7 @@ class QuestService implements IQuestService
     return $this->questRepository->saveQuest($quest);
   }
 
-  private function saveOption(array $data, int $questionId): void
+  private function saveOption(array $data, int $questionId): IOption
   {
     $option = new Option(
       0,
@@ -151,7 +180,109 @@ class QuestService implements IQuestService
       $data['isCorrect']
     );
 
-    $this->optionRepository->saveOption($option);
+    $id = $this->optionRepository->saveOption($option);
+
+    $option->setOptionId($id);
+
+    return $option;
+  }
+
+  private function updateQuestionFromData(array $data)
+  {
+    $question = new Question(
+      $data['questionId'],
+      $data['questId'],
+      $data['text'],
+      QuestionTypeUtil::fromString($data['type']),
+      $data['score'],
+    );
+
+    $this->questionRepository->updateQuestions([$question]);
+  }
+
+  private function updateOptionsFromData(array $options, int $questionId)
+  {
+    foreach ($options as $option) {
+      if (!$option) {
+        continue;
+      }
+
+      switch ($option['flag']) {
+        case 'added':
+          $this->saveOption($option, $questionId);
+          break;
+        case 'deleted':
+          $this->optionRepository->deleteOptionById($option['id']);
+          break;
+        default:
+          $option = new Option(
+            $option['id'],
+            $questionId,
+            $option['text'],
+            $option['isCorrect']
+          );
+
+          $this->optionRepository->updateOptions([$option]);
+      }
+    }
+  }
+
+  public function editQuest(array $data, int $creatorId, int $questId): IQuestResult
+  {
+    $errors = $this->validateQuestData($data);
+
+    if (!empty($errors)) {
+      return new QuestResult($errors);
+    }
+
+    $this->updateQuestFromData($data, $creatorId, $questId);
+
+    $questions = $data['questions'];
+
+    if (empty($questions)) {
+      return new QuestResult(['Questions are required.']);
+    }
+
+
+    foreach ($questions as $question) {
+      if (!$question) {
+        continue;
+      }
+
+      switch ($question['flag']) {
+        case 'added':
+          $question = $this->saveQuestion($question, $questId);
+
+          $options = $question['options'];
+
+          if ($question->getType() != QuestionType::READ_TEXT && empty($options)) {
+            return new QuestResult(['Options are required.']);
+          }
+
+          foreach ($options as $option) {
+            if (!$option) {
+              continue;
+            }
+
+            $this->saveOption($option, $question->getQuestionId());
+          }
+
+          break;
+        case 'deleted':
+          $id = $question['id'];
+          $this->questionRepository->deleteQuestionById($id);
+          $this->optionRepository->deleteAllOptions($id);
+          break;
+        default:
+          $this->updateQuestionFromData($question);
+          $options = $question['options'];
+          if (!empty($options)) {
+            $this->updateOptionsFromData($options, $question['id']);
+          }
+      }
+    }
+
+    return new QuestResult([], [], true);
   }
 
   public function createQuest(array $data, int $creatorId): IQuestResult
@@ -175,13 +306,11 @@ class QuestService implements IQuestService
         continue;
       }
 
-      $questionId = $this->saveQuestion($question, $questId);
+      $question = $this->saveQuestion($question, $questId);
 
       $options = $question['options'];
 
-      // TODO: check if options are required for all question types
-      // cause they are not required for read_text
-      if (empty($options)) {
+      if ($question->getType() != QuestionType::READ_TEXT && empty($options)) {
         return new QuestResult(['Options are required.']);
       }
 
@@ -190,7 +319,7 @@ class QuestService implements IQuestService
           continue;
         }
 
-        $this->saveOption($option, $questionId);
+        $this->saveOption($option, $question->getQuestionId());
       }
     }
 

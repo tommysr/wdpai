@@ -16,6 +16,29 @@ class QuestionsRepository extends Repository implements IQuestionsRepository
     return new Question($question['questionid'], $question['questid'], $question['text'], $type);
   }
 
+  public function deleteQuestionById(int $id): void
+  {
+    $pdo = $this->db->connect();
+
+    $sql = 'DELETE FROM questions WHERE questionid = :questionId';
+    $stmt = $pdo->prepare($sql);
+
+    $stmt->execute([
+      ':questionId' => $id,
+    ]);
+  }
+  public function deleteQuestion(IQuestion $question): void
+  {
+    $pdo = $this->db->connect();
+
+    $sql = 'DELETE FROM questions WHERE questionid = :questionId';
+    $stmt = $pdo->prepare($sql);
+
+    $stmt->execute([
+      ':questionId' => $question->getQuestionId(),
+    ]);
+  }
+
   public function deleteAllQuestions(int $questId): void
   {
     $pdo = $this->db->connect();
