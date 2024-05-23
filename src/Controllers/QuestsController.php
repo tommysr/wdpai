@@ -16,24 +16,6 @@ use App\Services\Authenticate\IAuthService;
 use App\Services\Quests\IQuestService;
 use App\Services\Quests\QuestService;
 
-function compareQuestionsId(IQuestion $a, IQuestion $b)
-{
-  if ($a->getQuestionId() == $b->getQuestionId()) {
-    return 0;
-  }
-
-  return ($a->getQuestionId() < $b->getQuestionId()) ? -1 : 1;
-}
-
-function compareQuestions(IQuestion $q1, IQuestion $q2)
-{
-  if ($q1->__equals($q2)) {
-    return 0;
-  }
-
-  return 1;
-}
-
 class QuestsController extends AppController implements IQuestsController
 {
   private IQuestService $questService;
@@ -47,10 +29,8 @@ class QuestsController extends AppController implements IQuestsController
   }
 
   /*
-
       User actions
-
-   */
+  */
   public function getIndex(IRequest $request): IResponse
   {
     return $this->getShowQuests($request);
@@ -65,10 +45,8 @@ class QuestsController extends AppController implements IQuestsController
   }
 
   /*
-
     Creator actions
-
- */
+  */
   private function renderEditAndCreateView(IQuest $quest = null): IResponse
   {
     return $this->render('layout', ['title' => 'quest add', 'quest' => $quest], 'createQuest');
@@ -129,188 +107,9 @@ class QuestsController extends AppController implements IQuestsController
     }
   }
 
-
-  // public function editQuest(?int $questId = null)
-  // {
-  //   try {
-  //     $requestType = $questId ? QuestAuthorizeRequest::EDIT : QuestAuthorizeRequest::CREATE;
-
-  //     $this->questAuthorizationService->authorizeQuestAction($requestType, $questId);
-  //     $questions = [];
-
-  //     if ($this->request->post('questions')) {
-  //       foreach ($this->request->post('questions') as $questionId => $questionData) {
-  //         $options = [];
-  //         $correctOptionsCount = 0;
-  //         $questionType = QuestionType::UNKNOWN;
-
-  //         if (isset($this->request->post('options')[$questionId])) {
-  //           foreach ($this->request->post('options')[$questionId] as $optionIndex => $optionData) {
-  //             $isCorrect = isset($optionData['isCorrect']);
-
-  //             if ($isCorrect) {
-  //               $correctOptionsCount++;
-  //             }
-
-  //             $options[] = new Option($optionIndex, $questionId, $optionData['text'], $isCorrect);
-  //           }
-
-  //           if ($correctOptionsCount == 1) {
-  //             $questionType = QuestionType::SINGLE_CHOICE;
-  //           } else {
-  //             $questionType = QuestionType::MULTIPLE_CHOICE;
-  //           }
-  //         } else {
-  //           $questionType = QuestionType::READ_TEXT;
-  //         }
-
-  //         $question = new Question($questionId, $questId, $questionData['text'], $questionType);
-  //         $question->setOptions($options);
-  //         $questions[] = $question;
-  //       }
-  //     }
-
-
-  //     $quizData = array(
-  //       "title" => $this->request->post("quizTitle"),
-  //       "description" => $this->request->post("quizDescription"),
-  //       "requiredWallet" => $this->request->post("requiredWallet"),
-  //       "timeRequired" => $this->request->post("timeRequired"),
-  //       "expiryDate" => $this->request->post("expiryDate"),
-  //       "participantsLimit" => $this->request->post("participantsLimit"),
-  //       "poolAmount" => $this->request->post("poolAmount"),
-  //       "token" => $this->request->post("token"),
-  //     );
-
-  //     $this->validateQuizData($quizData);
-
-  //     $quest = new Quest(
-  //       $questId ?? 0,
-  //       $quizData['title'],
-  //       $quizData['description'],
-  //       0,
-  //       $quizData['requiredWallet'],
-  //       $quizData['timeRequired'],
-  //       $quizData['expiryDate'],
-  //       0,
-  //       $quizData['participantsLimit'],
-  //       $quizData['poolAmount'],
-  //       $quizData['token'],
-  //       0,
-  //       SessionService::get('user')['id'],
-  //       false
-  //     );
-
-  //     $quest->setQuestions($questions);
-
-  //     if ($questId) {
-  //       $this->questRepository->updateQuest($quest);
-  //       $currentQuestions = $this->questionsRepository->getQuestionsByQuestId($questId);
-
-  //       $questionsToUpdate = [];
-  //       $questionsToDelete = [];
-  //       $questionsToAdd = [];
-
-
-
-  //       $currentQuestionMap = array_reduce($currentQuestions, function ($acc, $question) {
-  //         $acc[$question->getQuestionId()] = $question;
-  //         return $acc;
-  //       }, []);
-
-  //       foreach ($questions as $question) {
-  //         if ($question->getQuestionId() < 200) {
-  //           $questionsToAdd[] = $question;
-  //           continue;
-  //         }
-
-  //         $currentQuestion = $currentQuestionMap[$question->getQuestionId()] ?? null;
-  //         unset($currentQuestionMap[$question->getQuestionId()]);
-
-
-  //         if (!$currentQuestion->__equals($question)) {
-  //           $questionsToUpdate[] = $question;
-  //         }
-  //       }
-
-  //       $questionsToDelete = array_values($currentQuestionMap);
-
-
-  //       foreach ($questionsToDelete as $question) {
-  //         $this->optionsRepository->deleteAllOptions($question->getQuestionId());
-  //       }
-
-  //       $this->questionsRepository->deleteQuestions($questionsToDelete);
-  //       $this->questionsRepository->updateQuestions($questionsToUpdate);
-
-  //       foreach ($questionsToAdd as $question) {
-  //         $options = $question->getOptions();
-  //         $questionId = $this->questionsRepository->saveQuestion($question);
-
-  //         $this->optionsRepository->saveNewOptions($questionId, $options);
-  //       }
-
-  //       foreach ($questionsToUpdate as $question) {
-  //         $optionsToAdd = [];
-  //         $optionsToDelete = [];
-  //         $optionsToUpdate = [];
-
-  //         $currentOptions = $this->optionsRepository->getOptionsByQuestionId($question->getQuestionId());
-  //         $options = $question->getOptions();
-
-  //         $currentOptionsMap = array_reduce($currentOptions, function ($acc, $option) {
-  //           $acc[$option->getOptionId()] = $option;
-  //           return $acc;
-  //         }, []);
-
-
-  //         foreach ($options as $option) {
-  //           $optionId = $option->getOptionId();
-
-  //           if ($optionId < 400) {
-  //             $optionsToAdd[] = $option;
-  //             continue;
-  //           }
-
-  //           $currentOption = $currentOptionsMap[$optionId] ?? null;
-  //           unset($currentOptionsMap[$optionId]);
-
-  //           if (!$currentOption->__equals($option)) {
-  //             $optionsToUpdate[] = $option;
-  //           }
-  //         }
-
-  //         $optionsToDelete = array_values($currentOptionsMap);
-
-  //         $this->optionsRepository->saveNewOptions($questionId, $optionsToAdd);
-  //         $this->optionsRepository->deleteOptions($optionsToDelete);
-  //         $this->optionsRepository->updateOptions($optionsToUpdate);
-  //       }
-  //     } else {
-  //       $id = $this->questRepository->saveQuest($quest);
-
-  //       foreach ($quest->getQuestions() as $question) {
-  //         $question->setQuestId($id);
-  //         $questionId = $this->questionsRepository->saveQuestion($question);
-  //         $options = $question->getOptions();
-  //         $this->optionsRepository->saveNewOptions($questionId, $options);
-  //       }
-  //     }
-  //   } catch (NotLoggedInException $e) {
-  //     $this->redirectWithParams('login', ['message' => 'first, you need to log in']);
-  //   } catch (ValidationException $e) {
-  //     $this->redirectWithParams('createQuest/' . $questId, ['messages' => explode(';', $e->getMessage())]);
-  //   }
-
-  //   $this->redirect('createQuest/' . $questId);
-  // }
-
-
   /*
-
       Admin actions
-
-   */
+  */
 
   // shows list of quests which are not approved yet, but can be approved by admin
   public function getShowQuestsToApproval(IRequest $request): IResponse
@@ -328,15 +127,17 @@ class QuestsController extends AppController implements IQuestsController
     return new JsonResponse(['message' => 'quest published']);
   }
 
-  // public function getShowQuestWallets(IRequest $request, int $questId): IResponse
+  public function getShowWalletInput(IRequest $request, int $questId): IResponse
+  {
+    $identity = $this->authService->getIdentity();
+    $wallets = $this->questService->getQuestWallets($identity, $questId);
+
+    return $this->render('showWallets', ['title' => 'enter quest', 'questId' => $questId, 'wallets' => $wallets]);
+  }
+
+  // public function postSaveWallet(IRequest $request): IResponse
   // {
-  //   $quest = $this->questService->getQuest($questId);
-  //   $walletType = $quest->getRequiredWallet();
-  //   $userId = $this->authService->getIdentity()->getId();
 
-  //   $wallets = $this->walletRepository->getBlockchainWallets($userId, $walletType);
-
-  //   return $this->render('showWallets', ['title' => 'enter quest', 'questId' => $questId, 'wallets' => $wallets, 'blockchain' => $walletType]);
   // }
 
   // public function postStartQuest(IRequest $request, int $questId): IResponse

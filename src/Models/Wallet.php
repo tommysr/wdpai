@@ -1,6 +1,9 @@
 <?php
 
-class Wallet
+namespace App\Models;
+use App\Models\IWallet;
+
+class Wallet implements IWallet
 {
   private int $walletId;
   private int $userId;
@@ -15,8 +18,6 @@ class Wallet
     $this->userId = $userId;
     $this->blockchain = $blockchain;
     $this->walletAddress = $walletAddress;
-
-    
     $this->createdAt = $createdAt;
     $this->updatedAt = $updatedAt;
   }

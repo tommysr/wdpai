@@ -9,6 +9,7 @@ use App\Models\Question;
 use App\Models\QuestionType;
 use App\Models\QuestionTypeUtil;
 use App\Repository\IOptionsRepository;
+use App\Repository\IWalletRepository;
 use App\Services\Authenticate\IIdentity;
 use App\Services\Quests\IQuestService;
 use App\Repository\IQuestRepository;
@@ -27,6 +28,7 @@ class QuestService implements IQuestService
   private IQuestionsRepository $questionRepository;
   private IOptionsRepository $optionRepository;
   private IValidationChain $validationChain;
+  private IWalletRepository $walletRepository;
 
   public function __construct(
     IQuestRepository $questRepository = null,
@@ -39,7 +41,6 @@ class QuestService implements IQuestService
     $this->optionRepository = $optionRepository ?: new OptionsRepository();
     $this->validationChain = $validationChain ?: new QuestValidationChain();
   }
-
 
   public function getQuestsToApproval(): array
   {
@@ -64,10 +65,10 @@ class QuestService implements IQuestService
     return $quests;
   }
 
-
   public function getCreatorQuests(IIdentity $identity): array
   {
-    $quests = $this->questRepository->getCreatorQuests($identity->getId());
+    $creatorId = $identity->getId();
+    $quests = $this->questRepository->getCreatorQuests($creatorId);
 
     array_filter($quests, function ($quest) {
       return !$quest->getIsApproved();
@@ -76,33 +77,15 @@ class QuestService implements IQuestService
     return $quests;
   }
 
-  public function getQuests(string $role): array
+  public function getQuestWallets(IIdentity $identity, int $questId): array
   {
-    if ($role === 'admin') {
-      return $this->getAllQuests();
-    } else if ($role === 'user') {
-      return $this->getUserQuests();
-    } else if ($role === 'creator') {
-      return $this->getAllQuests();
+    $quest = $this->questRepository->getQuestById($questId);
+
+    if (!$quest) {
+      return [];
     }
 
-    return [];
-  }
-
-
-  private function getAllQuests(): array
-  {
-    return $this->questRepository->getQuests();
-  }
-
-  private function getAdminQuests(): array
-  {
-    return $this->questRepository->getQuests();
-  }
-
-  private function getUserQuests(): array
-  {
-    return $this->questRepository->getApprovedQuests();
+    return $this->walletRepository->getBlockchainWallets($identity->getId(), $quest->getRequiredWallet());
   }
 
   private function validateQuestData(array $data): array
@@ -199,6 +182,7 @@ class QuestService implements IQuestService
 
     $this->questionRepository->updateQuestions([$question]);
   }
+
 
   private function updateOptionsFromData(array $options, int $questionId)
   {

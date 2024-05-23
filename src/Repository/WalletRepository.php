@@ -1,12 +1,14 @@
 <?php
 
-require_once 'Repository.php';
-require_once __DIR__ . '/../models/Wallet.php';
+namespace App\Repository;
 
-class WalletRepository extends Repository
+use App\Repository\IWalletRepository;
+use App\Repository\Repository;
+use App\Models\IWallet;
+use App\Models\Wallet;
+
+class WalletRepository extends Repository implements IWalletRepository
 {
-
-
   public function getBlockchainWallets(int $userId, string $blockchain): array
   {
     $sql = "SELECT *
@@ -16,7 +18,7 @@ class WalletRepository extends Repository
 
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute(['userId' => $userId, 'blockchain' => $blockchain]);
-    $walletsFetched = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $walletsFetched = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     $wallets = [];
     foreach ($walletsFetched as $wallet) {
@@ -26,7 +28,7 @@ class WalletRepository extends Repository
     return $wallets;
   }
 
-  public function addWallet(Wallet $wallet): int
+  public function addWallet(IWallet $wallet): int
   {
     $sql = 'INSERT INTO UserWallets (UserID, Blockchain, WalletAddress, CreatedAt, UpdatedAt) VALUES (?, ?, ?, ?, ?);';
 
