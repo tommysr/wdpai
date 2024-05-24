@@ -179,4 +179,18 @@ class QuestRepository extends Repository implements IQuestRepository
 
     return $quests;
   }
+
+  public function getAllQuestIds(): array
+  {
+    $questIds = [];
+    $stmt = $this->db->connect()->prepare('SELECT quest_id FROM quests');
+    $stmt->execute();
+    $fetched = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    foreach ($fetched as $fetched_quest) {
+      $questIds[] = $fetched_quest['quest_id'];
+    }
+
+    return $questIds;
+  }
 }

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Repository;
+
 use App\Models\IQuest;
 
 interface IQuestRepository
@@ -13,5 +14,5 @@ interface IQuestRepository
   public function getQuestToApprove(): array;
   public function approve(int $questId);
   public function updateQuest(IQuest $quest);
-
+  public function getAllQuestIds(): array;
 }
