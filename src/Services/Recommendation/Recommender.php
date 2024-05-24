@@ -4,20 +4,56 @@ namespace App\Services\Recommendation;
 
 use App\Services\Recommendation\IRecommender;
 use App\Services\Recommendation\ISimilarityStrategy;
+use App\Services\Recommendation\KnnPredictor;
 
 class Recommender implements IRecommender
 {
-  protected array $data;
-  protected array $similarityMatrix;
+  protected array $data = [];
+  protected array $similarityMatrix = [];
   protected ISimilarityStrategy $similarityStrategy;
+  protected IPredictionStrategy $predictionStrategy;
 
-  public function __construct(array $data, ISimilarityStrategy $similarityStrategy)
+  public function setPredictionStrategy(string $name, array $data): void
   {
-    $this->data = $data;
-    $this->similarityStrategy = $similarityStrategy;
+    if (empty($this->data) || empty($this->similarityMatrix)) {
+      throw new \Exception('Data is not set');
+    }
+
+    switch ($name) {
+      case 'knn':
+        $this->predictionStrategy = new KnnPredictor($this->data, $this->similarityMatrix, $data['k']);
+        break;
+      default:
+        throw new \Exception('Invalid prediction strategy');
+    }
   }
 
-  public function construct(): IRecommender
+  public function setSimilarityStrategy(string $name, array $data): void
+  {
+    if (empty($this->data) || empty($this->similarityMatrix)) {
+      throw new \Exception('Data is not set');
+    }
+
+    switch ($name) {
+      case 'cosine':
+        $this->similarityStrategy = new CosineSimilarity();
+        break;
+      default:
+        throw new \Exception('Invalid similarity strategy');
+    }
+  }
+
+  public function setData(array $data): void
+  {
+    $this->data = $data;
+  }
+
+  public function setSimilarityMatrix(array $similarityMatrix): void
+  {
+    $this->similarityMatrix = $similarityMatrix;
+  }
+
+  private function calculateSimilarityMatrix(): void
   {
     $userCount = count($this->data);
     $similarityMatrix = [];
@@ -27,55 +63,34 @@ class Recommender implements IRecommender
         if ($i == $j) {
           $similarityMatrix[$i][$j] = 1.0;
         } else {
-          $similarityMatrix[$i][$j] = $this->similarityStrategy->calculate($this->data[$i], $this->data[$j]);
+          $vector1 = new Vector($this->data[$i]);
+          $vector2 = new Vector($this->data[$j]);
+          $similarityMatrix[$i][$j] = $this->similarityStrategy->calculate($vector1, $vector2);
         }
       }
     }
 
     $this->similarityMatrix = $similarityMatrix;
+  }
+
+  public function construct(): self
+  {
+    if (empty($this->similarityMatrix)) {
+      $this->calculateSimilarityMatrix();
+    }
 
     return $this;
   }
 
-  private function getKNearestNeighbors(int $userIndex, $k): array
-  {
-    $similarities = $this->similarityMatrix[$userIndex];
-    asort($similarities);
-    $neighbors = array_slice(array_keys($similarities), 1, $k, true);
-
-    return $neighbors;
-  }
-
-
   public function estimate(int $userIndex): array
   {
-    $neighbors = $this->getKNearestNeighbors($userIndex, 3);
     $userRatings = $this->data[$userIndex];
-    $predictedRatings = [];
-    $itemCount = count($this->data[0]);
 
-    for ($item = 0; $item < $itemCount; $item++) {
-      if ($userRatings[$item] == 0) {
-        $weightedSum = 0.0;
-        $similaritySum = 0.0;
+    return $this->predictionStrategy->predict($userIndex, $userRatings);
+  }
 
-        foreach ($neighbors as $neighbor) {
-          if ($this->data[$neighbor][$item] != 0) {
-            $weightedSum += $this->similarityMatrix[$userIndex][$neighbor] * $this->data[$neighbor][$item];
-            $similaritySum += abs($this->similarityMatrix[$userIndex][$neighbor]);
-          }
-        }
-
-        if ($similaritySum != 0) {
-          $predictedRatings[$item] = $weightedSum / $similaritySum;
-        } else {
-          $predictedRatings[$item] = 0;
-        }
-      } else {
-        $predictedRatings[$item] = $userRatings[$item];
-      }
-    }
-
-    return $predictedRatings;
+  public function getSimilarityMatrix(): array
+  {
+    return $this->similarityMatrix;
   }
 }
