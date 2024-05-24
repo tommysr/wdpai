@@ -12,7 +12,7 @@ class ErrorController extends AppController implements IErrorController
     return $this->render('error', ['code' => 404, 'message' => '']);
   }
 
-  public function error(IRequest $request, int $code): IResponse
+  public function getError(IRequest $request, int $code): IResponse
   {
     return $this->render('error', ['code' => $code, 'message' => '']);
   }

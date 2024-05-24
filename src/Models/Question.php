@@ -33,6 +33,10 @@ class Question implements IQuestion
     $this->score = $score;
   }
 
+  public function setQuestionId(int $id)
+  {
+    $this->questionId = $id;
+  }
 
   public function getQuestionId(): int
   {

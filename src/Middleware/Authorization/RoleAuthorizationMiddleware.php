@@ -11,7 +11,7 @@ use App\Middleware\BaseResponse;
 use App\Services\Authorize\IAcl;
 
 
-class AuthorizationMiddleware extends BaseMiddleware
+class RoleAuthorizationMiddleware extends BaseMiddleware
 {
   private IAcl $acl;
   private IAuthService $authService;

@@ -9,8 +9,9 @@ class RedirectResponse extends BaseResponse implements IRedirectResponse
 {
   private string $redirectUri;
 
-  public function __construct(string $redirectUri)
+  public function __construct(string $redirectUri, int $statusCode = 303)
   {
+    parent::__construct($statusCode);
     $this->redirectUri = $redirectUri;
   }
 

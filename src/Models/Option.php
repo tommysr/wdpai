@@ -34,6 +34,11 @@ class Option implements IOption
     }
   }
 
+  public function setOptionId(int $id)
+  {
+    $this->optionId = $id;
+  }
+
   public function getQuestionId(): int
   {
     return $this->questionId;

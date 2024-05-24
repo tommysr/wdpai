@@ -1,104 +1,213 @@
-const minQuestionId = 0;
-const maxQuestionId = 200;
-
-const minOptionId = 0;
-const maxOptionId = 400;
-
-let currentQuestionId = minQuestionId;
-let currentOptionId = minOptionId;
-
 const questionsDiv = document.getElementById("questions");
 const questions = document.querySelectorAll(".question");
 const optionsDiv = document.querySelectorAll(".options");
 
+let questionsOption = {};
+let lastQuestionId;
+
 document.addEventListener("DOMContentLoaded", function () {
-  document.getElementById("addQuestion").addEventListener("click", function () {
-    addQuestion();
-  });
-
-  questions.forEach((q) => {
-    q.querySelector(".removeQuestion").addEventListener("click", function () {
-      questionsDiv.removeChild(q);
-    });
-  });
-
-  optionsDiv.forEach((d) => {
-    const options = d.querySelectorAll(".option");
-
-    options.forEach((o) => {
-      o.querySelector(".removeOption").addEventListener("click", function () {
-        d.removeChild(o);
-      });
-    });
-  });
+  document.getElementById("questForm").addEventListener("submit", submitForm);
 });
 
-function addQuestion() {
-  if (currentQuestionId <= maxQuestionId) {
-    const newQuestionDiv = document.createElement("div");
-    newQuestionDiv.classList = "question flex-column-center-center gap-1";
+function removeQuestion(callDiv, questionId) {
+  const questionDiv = callDiv.parentNode;
 
-    newQuestionDiv.innerHTML = `
+  const input = document.createElement("input");
+  input.type = "hidden";
+  input.value = "remove";
+  input.name = `questions[${questionId}][flag]`;
+  questionDiv.appendChild(input);
+
+  questionDiv.style.display = "none";
+}
+
+function removeOption(callDiv, questionId, optionId) {
+  const optionDiv = callDiv.parentNode;
+
+  const input = document.createElement("input");
+  input.type = "hidden";
+  input.value = "remove";
+  input.name = `questions[${questionId}][options][${optionId}][flag]`;
+  optionDiv.appendChild(input);
+
+  optionDiv.style.display = "none";
+}
+
+function addQuestion(questionId) {
+  console.log(questionId);
+
+  const newQuestionDiv = document.createElement("div");
+  newQuestionDiv.classList = "question flex-column-center-center gap-1";
+
+  newQuestionDiv.innerHTML = `
       <label for="questionText" class="input-description main-text">Question Text:</label>
-      <textarea name="questions[${currentQuestionId}][text]" class="questionText main-text" cols="30" rows="10" required> </textarea>
+      <textarea name="questions[${questionId}][text]" class="questionText main-text" cols="30" rows="10" required> </textarea>
+      <input type="number" name="questions[${questionId}][points]" class="questionPoints" placeholder="points" required>
+      <input type="hidden" name="questions[${questionId}][flag]" value="added">
 
       <div class="options"></div>
       <button type="button" class="addOption main-button">Add Option</button><br>
       <button type="button" class="removeQuestion secondary-button">Remove Question</button><br><br>
     `;
-    questionsDiv.appendChild(newQuestionDiv);
+  questionsDiv.appendChild(newQuestionDiv);
 
-    newQuestionDiv
-      .querySelector(".addOption")
-      .addEventListener("click", function () {
-        addOption(newQuestionDiv, currentQuestionId);
-      });
+  newQuestionDiv
+    .querySelector(".addOption")
+    .addEventListener("click", function () {
+      if (questionsOption[questionId] != undefined) {
+        questionsOption[questionId] += 1;
+      } else {
+        questionsOption[questionId] = 0;
+      }
 
-    newQuestionDiv
-      .querySelector(".removeQuestion")
-      .addEventListener("click", function () {
-        questionsDiv.removeChild(newQuestionDiv);
-      });
+      addOption(newQuestionDiv, questionId, questionsOption[questionId]);
+    });
 
-    currentQuestionId++;
+  newQuestionDiv
+    .querySelector(".removeQuestion")
+    .addEventListener("click", function () {
+      questionsDiv.removeChild(newQuestionDiv);
+    });
+}
+
+function addQuestionRaw(questionId) {
+  if (lastQuestionId) {
+    lastQuestionId += 1;
   } else {
-    console.error("Maximum limit for question IDs exceeded.");
+    lastQuestionId = questionId;
   }
+
+  addQuestion(lastQuestionId);
 }
 
-function addOptionRaw(callDiv, questionId) {
-  const questionDiv = callDiv.parentNode;
+function addOptionRaw(callDiv, questionId, optionId) {
+  const optionsDiv = callDiv.parentNode;
 
-  addOption(questionDiv, questionId);
+  if (questionsOption[questionId] != undefined) {
+    questionsOption[questionId] += 1;
+  } else {
+    questionsOption[questionId] = optionId;
+  }
+
+  addOption(optionsDiv, questionId, questionsOption[questionId]);
 }
 
-function addOption(questionDiv, questionId) {
+function addOption(questionDiv, questionId, optionId) {
   const optionsDiv = questionDiv.querySelector(".options");
 
-  if (currentOptionId <= maxOptionId) {
-    const newOptionDiv = document.createElement("div");
-    newOptionDiv.classList = "option";
+  const newOptionDiv = document.createElement("div");
+  newOptionDiv.classList = "option";
 
-    newOptionDiv.innerHTML = `
-      <input type="text" class="optionText" name="options[${questionId}][${currentOptionId}][text]" placeholder="new option">
+  newOptionDiv.innerHTML = `
+      <input type="text" class="optionText" name="questions[${questionId}][options][${optionId}][text]" placeholder="new option">
+
+      <input type="hidden" name="questions[${questionId}][options][${optionId}][flag]" value="added">
 
       <label class="option-container">
-        <input type="checkbox" name="options[${questionId}][${currentOptionId}][isCorrect]"/>
+        <input type="checkbox" name="questions[${questionId}][options][${optionId}][isCorrect]"/>
         <span class="checkmark"></span>
       </label>
       <button type="button" class="removeOption"><i class="fa fa-times-circle"
         aria-hidden="true"></i></button><br>
     `;
-    optionsDiv.appendChild(newOptionDiv);
+  optionsDiv.appendChild(newOptionDiv);
 
-    newOptionDiv
-      .querySelector(".removeOption")
-      .addEventListener("click", function () {
-        optionsDiv.removeChild(newOptionDiv);
+  newOptionDiv
+    .querySelector(".removeOption")
+    .addEventListener("click", function () {
+      optionsDiv.removeChild(newOptionDiv);
+    });
+}
+
+function update(data, keys, value) {
+  if (keys.length === 0) {
+    // Leaf node
+    return value;
+  }
+
+  let key = keys.shift();
+  if (!key) {
+    data = data || [];
+    if (Array.isArray(data)) {
+      key = data.length;
+    }
+  }
+
+  // Try converting key to a numeric value
+  let index = +key;
+  if (!isNaN(index)) {
+    // We have a numeric index, make data a numeric array
+    // This will not work if this is a associative array
+    // with numeric keys
+    data = data || [];
+    key = index;
+  }
+
+  // If none of the above matched, we have an associative array
+  data = data || {};
+
+  let val = update(data[key], keys, value);
+  data[key] = val;
+
+  return data;
+}
+
+//credits
+// https://stackoverflow.com/questions/41431322/how-to-convert-formdata-html5-object-to-json
+// author: Joyce Babu
+function serializeForm(form) {
+  return Array.from(new FormData(form).entries()).reduce(
+    (data, [field, value]) => {
+      let [_, prefix, keys] = field.match(/^([^\[]+)((?:\[[^\]]*\])*)/);
+
+      if (keys) {
+        keys = Array.from(keys.matchAll(/\[([^\]]*)\]/g), (m) => m[1]);
+        value = update(data[prefix], keys, value);
+      }
+      data[prefix] = value;
+      return data;
+    },
+    {}
+  );
+}
+
+function submitForm(event) {
+  event.preventDefault();
+
+  const formData = serializeForm(event.target);
+
+  const path = window.location.pathname;
+  let apiUrl = "";
+  if (path.startsWith("/createQuest")) {
+    apiUrl = "/createQuest";
+  } else if (path.startsWith("/editQuest")) {
+    const parts = path.split("/");
+    const questId = parts[2];
+    apiUrl = `/editQuest/${questId}`;
+  }
+  fetch(apiUrl, {
+    method: "POST",
+    body: JSON.stringify(formData),
+    headers: {
+      "Content-Type": "application/json",
+    },
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+      document.querySelectorAll(".error").forEach((errorDiv) => {
+        errorDiv.textContent = "";
       });
 
-    currentOptionId++;
-  } else {
-    console.error("Maximum limit for option IDs exceeded.");
-  }
+      if (data.messages) {
+        document.querySelectorAll(".error").forEach((errorDiv) => {
+          errorDiv.textContent = data.messages;
+        });
+      } else {
+        console.log("some error");
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
 }

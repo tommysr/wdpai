@@ -9,9 +9,9 @@ use App\Request\IRequest;
 use App\Request\Request;
 
 // concrete default implementations
+use App\Services\Authenticate\UserIdentity;
 use App\Services\Session\SessionService;
 use App\Services\Session\ISessionService;
-use App\Utils\GlobalVariablesManager;
 use App\View\IViewRenderer;
 use App\View\ViewRenderer;
 use App\Middleware\IResponse;
@@ -33,7 +33,7 @@ class AppController implements IHandler
     {
         $actionMethod = $this->getActionMethod();
         if (!method_exists($this, $actionMethod)) {
-            return new BaseResponse('Action not found', [], 404);
+            return new BaseResponse(404, [], 'Not Found');
         }
         $params = $this->request->getAttribute('params', []);
         return call_user_func_array([$this, $actionMethod], array_merge([$request], $params));
@@ -48,7 +48,16 @@ class AppController implements IHandler
 
     public function render(string $template, array $variables = [], string $content = null): IResponse
     {
-        $globalVariables = GlobalVariablesManager::getGlobalVariables($this->sessionService);
+        $identityString = $this->sessionService->get('identity');
+
+        $globalVariables = [];
+
+        if ($identityString) {
+            $identity = UserIdentity::fromString($identityString);
+            $globalVariables['userId'] = $identity->getId();
+            $globalVariables['userRole'] = $identity->getRole()->getName();
+        }
+
         $variables = array_merge($variables, $globalVariables);
         $content = $this->viewRenderer->render($template, $variables, $content);
         return new BaseResponse(200, [], $content);

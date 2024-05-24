@@ -34,11 +34,15 @@ class AuthenticateService implements IAuthService
     return $this->session->has('identity');
   }
 
-  public function getIdentity(): IIdentity
+  public function getIdentity(): ?IIdentity
   {
     $identityString = $this->session->get('identity');
-    
-    return UserIdentity::fromString($identityString);
+
+    if ($identityString) {
+      return UserIdentity::fromString($identityString);
+    }
+
+    return null;
   }
 
   public function clearIdentity()

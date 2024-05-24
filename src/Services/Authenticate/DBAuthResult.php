@@ -5,18 +5,18 @@ use App\Services\Authenticate\IAuthResult;
 
 class DBAuthResult implements IAuthResult
 {
-    private IIdentity $identity;
+    private ?IIdentity $identity;
     private array $messages;
     private bool $isValid;
 
-    public function __construct(IIdentity $identity, array $messages, bool $isValid = false)
+    public function __construct(IIdentity $identity = null, array $messages = [], bool $isValid = false)
     {
         $this->identity = $identity;
         $this->messages = $messages;
         $this->isValid = $isValid;
     }
 
-    public function getIdentity(): IIdentity
+    public function getIdentity(): ?IIdentity
     {
         return $this->identity;
     }
