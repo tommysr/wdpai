@@ -3,33 +3,15 @@
 namespace App\Services\Recommendation;
 
 use App\Services\Recommendation\ISimilarityStrategy;
-
-function dotProduct($vector1, $vector2)
-{
-  $result = 0;
-  $length = count($vector1);
-  for ($i = 0; $i < $length; $i++) {
-    $result += $vector1[$i] * $vector2[$i];
-  }
-  return $result;
-}
-
-function magnitude($vector)
-{
-  $sum = 0;
-  foreach ($vector as $value) {
-    $sum += pow($value, 2);
-  }
-  return sqrt($sum);
-}
+use App\Services\Recommendation\IVector;
 
 class CosineSimilarity implements ISimilarityStrategy
 {
-  public function calculate(array $firstVector, array $secondVector): float
+  public function calculate(IVector $firstVector, IVector $secondVector): float
   {
-    $dotProduct = dotProduct($firstVector, $secondVector);
-    $magnitude1 = magnitude($firstVector);
-    $magnitude2 = magnitude($secondVector);
+    $dotProduct = $firstVector->dot($secondVector);
+    $magnitude1 = $firstVector->norm();
+    $magnitude2 = $secondVector->norm();
     $denominator = $magnitude1 * $magnitude2;
 
     if ($denominator != 0) {
