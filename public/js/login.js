@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const form = document.querySelector("form");
   const email = document.querySelector("input[name='email']");
   const password = document.querySelector("input[name='password']");
-
+  const formErrorMessage = document.querySelector("#form-error");
   const emailErrorMessage = document.querySelector("#email-error");
   const passwordErrorMessage = document.querySelector("#password-error");
 
@@ -30,10 +30,33 @@ document.addEventListener("DOMContentLoaded", function () {
   password.addEventListener("blur", checkPasswordValidity);
 
   form.addEventListener("submit", (event) => {
+    event.preventDefault();
+
     checkEmailValidity();
     checkPasswordValidity();
     if (!form.checkValidity()) {
-      event.preventDefault();
+      return;
     }
+
+    const formData = new FormData(form);
+
+    fetch("/login", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data.errors) {
+          formErrorMessage.textContent = data.errors.join("\n");
+        } else {
+          window.location.href = data.redirectUrl;
+        }
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        formErrorMessage.textContent = error;
+      });
   });
 });
