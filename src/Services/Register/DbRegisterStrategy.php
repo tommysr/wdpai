@@ -22,13 +22,8 @@ class DbRegisterStrategy implements IRegisterStrategy
     $this->request = $request;
   }
 
-  public function register(): IRegisterResult
+  private function validateRegistrationData($email, $username, $password, $confirmedPassword): IRegisterResult
   {
-    $email = $this->request->getParsedBodyParam('email');
-    $password = $this->request->getParsedBodyParam('password');
-    $username = $this->request->getParsedBodyParam('username');
-    $confirmedPassword = $this->request->getParsedBodyParam('confirmedPassword');
-
     if ($this->userRepository->userExists($email)) {
       return new DBRegisterResult(['Email exists']);
     }
@@ -39,6 +34,22 @@ class DbRegisterStrategy implements IRegisterStrategy
 
     if ($password !== $confirmedPassword) {
       return new DBRegisterResult(['Passwords do not match']);
+    }
+
+    return new DBRegisterResult([], true);
+  }
+
+  public function register(): IRegisterResult
+  {
+    $email = $this->request->getParsedBodyParam('email');
+    $password = $this->request->getParsedBodyParam('password');
+    $username = $this->request->getParsedBodyParam('username');
+    $confirmedPassword = $this->request->getParsedBodyParam('confirmedPassword');
+
+    $result = $this->validateRegistrationData($email, $username, $password, $confirmedPassword);
+
+    if (!$result->isValid()) {
+      return $result;
     }
 
     $password_hash = password_hash($password, PASSWORD_DEFAULT);

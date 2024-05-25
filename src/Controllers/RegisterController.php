@@ -6,6 +6,7 @@ use App\Controllers\AppController;
 use App\Controllers\Interfaces\IRegisterController;
 use App\Middleware\JsonResponse;
 use App\Middleware\RedirectResponse;
+use App\Repository\UserRepository;
 use App\Request\IRequest;
 use App\Middleware\IResponse;
 use App\Services\Register\DbRegisterStrategy;
@@ -13,6 +14,7 @@ use App\Services\Register\IRegisterService;
 use App\Services\Register\IRegisterStrategyFactory;
 use App\Services\Register\RegisterService;
 use App\Request\IFullRequest;
+use App\Services\Register\StrategyFactory;
 
 class RegisterController extends AppController implements IRegisterController
 {
@@ -21,7 +23,15 @@ class RegisterController extends AppController implements IRegisterController
   public function __construct(IFullRequest $request, IRegisterService $registerService = null)
   {
     parent::__construct($request);
-    $this->registerService = $registerService ?: new RegisterService($this->request);
+    $this->registerService = $registerService ?: $this->initializeRegisterService();
+  }
+
+  private function initializeRegisterService(): IRegisterService
+  {
+    $userRepository = new UserRepository();
+    $strategyFactory = new StrategyFactory($this->request, $userRepository);
+    $strategyFactory->registerStrategy('db', new DbRegisterStrategy($this->request, $userRepository));
+    return new RegisterService($this->request, $userRepository, $strategyFactory);
   }
 
   public function getIndex(IRequest $request): IResponse

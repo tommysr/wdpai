@@ -1,4 +1,4 @@
-<!-- <?php
+<?php
 
 namespace App\Services\Register;
 
@@ -8,6 +8,8 @@ use App\Request\IFullRequest;
 
 class StrategyFactory implements IRegisterStrategyFactory
 {
+  private $strategies = [];
+
   private IUserRepository $userRepository;
   private IFullRequest $request;
 
@@ -17,12 +19,17 @@ class StrategyFactory implements IRegisterStrategyFactory
     $this->userRepository = $userRepository;
   }
 
+  public function registerStrategy(string $method, IRegisterStrategy $strategy)
+  {
+    $this->strategies[$method] = $strategy;
+  }
+
   public function create(string $method): IRegisterStrategy
   {
-    if ($method === 'db') {
-      return new DbRegisterStrategy($this->request, $this->userRepository);
-    } else {
+    if (!isset($this->strategies[$method])) {
       throw new \Exception('Invalid method');
     }
+    
+    return $this->strategies[$method];
   }
 }
