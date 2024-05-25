@@ -8,29 +8,24 @@ use App\Request\IFullRequest;
 use App\Middleware\IResponse;
 use App\Middleware\IHandler;
 use App\Services\Authenticate\IAuthService;
-use App\Middleware\BaseResponse;
 use App\Services\Authorize\IAcl;
-use App\Services\Authorize\IQuestAuthorizeService;
 
 
 class RoleAuthorizationMiddleware extends BaseMiddleware
 {
   private IAcl $acl;
   private IAuthService $authService;
-  private IQuestAuthorizeService $questAuthorizeService;
 
-  public function __construct(IAcl $acl, IAuthService $authService, IQuestAuthorizeService $questAuthorizeService)
+  public function __construct(IAcl $acl, IAuthService $authService)
   {
     $this->acl = $acl;
     $this->authService = $authService;
-    $this->questAuthorizeService = $questAuthorizeService;
   }
 
   public function process(IFullRequest $request, IHandler $handler): IResponse
   {
     $identity = $this->authService->getIdentity();
     $role = $identity ? $identity->getRole() : 'guest';
-
     $resource = $request->getAttribute('controller');
     $privilege = $request->getAttribute('action');
 

@@ -3,34 +3,35 @@
 namespace App\Middleware\QuestAuthorization;
 
 use App\Middleware\BaseMiddleware;
-use App\Middleware\BaseResponse;
+use App\Middleware\RedirectResponse;
 use App\Request\IFullRequest;
 use App\Middleware\IResponse;
 use App\Middleware\IHandler;
-use App\Services\Authorize\QuestRequest;
-use App\Services\Authorize\IQuestAuthorizeService;
-use App\Services\Authorize\QuestAuthorizeService;
+use App\Services\Authorize\Quest\QuestRequest;
+use App\Services\Authorize\Quest\IQuestAuthorizeService;
 
 class QuestAuthorizationMiddleware extends BaseMiddleware
 {
-  private QuestRequest $questRequest;
   private IQuestAuthorizeService $questAuthorizeService;
 
-  public function __construct(QuestRequest $questRequest, IQuestAuthorizeService $questAuthorizeService = null)
+  public function __construct(IQuestAuthorizeService $questAuthorizeService)
   {
-    $this->questRequest = $questRequest;
-    $this->questAuthorizeService = $questAuthorizeService ?: new QuestAuthorizeService();
+    $this->questAuthorizeService = $questAuthorizeService;
   }
 
   public function process(IFullRequest $request, IHandler $handler): IResponse
   {
     $params = $request->getAttribute('params');
-    $questId = $params ? $params['questId'] : null;
+    $requestAction = $request->getAttribute('action');
+    $questRequest = QuestRequest::from($requestAction);
+    $questId = $params[0] ? (int) $params[0] : null;
 
-    $result = $this->questAuthorizeService->authorizeQuest($this->questRequest, $questId);
+    if ($questRequest !== null) {
+      $authResult = $this->questAuthorizeService->authorizeQuest($questRequest, $questId);
 
-    if (!$result->isValid()) {
-      return new BaseResponse('Unauthorized', [], 401);
+      if (!$authResult->isValid()) {
+        return new RedirectResponse('/error/401');
+      }
     }
 
     if ($this->next !== null) {

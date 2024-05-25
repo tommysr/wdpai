@@ -11,7 +11,7 @@ use App\Repository\QuestProgress\IQuestProgressRepository;
 
 class QuestProgressRepository extends Repository implements IQuestProgressRepository
 {
-  public function getInProgress(int $userId): ?int
+  public function getInProgress(int $userId): ?QuestProgress
   {
     $stateInProgress = QuestState::InProgress;
     $stateInt = $stateInProgress->getStateId();
@@ -22,15 +22,13 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
 
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute([':state' => $stateInt, ':user_id' => $userId]);
-    $questId = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    $qp = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-    $len = sizeof($questId);
-
-    if ($len > 1) {
-      throw new \Exception("User has more than one quest in progress");
+    if (!$qp) {
+      return null;
     }
 
-    return sizeof($questId) > 0 ? $questId[0]['quest_id'] : null;
+    return new QuestProgress($qp['completion_date'], $qp['score'], $qp['quest_id'], $qp['wallet_id'], $qp['last_question_id'], QuestState::fromId($qp['state']));
   }
 
   public function getQuestProgress(int $userId, int $questId): ?IQuestProgress
