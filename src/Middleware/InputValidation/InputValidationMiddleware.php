@@ -9,9 +9,9 @@ use App\Middleware\IHandler;
 use App\Middleware\IResponse;
 use App\Middleware\JsonResponse;
 
-class InputValidationMiddleware extends BaseMiddleware
+abstract class InputValidationMiddleware extends BaseMiddleware
 {
-  protected ?IValidationChain $validationChain;
+  protected IValidationChain $validationChain;
 
   public function process(IFullRequest $request, IHandler $handler): IResponse
   {
