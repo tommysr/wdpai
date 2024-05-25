@@ -2,55 +2,26 @@
 
 namespace App\Services\Register;
 
-use App\Services\Register\IRegisterService;
 use App\Repository\IUserRepository;
-use App\Services\Register\IRegisterResult;
-use App\Validator\IValidationChain;
-use App\Repository\UserRepository;
-use App\Validator\EmailValidationRule;
-use App\Validator\UsernameFormatValidationRule;
-use App\Validator\ConfirmedPasswordValidationRule;
-use App\Validator\MinLengthValidationRule;
-use App\Validator\RequiredValidationRule;
 use App\Request\IFullRequest;
-use App\Services\Register\DBRegisterResult;
-use App\Models\User;
-use App\Validator\ValidationChain;
+use App\Services\Register\IRegisterService;
+use App\Services\Register\IRegisterStrategyFactory;
 
 class RegisterService implements IRegisterService
 {
-  private IUserRepository $userRepository;
   private IFullRequest $request;
+  private IRegisterStrategyFactory $registerStrategyFactory;
 
-  public function __construct(IFullRequest $request, IUserRepository $userRepository = null)
+  public function __construct(IFullRequest $request, IUserRepository $userRepository = null, IRegisterStrategyFactory $strategy = null)
   {
-    $this->userRepository = $userRepository ?: new UserRepository();
     $this->request = $request;
+    $this->registerStrategyFactory = $strategy ?: new StrategyFactory($request, $userRepository);
   }
 
-  public function register(array $data): IRegisterResult
+  public function register(): IRegisterResult
   {
-    $email = $this->request->getParsedBodyParam('email');
-    $password = $this->request->getParsedBodyParam('password');
-    $username = $this->request->getParsedBodyParam('username');
-    $confirmedPassword = $this->request->getParsedBodyParam('confirmedPassword');
-
-    if ($this->userRepository->userExists($email)) {
-      return new DBRegisterResult(['Email exists']);
-    }
-
-    if ($this->userRepository->userNameExists($username)) {
-      return new DBRegisterResult(['Username already taken']);
-    }
-
-    if ($password !== $confirmedPassword) {
-      return new DBRegisterResult(['Passwords do not match']);
-    }
-
-    $password_hash = password_hash($password, PASSWORD_DEFAULT);
-    $user = new User(0, $email, $password_hash, $username);
-    $this->userRepository->addUser($user);
-
-    return new DBRegisterResult(['User registered successfully'], true);
+    $method = $this->request->getParsedBodyParam('register_method');
+    $strategy = $this->registerStrategyFactory->create($method);
+    return $strategy->register();
   }
 }

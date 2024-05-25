@@ -11,7 +11,7 @@ class AuthAdapterFactory implements IAuthAdapterFactory
 {
     public function createAuthAdapter(IFullRequest $request): ?IAuthAdapter
     {
-        $bodyParams = $request ->getParsedBody();
+        $bodyParams = $request->getParsedBody();
 
         // could also throw error
         if (!isset($bodyParams['email']) || !isset($bodyParams['password'])) {

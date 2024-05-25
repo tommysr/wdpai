@@ -2,7 +2,8 @@
 
 namespace App\Services\Register;
 
-interface IRegisterService
+
+interface IRegisterStrategy
 {
   public function register(): IRegisterResult;
 }

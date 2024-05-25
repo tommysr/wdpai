@@ -8,7 +8,9 @@ use App\Middleware\JsonResponse;
 use App\Middleware\RedirectResponse;
 use App\Request\IRequest;
 use App\Middleware\IResponse;
+use App\Services\Register\DbRegisterStrategy;
 use App\Services\Register\IRegisterService;
+use App\Services\Register\IRegisterStrategyFactory;
 use App\Services\Register\RegisterService;
 use App\Request\IFullRequest;
 
@@ -34,7 +36,7 @@ class RegisterController extends AppController implements IRegisterController
 
   public function postRegister(IRequest $request): IResponse
   {
-    $result = $this->registerService->register($this->request->getParsedBody());
+    $result = $this->registerService->register();
 
     if ($result->isValid()) {
       return new JsonResponse([]);
