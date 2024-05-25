@@ -63,14 +63,14 @@ class RatingRepository extends Repository implements IRatingRepository
     ]);
   }
 
-  public function deleteRating(int $userId, int $questId): void
+  public function deleteRating(IRating $rating): void
   {
     $pdo = $this->db->connect();
     $query = "DELETE FROM ratings WHERE user_id = :userId AND quest_id = :questId";
     $smtp = $pdo->prepare($query);
     $smtp->execute([
-      ':userId' => $userId,
-      ':questId' => $questId,
+      ':userId' => $rating->getUserId(),
+      ':questId' => $rating->getQuestId(),
     ]);
   }
 }

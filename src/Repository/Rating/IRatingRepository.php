@@ -10,5 +10,5 @@ interface IRatingRepository
   public function getRating(int $userId, int $questId): ?IRating;
   public function addRating(IRating $rating): void;
   public function updateRating(IRating $rating): void;
-  public function deleteRating(int $userId, int $questId): void;
+  public function deleteRating(IRating $rating): void;
 }
