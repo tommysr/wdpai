@@ -10,4 +10,5 @@ interface IUserRepository
   public function getUserById(int $id): ?User;
   public function userExists($email): bool;
   public function userNameExists($username): bool;
+  public function getAllUserIds(): array;
 }

@@ -9,6 +9,20 @@ use PDO;
 
 class UserRepository extends Repository implements IUserRepository
 {
+  public function getAllUserIds(): array
+  {
+    $stmt = $this->db->connect()->prepare('
+      SELECT user_id FROM Users
+    ');
+    $stmt->execute();
+
+    $userIds = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    return array_map(function ($userId) {
+      return $userId['user_id'];
+    }, $userIds);
+  }
+
   public function addUser(User $user): void
   {
     $stmt = $this->db->connect()->prepare('
