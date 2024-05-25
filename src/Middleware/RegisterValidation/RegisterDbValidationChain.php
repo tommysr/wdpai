@@ -12,6 +12,7 @@ class RegisterDbValidationChain extends ValidationChain
 {
   public function __construct()
   {
+    $this->addRule('register_method', new RequiredValidationRule());
     $this->addRules('email', [new RequiredValidationRule(), new EmailValidationRule()]);
     $this->addRules('password', [new RequiredValidationRule(), new MinLengthValidationRule(8)]);
     $this->addRules('username', [new RequiredValidationRule(), new UsernameFormatValidationRule()]);

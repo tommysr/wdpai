@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .then((data) => {
         if (data.errors) {
-          formErrorMessage.textContent = data.errors.join("\n");
+          formErrorMessage.textContent = data.errors;
         } else {
           window.location.href = data.redirectUrl;
         }

@@ -29,6 +29,7 @@ $authMiddleware = new AuthenticationMiddleware($authService, $authAdapterFactory
 Router::get('/error/{code}', 'ErrorController@error');
 
 // this looks good, checked
+Router::get('/', 'LoginController@login', [$authMiddleware]);
 Router::get('/login', 'LoginController@login', [$authMiddleware]);
 $loginValidationFactory = new LoginChainFactory();
 Router::post('/login', 'LoginController@login', [new LoginValidationMiddleware($loginValidationFactory), $authMiddleware]);

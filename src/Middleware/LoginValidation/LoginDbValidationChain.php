@@ -11,6 +11,7 @@ class LoginDbValidationChain extends ValidationChain
 {
   public function __construct()
   {
+    $this->addRule('login_method', new RequiredValidationRule());
     $this->addRules('email', [new RequiredValidationRule(), new EmailValidationRule()]);
     $this->addRules('password', [new RequiredValidationRule(), new MinLengthValidationRule(8)]);
   }
