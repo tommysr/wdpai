@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 
-use App\Middleware\AuthenticationMiddleware;
+use App\Middleware\Authentication\AuthenticationMiddleware;
 use App\Middleware\Authorization\RoleAuthorizationMiddleware;
 use App\Middleware\LoginValidation\LoginValidationMiddleware;
 use App\Routing\Router;

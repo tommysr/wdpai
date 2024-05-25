@@ -1,7 +1,11 @@
 <?php
 
-namespace App\Middleware;
+namespace App\Middleware\Authentication;
 
+use App\Middleware\IHandler;
+use App\Middleware\IResponse;
+use App\Middleware\JsonResponse;
+use App\Middleware\RedirectResponse;
 use App\Request\IFullRequest;
 use App\Middleware\BaseMiddleware;
 

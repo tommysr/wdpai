@@ -20,7 +20,6 @@ class Emitter implements IEmitter
       $this->emitNormalResponse($response);
     }
   }
-
   private function buildHeaders(array $headers): string
   {
     $headerString = '';
