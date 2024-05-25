@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Services\Recommendation;
+namespace App\Services\Recommendation\Similarity;
 
-use App\Services\Recommendation\ISimilarityStrategy;
-use App\Services\Recommendation\IVector;
+use App\Services\Recommendation\Similarity\ISimilarityStrategy;
+use App\Services\Recommendation\Utils\IVector;
 
 class CosineSimilarity implements ISimilarityStrategy
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services\Recommendation;
+namespace App\Services\Recommendation\Utils;
 
-use App\Services\Recommendation\IVector;
+use App\Services\Recommendation\Utils\IVector;
 
 class Vector implements IVector
 {
@@ -13,6 +13,23 @@ class Vector implements IVector
   {
     $this->data = $data;
     $this->dimensions = count($data);
+  }
+
+  public function intersect(IVector $other): IVector
+  {
+    $res = array_fill(0, $this->dimensions, 0);
+
+    if ($this->dimensions !== $other->getDimensions()) {
+      throw new \InvalidArgumentException('Vectors must be of the same length.');
+    }
+
+    for ($i = 0; $i < $this->dimensions; $i++) {
+      if ($other->getDimensionValue($i) === 0) {
+        $res[$i] = 0;
+      }
+    }
+
+    return new Vector($res);
   }
 
   public function getDimensionValue(int $i): float

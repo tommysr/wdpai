@@ -7,4 +7,5 @@ interface IRatingService
 {
   public function addRating(IRating $rating): void;
   public function getUserItemMatrix(): array;
+  public function getPopularItems(int $limit): array;
 }

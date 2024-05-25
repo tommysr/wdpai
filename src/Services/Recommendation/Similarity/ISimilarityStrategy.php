@@ -1,7 +1,7 @@
 <?php
 
-namespace App\Services\Recommendation;
-use App\Services\Recommendation\IVector;
+namespace App\Services\Recommendation\Similarity;
+use App\Services\Recommendation\Utils\IVector;
 
 interface ISimilarityStrategy
 {

@@ -51,4 +51,9 @@ class RatingService implements IRatingService
 
     return $userItemMatrix;
   }
+
+  public function getPopularItems(int $limit): array
+  {
+    return [];
+  }
 }

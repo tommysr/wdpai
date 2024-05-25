@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Recommendation;
+namespace App\Services\Recommendation\Utils;
 
 interface IVector
 {
@@ -8,4 +8,5 @@ interface IVector
   public function dot(IVector $other): float;
   public function getDimensionValue(int $i): float;
   public function getDimensions(): int;
+  public function intersect(IVector $other): IVector;
 }

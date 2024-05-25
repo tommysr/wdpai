@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services\Recommendation;
+namespace App\Services\Recommendation\Prediction;
 
-use App\Services\Recommendation\IPredictionStrategy;
+use App\Services\Recommendation\Prediction\IPredictionStrategy;
 
 abstract class BasePredictionStrategy implements IPredictionStrategy
 {
