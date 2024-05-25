@@ -20,10 +20,17 @@ class ValidationChain implements IValidationChain
     $this->rules[$key][] = $rule;
   }
 
+  public function addRules(string $key, array $rules)
+  {
+    foreach ($rules as $rule) {
+      $this->addRule($key, $rule);
+    }
+  }
+
   public function validateField(string $key, $value): bool|string
   {
     if (!isset($this->rules[$key])) {
-      throw new \Exception("No validation rules defined for field $key.");
+      throw new ValidationRuleNotDefined("No validation rules defined for field $key.");
     }
 
     $rules = $this->getRules($key);
@@ -49,4 +56,8 @@ class ValidationChain implements IValidationChain
     }
     return $errors;
   }
+}
+
+class ValidationRuleNotDefined extends \Exception
+{
 }

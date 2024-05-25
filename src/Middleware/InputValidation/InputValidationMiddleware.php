@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Middleware;
+namespace App\Middleware\InputValidation;
 
 use App\Middleware\BaseMiddleware;
 use App\Validator\IValidationChain;
@@ -20,10 +20,14 @@ class InputValidationMiddleware extends BaseMiddleware
 
   public function process(IFullRequest $request, IHandler $handler): IResponse
   {
-    $errors = $this->validationChain->validateFields($request->getParsedBody());
+    try {
+      $errors = $this->validationChain->validateFields($request->getParsedBody());
 
-    if (count($errors) > 0) {
-      return new JsonResponse($errors);
+      if (count($errors) > 0) {
+        return new JsonResponse($errors);
+      }
+    } catch (\Exception $e) {
+      return new JsonResponse(['error' => $e->getMessage()]);
     }
 
     if ($this->next !== null) {
