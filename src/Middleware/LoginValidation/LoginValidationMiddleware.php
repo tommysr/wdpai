@@ -1,21 +1,27 @@
 <?php
-
 namespace App\Middleware\LoginValidation;
 
+use App\Middleware\IHandler;
 use App\Middleware\InputValidation\InputValidationMiddleware;
-use App\Validator\EmailValidationRule;
-use App\Validator\IValidationChain;
-use App\Validator\MinLengthValidationRule;
-use App\Validator\RequiredValidationRule;
-use App\Validator\ValidationChain;
+use App\Middleware\IResponse;
+use App\Request\IFullRequest;
+use App\Validator\Factory\IValidationChainFactory;
 
 class LoginValidationMiddleware extends InputValidationMiddleware
 {
-  public function __construct(IValidationChain $validationChain = null)
+  private IValidationChainFactory $validationFactory;
+
+  public function __construct(IValidationChainFactory $validationFactory)
   {
-    $validationChain = $validationChain ?: new ValidationChain();
-    $validationChain->addRules('email', [new RequiredValidationRule(), new EmailValidationRule()]);
-    $validationChain->addRules('password', [new RequiredValidationRule(), new MinLengthValidationRule(8)]);
-    parent::__construct($validationChain);
+    $this->validationFactory = $validationFactory;
+  }
+
+  public function process(IFullRequest $request, IHandler $handler): IResponse
+  {
+    $login_method = $request->getParsedBody()['login_method'] ?? 'db';
+    $validationChain = $this->validationFactory->createValidationChain($login_method);
+    $this->validationChain = $validationChain;
+
+    return parent::process($request, $handler);
   }
 }

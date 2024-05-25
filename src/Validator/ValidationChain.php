@@ -6,7 +6,7 @@ use App\Validator\IValidationChain;
 use App\Validator\IValid;
 
 
-class ValidationChain implements IValidationChain
+abstract class ValidationChain implements IValidationChain
 {
   private array $rules = [];
 

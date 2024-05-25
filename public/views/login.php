@@ -41,6 +41,7 @@
           <span id="password-error" class="error-message"></span>
         </div>
         <span id="form-error" class="error-message"></span>
+        <input type="hidden" name="login_method" value="db">
         <button class="main-button">Sign in</button>
       </form>
 

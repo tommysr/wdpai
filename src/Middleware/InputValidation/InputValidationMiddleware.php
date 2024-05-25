@@ -11,12 +11,7 @@ use App\Middleware\JsonResponse;
 
 class InputValidationMiddleware extends BaseMiddleware
 {
-  private IValidationChain $validationChain;
-
-  public function __construct(IValidationChain $validationChain)
-  {
-    $this->validationChain = $validationChain;
-  }
+  protected ?IValidationChain $validationChain;
 
   public function process(IFullRequest $request, IHandler $handler): IResponse
   {
