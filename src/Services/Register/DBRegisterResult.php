@@ -9,7 +9,7 @@ class DBRegisterResult implements IRegisterResult
   private $messages;
   private $isValid;
 
-  public function __construct(array $messages, bool $isValid)
+  public function __construct(array $messages, bool $isValid = false)
   {
     $this->messages = $messages;
     $this->isValid = $isValid;

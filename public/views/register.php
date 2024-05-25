@@ -39,8 +39,6 @@
       </div>
 
       <form
-        action="register"
-        method="post"
         class="flex-column-center-center gap-1-5"
       >
         <div class="flex-column-center-center">
@@ -95,9 +93,8 @@
           </div>
           <span id="tos-error" class="error-message"></span>
         </div>
-
+        <span id="form-error" class="error-message"></span>
         <button class="main-button" type="submit">Sign up</button>
-
         <span class="error-message"><?= $message; ?></span>
       </form>
     </main>

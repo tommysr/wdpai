@@ -3,7 +3,7 @@
 namespace App\Services\Authorize;
 
 use App\Services\Authorize\IAcl;
-use App\Services\Authorize\IRole;
+use App\Models\Interfaces\IRole;
 
 
 class Acl implements IAcl

@@ -1,14 +1,14 @@
 <?php
 
 namespace App\Repository;
-use App\Models\User;
+use App\Models\Interfaces\IUser;
 
 interface IUserRepository
 {
-  public function addUser(User $user): void;
-  public function getUser(string $email): ?User;
-  public function getUserById(int $id): ?User;
-  public function userExists($email): bool;
-  public function userNameExists($username): bool;
+  public function addUser(IUser $user): void;
+  public function getUser(string $email): ?IUser;
+  public function getUserById(int $id): ?IUser;
+  public function userExists(string $email): bool;
+  public function userNameExists(string $username): bool;
   public function getAllUserIds(): array;
 }

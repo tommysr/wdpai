@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-use App\Services\Authorize\IRole;
-use App\Services\Authorize\Role;
+use App\Models\Interfaces\IRole;
+use App\Models\Role;
 use DateTime;
+use App\Models\Interfaces\IUser;
 
 
-class User
+class User implements IUser
 {
   private string $email;
   private string $password;
   private string $name;
   private string $joinDate;
+  private string $avatarUrl = '';
   private int $id;
   private IRole $role;
 
@@ -21,14 +23,16 @@ class User
     string $email,
     string $password,
     string $name,
-    string $roleName,
-    string $joinDate = null
+    string $roleName = 'normal',
+    string $joinDate = null,
+    string $avatarUrl = ''
   ) {
     $this->id = $id;
     $this->email = $email;
     $this->password = $password;
     $this->name = $name;
     $this->role = Role::fromName($roleName);
+    $this->avatarUrl = $avatarUrl;
 
     if ($joinDate !== null) {
       $this->joinDate = DateTime::createFromFormat('Y-m-d', $joinDate)->format('Y-m-d');
@@ -65,5 +69,10 @@ class User
   public function getRole(): IRole
   {
     return $this->role;
+  }
+
+  public function getAvatarUrl(): string
+  {
+    return $this->avatarUrl;
   }
 }

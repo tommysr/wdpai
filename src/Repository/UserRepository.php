@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Repository\IUserRepository;
+use App\Models\Interfaces\IUser;
 use App\Models\User;
 use App\Repository\Repository;
 use PDO;
@@ -11,11 +12,9 @@ class UserRepository extends Repository implements IUserRepository
 {
   public function getAllUserIds(): array
   {
-    $stmt = $this->db->connect()->prepare('
-      SELECT user_id FROM Users
-    ');
+    $sql = 'SELECT user_id FROM users';
+    $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute();
-
     $userIds = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     return array_map(function ($userId) {
@@ -23,11 +22,12 @@ class UserRepository extends Repository implements IUserRepository
     }, $userIds);
   }
 
-  public function addUser(User $user): void
+  public function addUser(IUser $user): void
   {
+    // default role_id and avatar_id are 0
     $stmt = $this->db->connect()->prepare('
-      INSERT INTO Users (Email, Username, Password, JoinDate)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO Users (email, username, password, join_date, role_id, avatar_id)
+      VALUES (?, ?, ?, ?, 1, 1)
     ');
 
     $stmt->execute([
@@ -38,28 +38,43 @@ class UserRepository extends Repository implements IUserRepository
     ]);
   }
 
-  public function getUserById(int $id): ?User
+  private function constructUser(array $data): IUser
   {
-    $stmt = $this->db->connect()->prepare('
-      SELECT * FROM Users WHERE UserID = :id
-    ');
+    return new User(
+      $data['user_id'],
+      $data['email'],
+      $data['password'],
+      $data['username'],
+      $data['role_name'],
+      $data['join_date'],
+      $data['avatar_url']
+    );
+  }
+
+  private function getUserQuery(string $whereClause = ''): string
+  {
+    return 'SELECT user_id, email, password, username, roles.name as role_name, join_date, picture_url as avatar_url FROM users JOIN roles ON users.role_id = roles.role_id JOIN pictures ON users.avatar_id = pictures.picture_id' . $whereClause ? ' ' . $whereClause : '';
+  }
+
+  public function getUserById(int $id): ?IUser
+  {
+    $sql = $this->getUserQuery("WHERE user_id = :id");
+    $stmt = $this->db->connect()->prepare($sql);
     $stmt->bindParam(':id', $id, PDO::PARAM_INT);
     $stmt->execute();
-
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$user) {
       return null;
     }
 
-    return new User($user['userid'], $user['email'], $user['password'], $user['username'], $user['role'], $user['joindate']);
+    return $this->constructUser($user);
   }
 
-  public function getUser(string $email): ?User
+  public function getUser(string $email): ?IUser
   {
-    $stmt = $this->db->connect()->prepare('
-      SELECT * FROM USERS WHERE email = :email
-    ');
+    $sql = $this->getUserQuery("WHERE email = :email");
+    $stmt = $this->db->connect()->prepare($sql);
     $stmt->bindParam(':email', $email, PDO::PARAM_STR);
     $stmt->execute();
 
@@ -69,18 +84,16 @@ class UserRepository extends Repository implements IUserRepository
       return null;
     }
 
-    return new User($user['userid'], $user['email'], $user['password'], $user['username'], $user['role'], $user['joindate']);
+    return $this->constructUser($user);
   }
 
 
-  public function userExists($email): bool
+  public function userExists(string $email): bool
   {
-    $stmt = $this->db->connect()->prepare('
-      SELECT FROM Users WHERE Email = ?;
-    ');
-    $stmt->execute([
-      $email
-    ]);
+    $sql = "SELECT * FROM users WHERE email = :email";
+    $stmt = $this->db->connect()->prepare($sql);
+    $stmt->bindParam(":email", $email, PDO::PARAM_STR);
+    $stmt->execute();
 
     if ($stmt->fetch(PDO::FETCH_ASSOC)) {
       return true;
@@ -89,14 +102,12 @@ class UserRepository extends Repository implements IUserRepository
     }
   }
 
-  public function userNameExists($username): bool
+  public function userNameExists(string $username): bool
   {
-    $stmt = $this->db->connect()->prepare('
-    SELECT FROM Users WHERE Username = ?;
-  ');
-    $stmt->execute([
-      $username
-    ]);
+    $sql = "SELECT * FROM users WHERE username = :username";
+    $stmt = $this->db->connect()->prepare($sql);
+    $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+    $stmt->execute();
 
     if ($stmt->fetch(PDO::FETCH_ASSOC)) {
       return true;

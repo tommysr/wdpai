@@ -40,6 +40,8 @@ class RegisterService implements IRegisterService
 
       $this->validationChain->addRule('username', new RequiredValidationRule());
       $this->validationChain->addRule('username', new UsernameFormatValidationRule());
+
+      $this->validationChain->addRule('confirmedPassword', new RequiredValidationRule());
     }
   }
 
@@ -48,7 +50,7 @@ class RegisterService implements IRegisterService
     $errors = $this->validationChain->validateFields($this->request->getParsedBody());
 
     if (!empty($errors)) {
-      return new DBRegisterResult($errors, false);
+      return new DBRegisterResult($errors);
     }
 
     $email = $this->request->getParsedBodyParam('email');
@@ -56,20 +58,20 @@ class RegisterService implements IRegisterService
     $username = $this->request->getParsedBodyParam('username');
     $confirmedPassword = $this->request->getParsedBodyParam('confirmedPassword');
 
-    if ($password !== $confirmedPassword) {
-      return new DBRegisterResult(['Passwords do not match'], false);
-    }
-
     if ($this->userRepository->userExists($email)) {
-      return new DBRegisterResult(['Email already exists'], false);
+      return new DBRegisterResult(['Email exists']);
     }
 
     if ($this->userRepository->userNameExists($username)) {
-      return new DBRegisterResult(['Username already exists'], false);
+      return new DBRegisterResult(['Username already taken']);
+    }
+
+    if ($password !== $confirmedPassword) {
+      return new DBRegisterResult(['Passwords do not match']);
     }
 
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
-    $user = new User($email, $password_hash, $username, null);
+    $user = new User(0, $email, $password_hash, $username);
     $this->userRepository->addUser($user);
 
     return new DBRegisterResult(['User registered successfully'], true);

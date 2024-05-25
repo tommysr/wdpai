@@ -3,8 +3,8 @@
 namespace App\Services\Authenticate;
 
 use App\Services\Authenticate\IIdentity;
-use App\Services\Authorize\IRole;
-use App\Services\Authorize\Role;
+use App\Models\Interfaces\IRole;
+use App\Models\Role;
 
 class UserIdentity implements IIdentity
 {

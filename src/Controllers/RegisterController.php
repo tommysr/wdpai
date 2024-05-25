@@ -37,9 +37,9 @@ class RegisterController extends AppController implements IRegisterController
     $result = $this->registerService->register($this->request->getParsedBody());
 
     if ($result->isValid()) {
-      return new RedirectResponse('/login');
+      return new JsonResponse([]);
     }
 
-    return new JsonResponse($result->getMessages());
+    return new JsonResponse(['errors' => $result->getMessages()]);
   }
 }
