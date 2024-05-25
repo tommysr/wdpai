@@ -43,7 +43,7 @@ class Router implements IRouter
 
         $controllerClassName = "App\\Controllers\\" . $controllerName;
         $action = empty($actionName) ? 'index' : $actionName;
-        $request = $request->withAttribute('action', $action)->withAttribute('params', $params);
+        $request = $request->withAttribute('controller', $controllerName)->withAttribute('action', $action)->withAttribute('params', $params);
         $controllerInstance = new $controllerClassName($request);
 
         if (!$controllerInstance instanceof IRootController) {

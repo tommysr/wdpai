@@ -14,6 +14,7 @@ use App\Request\Request;
 use App\Services\Authenticate\AuthenticateService;
 use App\Services\Authorize\Acl;
 use App\Models\Role;
+use App\Services\Authorize\QuestAuthorizeService;
 use App\Services\Session\SessionService;
 use App\Services\Authenticate\AuthAdapterFactory;
 use App\Emitter\Emitter;
@@ -22,6 +23,8 @@ $sessionService = new SessionService();
 SessionService::start();
 
 $authService = new AuthenticateService($sessionService);
+$questAuthorizeService = new QuestAuthorizeService(authService: $authService, sessionService: $sessionService);
+
 $authAdapterFactory = new AuthAdapterFactory();
 $authMiddleware = new AuthenticationMiddleware($authService, $authAdapterFactory, '/showQuests');
 
@@ -47,7 +50,7 @@ $acl = new Acl();
 
 // maybe get roles from db
 $admin = new Role('admin');
-$user = new Role('user');
+$user = new Role('normal');
 $guest = new Role('guest');
 $creator = new Role('creator');
 
@@ -57,12 +60,10 @@ $acl->addRole($guest);
 $acl->addRole($creator);
 
 $acl->allow($creator, 'QuestsController', 'createQuest');
+$acl->allow($creator, 'QuestsController', 'editQuest');
 $authorizeMiddleware = new RoleAuthorizationMiddleware($acl, $authService);
-
-
 Router::get('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $authorizeMiddleware]);
 Router::get('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddleware, $authorizeMiddleware]);
-
 
 $questValidation = new QuestValidationChain();
 Router::post('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $authorizeMiddleware, new QuestValidationMiddleware($questValidation)]);

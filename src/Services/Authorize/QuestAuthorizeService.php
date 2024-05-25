@@ -2,41 +2,41 @@
 
 namespace App\Services\Authorize;
 
-use App\Repository\QuestStatisticsRepository;
+use App\Models\QuestState;
+use App\Repository\QuestProgress\IQuestProgressRepository;
+use App\Repository\QuestProgress\QuestProgressRepository;
+use App\Repository\QuestRepository;
 use App\Services\Authenticate\AuthenticateService;
 use App\Services\Authenticate\IAuthService;
 use App\Services\Authorize\QuestRequest;
 use App\Services\Authorize\IQuestAuthorizeService;
-use App\Repository\IQuestStatisticsRepository;
 use App\Repository\IQuestRepository;
 use App\Services\Authorize\IAuthResult;
-use App\Services\Authorize\AuthResult;
 use App\Services\Session\ISessionService;
+use App\Services\Session\SessionService;
 
 class QuestAuthorizeService implements IQuestAuthorizeService
 {
-  private IQuestStatisticsRepository $questStatisticsRepository;
+  private IQuestProgressRepository $questProgress;
   private IQuestRepository $questRepository;
   private IAuthService $authService;
 
-  public function __construct(IQuestStatisticsRepository $questStatisticsRepository = null, IQuestRepository $questRepository = null, IAuthService $authService = null, ISessionService $sessionService = null)
+  public function __construct(IQuestProgressRepository $questProgress = null, IQuestRepository $questRepository = null, IAuthService $authService = null, ISessionService $sessionService = null)
   {
-    $this->questStatisticsRepository = $questStatisticsRepository ?: new QuestStatisticsRepository();
-    $this->questRepository = $questRepository ?: new $questRepository();
-    $this->authService = $authService ?: new AuthenticateService($sessionService);
+    $this->questProgress = $questProgress ?: new QuestProgressRepository();
+    $this->questRepository = $questRepository ?: new QuestRepository();
+    $this->authService = $authService ?: new AuthenticateService($sessionService ?: new SessionService());
   }
 
   public function authorizeQuest(QuestRequest $request, int $questId = null): IAuthResult
   {
     switch ($request) {
       case QuestRequest::PLAY:
-        return $this->checkGameplayRequest($questId);
-      case QuestRequest::ENTER:
-        return $this->checkParticipationRequest($questId);
+        return $this->checkPlayRequest($questId);
       case QuestRequest::EDIT:
         return $this->checkEditRequest($questId);
       default:
-        return new AuthResult(false, ['invalid request']);
+        return new AuthorizationResult(['invalid request']);
     }
   }
 
@@ -45,75 +45,44 @@ class QuestAuthorizeService implements IQuestAuthorizeService
     $userId = $this->authService->getIdentity()->getId();
     $quest = $this->questRepository->getQuestById($questId);
 
-    if ($userId === null) {
-      return new AuthResult(false, ['you need to log in']);
-    }
-
     if ($quest === null) {
-      return new AuthResult(false, ['quest not found']);
+      return new AuthorizationResult(['quest not found']);
+    }
+    if ($quest->getCreatorId() !== $userId) {
+      return new AuthorizationResult(['quest is not owned by you']);
     }
 
     if ($quest->getIsApproved()) {
-      return new AuthResult(false, ['quest is already approved']);
+      return new AuthorizationResult(['quest is already approved']);
     }
 
-    if ($quest->getCreatorId() !== $userId) {
-      return new AuthResult(false, ['quest is not owned by you']);
-    }
-
-    return new AuthResult(true);
+    return new AuthorizationResult([], true);
   }
 
 
-  public function checkGameplayRequest(int $questId): IAuthResult
+  public function checkPlayRequest(int $questId = null): IAuthResult
   {
     $userId = $this->authService->getIdentity()->getId();
+    $questInProgress = $this->questProgress->getInProgress($userId);
 
-    if ($userId === null) {
-      return new AuthResult(false, ['you need to log in']);
+    if ($questInProgress !== null) {
+      return new AuthorizationResult(['you have a gameplay in progress'], false, '/play/' . $questInProgress);
     }
 
-    $gameplayToResume = $this->questStatisticsRepository->getQuestIdToFinish($userId);
+    if ($questId) {
+      $quest = $this->questRepository->getQuestById($questId);
 
-    if ($gameplayToResume === null) {
-      return new AuthResult(true);
+      if (!$quest) {
+        return new AuthorizationResult(['quest not found']);
+      }
+
+      $progress = $this->questProgress->getQuestProgress($userId, $questId);
+
+      if ($progress) {
+        return new AuthorizationResult(['you have already played this quest']);
+      }
     }
 
-    if ($gameplayToResume !== $questId) {
-      return new AuthResult(false, ['you have a gameplay in progress']);
-    }
-
-    return new AuthResult(true);
-  }
-
-
-  public function checkParticipationRequest(int $questId): IAuthResult
-  {
-    $userId = $this->authService->getIdentity()->getId();
-
-
-    if ($userId === null) {
-      return new AuthResult(false, ['you need to log in']);
-    }
-
-    $gameplayToResume = $this->questStatisticsRepository->getQuestIdToFinish($userId);
-
-    if ($gameplayToResume) {
-      return new AuthResult(false, ['you have a gameplay in progress']);
-    }
-
-    return new AuthResult(true);
-
-
-    // $questStats = $this->questStatisticsRepository->getQuestStatistic($id, $questId);
-
-    // // check if user already participated in quest, maybe need to somehow redirect to current gameplay 
-    // if ($questStats) {
-    //   if ($questStats->getCompletionDate()) {
-    //     throw new AuthorizationException('You can not reenter quest.');
-    //   } else {
-    //     throw new GameplayInProgressException('You are already in game');
-    //   }
-    // }
+    return new AuthorizationResult([], true);
   }
 }

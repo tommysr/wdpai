@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Services\Authorize;
+namespace App\Services\Authorize\Quest;
 
 enum QuestRequest
 {
   case PLAY;
-  case ENTER;
-  case CREATE;
   case EDIT;
   case PUBLISH;
 }

@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Interfaces;
+
+use App\Models\Interfaces\IQuestState;
 
 /**
  * Interface for quest statistics.
  */
-interface IQuestStatistics
+interface IQuestProgress
 {
   /**
    * Get the completion date of the quest.
@@ -20,13 +22,6 @@ interface IQuestStatistics
    * @return int The score of the quest.
    */
   public function getScore(): int;
-
-  /**
-   * Get the user ID of the quest.
-   * 
-   * @return int The user ID of the quest.
-   */
-  public function getUserId(): int;
 
   /**
    * Get the quest ID of the quest.
@@ -49,10 +44,6 @@ interface IQuestStatistics
    */
   public function getLastQuestionId(): int;
 
-  /**
-   * Get the state of the quest.
-   * 
-   * @return string The state of the quest.
-   */
-  public function getState(): string;
+
+  public function getState(): IQuestState;
 }
