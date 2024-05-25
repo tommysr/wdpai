@@ -32,6 +32,7 @@ class AppController implements IHandler
     public function handle(IRequest $request): IResponse
     {
         $actionMethod = $this->getActionMethod();
+
         if (!method_exists($this, $actionMethod)) {
             return new BaseResponse(404, [], 'Not Found');
         }

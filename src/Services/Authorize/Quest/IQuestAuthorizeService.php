@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Services\Authorize;
+namespace App\Services\Authorize\Quest;
 
 use App\Services\Authorize\IAuthResult;
+use App\Services\Authorize\Quest\QuestRequest;
 
 /**
  * Interface for authorizing quests.

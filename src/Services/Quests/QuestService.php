@@ -27,19 +27,16 @@ class QuestService implements IQuestService
   private IQuestRepository $questRepository;
   private IQuestionsRepository $questionRepository;
   private IOptionsRepository $optionRepository;
-  private IValidationChain $validationChain;
   private IWalletRepository $walletRepository;
 
   public function __construct(
     IQuestRepository $questRepository = null,
     IQuestionsRepository $questionRepository = null,
     IOptionsRepository $optionRepository = null,
-    IValidationChain $validationChain = null
   ) {
     $this->questRepository = $questRepository ?: new QuestRepository();
     $this->questionRepository = $questionRepository ?: new QuestionsRepository();
     $this->optionRepository = $optionRepository ?: new OptionsRepository();
-    $this->validationChain = $validationChain ?: new QuestValidationChain();
   }
 
   public function getQuestsToApproval(): array
@@ -86,11 +83,6 @@ class QuestService implements IQuestService
     }
 
     return $this->walletRepository->getBlockchainWallets($identity->getId(), $quest->getRequiredWallet());
-  }
-
-  private function validateQuestData(array $data): array
-  {
-    return $this->validationChain->validateFields($data);
   }
 
   private function saveQuestion(array $data, int $questId): IQuestion
@@ -213,12 +205,6 @@ class QuestService implements IQuestService
 
   public function editQuest(array $data, int $creatorId, int $questId): IQuestResult
   {
-    $errors = $this->validateQuestData($data);
-
-    if (!empty($errors)) {
-      return new QuestResult($errors);
-    }
-
     $this->updateQuestFromData($data, $creatorId, $questId);
 
     $questions = $data['questions'];
@@ -271,12 +257,6 @@ class QuestService implements IQuestService
 
   public function createQuest(array $data, int $creatorId): IQuestResult
   {
-    $errors = $this->validateQuestData($data);
-
-    if (!empty($errors)) {
-      return new QuestResult($errors);
-    }
-
     $questId = $this->saveQuest($data, $creatorId);
 
     $questions = $data['questions'];

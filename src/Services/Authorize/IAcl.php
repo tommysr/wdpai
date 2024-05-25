@@ -2,7 +2,7 @@
 
 namespace App\Services\Authorize;
 
-use App\Services\Authorize\IRole;
+use App\Models\Interfaces\IRole;
 
 interface IAcl
 {

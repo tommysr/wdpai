@@ -29,7 +29,7 @@ class DBAuthAdapter implements IAuthAdapter
         $user = $this->userRepository->getUser($this->email);
 
         if (!$user || !password_verify($this->password, $user->getPassword())) {
-            return new DBAuthResult(null, [''], false);
+            return new DBAuthResult(null, ['invalid credentials']);
         }
 
         $identity = new UserIdentity($user->getId(), $user->getRole());

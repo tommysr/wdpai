@@ -31,9 +31,9 @@
 
     <!-- Check if user is logged in to render appropriate link -->
     <?php if (isset($userId)): ?>
-      <a href="/logout" class="main-button">Sign out</a>
+      <a href="/logout" class="main-button" style="text-decoration: none; display: flex; justify-content: center; align-items: center;">Sign out</a>
     <?php else: ?>
-      <a href="/login" class="main-button">Sign in</a>
+      <a href="/login" class="main-button" style="text-decoration: none; display: flex; justify-content: center; align-items: center;">Sign in</a>
     <?php endif; ?>
 
     <div class="logo">

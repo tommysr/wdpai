@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Services\Authorize;
-use App\Services\Authorize\IRole;
+namespace App\Models;
+
+use App\Models\Interfaces\IRole;
 
 class Role implements IRole
 {
@@ -17,7 +18,7 @@ class Role implements IRole
     return $this->role;
   }
 
-  public static function fromName(string $role): IRole
+  public static function fromName(string $role): self
   {
     return new Role($role);
   }

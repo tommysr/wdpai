@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Services\Authenticate;
-use App\Services\Authorize\IRole;
+use App\Models\Interfaces\IRole;
 
 interface IIdentity {
   public function getId(): int;

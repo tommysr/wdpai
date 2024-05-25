@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const emailErrorMessage = document.querySelector("#email-error");
   const usernameErrorMessage = document.querySelector("#username-error");
   const passwordErrorMessage = document.querySelector("#password-error");
+  const formErrorMessage = document.querySelector("#form-error");
   const confirmedPasswordErrorMessage =
     document.querySelector("#confirm-error");
   const tosErrorMessage = document.querySelector("#tos-error");
@@ -72,13 +73,34 @@ document.addEventListener("DOMContentLoaded", function () {
   tosCheckbox.addEventListener("blur", checkTosValidity);
 
   form.addEventListener("submit", (event) => {
+    event.preventDefault();
+
     checkEmailValidity();
     checkUsernameValidity();
     checkPasswordValidity();
     checkTosValidity();
 
     if (!form.checkValidity() && !checkConfirmedPasswordValidity()) {
-      event.preventDefault();
+      return;
     }
+
+    fetch("/register", {
+      method: "POST",
+      body: new FormData(form),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data.errors) {
+          formErrorMessage.textContent = data.errors[0];
+        } else {
+          window.location = "/login";
+        }
+      })
+      .catch((error) => {
+        formErrorMessage.textContent = "form error";
+        console.error(error);
+      });
   });
 });

@@ -26,7 +26,7 @@ class Route implements IRoute
             }
 
             if ($this->middleware) {
-                $middleware->setNext($this->middleware);
+                $this->middleware->setNext($middleware);
             } else {
                 $this->middleware = $middleware;
             }

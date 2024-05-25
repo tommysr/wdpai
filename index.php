@@ -1,53 +1,53 @@
 <?php
 require_once __DIR__ . '/vendor/autoload.php';
 
-use App\Middleware\AuthenticationMiddleware;
+use App\Middleware\Authentication\AuthenticationMiddleware;
 use App\Middleware\Authorization\RoleAuthorizationMiddleware;
-use App\Middleware\InputValidationMiddleware;
+use App\Middleware\LoginValidation\LoginChainFactory;
+use App\Middleware\LoginValidation\LoginValidationMiddleware;
+use App\Middleware\QuestAuthorization\QuestAuthorizationMiddleware;
+use App\Middleware\QuestValidation\QuestValidationChain;
+use App\Middleware\QuestValidation\QuestValidationMiddleware;
+use App\Middleware\RegisterValidation\RegisterChainFactory;
+use App\Middleware\RegisterValidation\RegisterValidationMiddleware;
+use App\Repository\QuestProgress\QuestProgressRepository;
+use App\Repository\QuestRepository;
 use App\Routing\Router;
 use App\Request\Request;
 use App\Services\Authenticate\AuthenticateService;
 use App\Services\Authorize\Acl;
-use App\Services\Authorize\Role;
+use App\Models\Role;
+use App\Services\Authorize\Quest\AuthorizationFactory;
+use App\Services\Authorize\Quest\QuestAuthorizeService;
 use App\Services\Session\SessionService;
 use App\Services\Authenticate\AuthAdapterFactory;
 use App\Emitter\Emitter;
-use App\Validator\EmailValidationRule;
-use App\Validator\MinLengthValidationRule;
-use App\Validator\RequiredValidationRule;
-use App\Validator\ValidationChain;
-
 
 $sessionService = new SessionService();
 SessionService::start();
+
+// AUTHENTICATION
 $authService = new AuthenticateService($sessionService);
 $authAdapterFactory = new AuthAdapterFactory();
 $authMiddleware = new AuthenticationMiddleware($authService, $authAdapterFactory, '/showQuests');
 
-$validationChain = new ValidationChain();
-$validationChain->addRule('email', new RequiredValidationRule());
-$validationChain->addRule('email', new EmailValidationRule());
-$validationChain->addRule('password', new RequiredValidationRule());
-$validationChain->addRule('password', new MinLengthValidationRule(8));
+// VALIDATION
+$registerValidationFactory = new RegisterChainFactory();
+$registerValidationMiddleware = new RegisterValidationMiddleware($registerValidationFactory);
+$loginValidationFactory = new LoginChainFactory();
+$loginValidationMiddleware = new LoginValidationMiddleware($loginValidationFactory);
+$questValidation = new QuestValidationChain();
+$questValidationMiddleware = new QuestValidationMiddleware($questValidation);
 
-$loginValidationMiddleware = new InputValidationMiddleware($validationChain);
+// AUTHORIZATION
+$questAuthorizeStrategyFactory = new AuthorizationFactory($sessionService, $authService, new QuestProgressRepository(), new QuestRepository());
+$questAuthorizeService = new QuestAuthorizeService($questAuthorizeStrategyFactory);
+$questAuthorizeMiddleware = new QuestAuthorizationMiddleware($questAuthorizeService);
 
-Router::get('/error/{code}', 'ErrorController@error');
-
-Router::get('/login', 'LoginController@login', [$authMiddleware, $loginValidationMiddleware]);
-Router::post('/login', 'LoginController@login', [$authMiddleware]);
-Router::get('/logout', 'LoginController@logout', [$authMiddleware]);
-
-Router::get('/register', 'RegisterController@register', [$authMiddleware]);
-Router::post('/register', 'RegisterController@register', [$authMiddleware]);
-
-Router::get('/showQuests', 'QuestsController@index');
-Router::get('/showCreatedQuests', 'QuestsController@showCreatedQuests', [$authMiddleware]);
-
+// ACL
 $acl = new Acl();
-
 $admin = new Role('admin');
-$user = new Role('user');
+$user = new Role('normal');
 $guest = new Role('guest');
 $creator = new Role('creator');
 
@@ -57,19 +57,29 @@ $acl->addRole($guest);
 $acl->addRole($creator);
 
 $acl->allow($creator, 'QuestsController', 'createQuest');
-$authorizeMiddleware = new RoleAuthorizationMiddleware($acl, $authService);
+$acl->allow($creator, 'QuestsController', 'editQuest');
 
-Router::get('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $authorizeMiddleware]);
-Router::get('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddleware, $authorizeMiddleware]);
+$roleAuthorizationMiddleware = new RoleAuthorizationMiddleware($acl, $authService);
 
-Router::post('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $authorizeMiddleware]);
-Router::post('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddleware, $authorizeMiddleware]);
+// ROUTES
+Router::get('/error/{code}', 'ErrorController@error');
+Router::get('/', 'QuestsController@index', [$authMiddleware]);
+Router::get('/login', 'LoginController@login', [$authMiddleware]);
+Router::post('/login', 'LoginController@login', [$loginValidationMiddleware, $authMiddleware]);
+Router::get('/logout', 'LoginController@logout', [$authMiddleware]);
+Router::get('/register', 'RegisterController@register', [$authMiddleware]);
+Router::post('/register', 'RegisterController@register', [$authMiddleware, $registerValidationMiddleware]);
+Router::get('/showQuests', 'QuestsController@index', [$authMiddleware]);
+Router::get('/showCreatedQuests', 'QuestsController@showCreatedQuests', [$authMiddleware]);
+Router::get('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $roleAuthorizationMiddleware]);
+Router::get('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddleware, $roleAuthorizationMiddleware]);
+Router::post('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $roleAuthorizationMiddleware, $questValidationMiddleware]);
+Router::post('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddleware, $roleAuthorizationMiddleware, $questValidationMiddleware]);
 
 $request = new Request($_SERVER, $_GET, $_POST);
 $response = Router::dispatch($request);
 $emitter = new Emitter();
 $emitter->emit($response);
-
 
 
 // Router::get('showQuestWallets', 'QuestsController');
