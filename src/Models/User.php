@@ -23,7 +23,7 @@ class User implements IUser
     string $email,
     string $password,
     string $name,
-    string $roleName = 'normal',
+    IRole $role,
     string $joinDate = null,
     string $avatarUrl = ''
   ) {
@@ -31,7 +31,7 @@ class User implements IUser
     $this->email = $email;
     $this->password = $password;
     $this->name = $name;
-    $this->role = Role::fromName($roleName);
+    $this->role = $role;
     $this->avatarUrl = $avatarUrl;
 
     if ($joinDate !== null) {

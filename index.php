@@ -10,8 +10,10 @@ use App\Middleware\QuestValidation\QuestValidationChain;
 use App\Middleware\QuestValidation\QuestValidationMiddleware;
 use App\Middleware\RegisterValidation\RegisterChainFactory;
 use App\Middleware\RegisterValidation\RegisterValidationMiddleware;
+use App\Models\UserRole;
 use App\Repository\QuestProgress\QuestProgressRepository;
 use App\Repository\QuestRepository;
+use App\Repository\Role\RoleRepository;
 use App\Routing\Router;
 use App\Request\Request;
 use App\Services\Authenticate\AuthenticateService;
@@ -45,19 +47,19 @@ $questAuthorizeService = new QuestAuthorizeService($questAuthorizeStrategyFactor
 $questAuthorizeMiddleware = new QuestAuthorizationMiddleware($questAuthorizeService);
 
 // ACL
+
+$roleRepository = new RoleRepository();
+$rolesFromDatabase = $roleRepository->getRoles();
 $acl = new Acl();
-$admin = new Role('admin');
-$user = new Role('normal');
-$guest = new Role('guest');
-$creator = new Role('creator');
+foreach ($rolesFromDatabase as $role) {
+  $name = $role->getName();
 
-$acl->addRole($admin);
-$acl->addRole($user);
-$acl->addRole($guest);
-$acl->addRole($creator);
+  $acl->addRole($name);
+}
 
-$acl->allow($creator, 'QuestsController', 'createQuest');
-$acl->allow($creator, 'QuestsController', 'editQuest');
+
+$acl->allow(UserRole::CREATOR, 'QuestsController', 'createQuest');
+$acl->allow(UserRole::CREATOR, 'QuestsController', 'editQuest');
 
 $roleAuthorizationMiddleware = new RoleAuthorizationMiddleware($acl, $authService);
 

@@ -3,7 +3,10 @@
 namespace App\Services\Register;
 
 
+use App\Models\UserRole;
 use App\Repository\IUserRepository;
+use App\Repository\Role\IRoleRepository;
+use App\Repository\Role\RoleRepository;
 use App\Services\Register\IRegisterResult;
 use App\Repository\UserRepository;
 use App\Request\IFullRequest;
@@ -14,11 +17,13 @@ use App\Models\User;
 class DbRegisterStrategy implements IRegisterStrategy
 {
   private IUserRepository $userRepository;
+  private IRoleRepository $roleRepository;
   private IFullRequest $request;
 
-  public function __construct(IFullRequest $request, IUserRepository $userRepository = null)
+  public function __construct(IFullRequest $request, IUserRepository $userRepository = null, IRoleRepository $roleRepository = null)
   {
     $this->userRepository = $userRepository ?: new UserRepository();
+    $this->roleRepository = $roleRepository ?: new RoleRepository();
     $this->request = $request;
   }
 
@@ -53,7 +58,9 @@ class DbRegisterStrategy implements IRegisterStrategy
     }
 
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
-    $user = new User(0, $email, $password_hash, $username);
+
+    $defaultRole = $this->roleRepository->getRole(UserRole::NORMAL);
+    $user = new User(0, $email, $password_hash, $username, $defaultRole);
     $this->userRepository->addUser($user);
 
     return new DBRegisterResult(['User registered successfully'], true);

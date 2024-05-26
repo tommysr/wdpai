@@ -26,20 +26,18 @@ class Acl implements IAcl
         }
     }
 
-    public function isAllowed(IRole $role, string $resource, string $action): bool
+    public function isAllowed(string $role, string $resource, string $action): bool
     {
-        $roleName = $role->getName();
-        return isset($this->permissions[$roleName][$resource][$action])
-            ? $this->permissions[$roleName][$resource][$action]
+        return isset($this->permissions[$role][$resource][$action])
+            ? $this->permissions[$role][$resource][$action]
             : false;
     }
 
-    public function addRole(IRole $role): void
+    public function addRole(string $role): void
     {
-        $roleName = $role->getName();
-        if (!isset($this->roles[$roleName])) {
-            $this->roles[$roleName] = $role;
-            $this->permissions[$roleName] = [];
+        if (!isset($this->roles[$role])) {
+            $this->roles[$role] = $role;
+            $this->permissions[$role] = [];
         }
     }
 
@@ -57,24 +55,22 @@ class Acl implements IAcl
         }
     }
 
-    public function allow(IRole $role, string $resource, string $action): void
+    public function allow(string $role, string $resource, string $action): void
     {
         $this->addRole($role);
         $this->addResource($resource);
         $this->addAction($action);
 
-        $roleName = $role->getName();
-        if (!isset($this->permissions[$roleName][$resource])) {
-            $this->permissions[$roleName][$resource] = [];
+        if (!isset($this->permissions[$role][$resource])) {
+            $this->permissions[$role][$resource] = [];
         }
-        $this->permissions[$roleName][$resource][$action] = true;
+        $this->permissions[$role][$resource][$action] = true;
     }
 
-    public function deny(IRole $role, string $resource, string $action): void
+    public function deny(string $role, string $resource, string $action): void
     {
-        $roleName = $role->getName();
-        if (isset($this->permissions[$roleName][$resource][$action])) {
-            $this->permissions[$roleName][$resource][$action] = false;
+        if (isset($this->permissions[$role][$resource][$action])) {
+            $this->permissions[$role][$resource][$action] = false;
         }
     }
 }
