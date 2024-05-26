@@ -18,7 +18,6 @@ use App\Routing\Router;
 use App\Request\Request;
 use App\Services\Authenticate\AuthenticateService;
 use App\Services\Authorize\Acl;
-use App\Models\Role;
 use App\Services\Authorize\Quest\AuthorizationFactory;
 use App\Services\Authorize\Quest\QuestAuthorizeService;
 use App\Services\Session\SessionService;
@@ -58,8 +57,8 @@ foreach ($rolesFromDatabase as $role) {
 }
 
 
-$acl->allow(UserRole::CREATOR, 'QuestsController', 'createQuest');
-$acl->allow(UserRole::CREATOR, 'QuestsController', 'editQuest');
+$acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'createQuest');
+$acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'editQuest');
 
 $roleAuthorizationMiddleware = new RoleAuthorizationMiddleware($acl, $authService);
 

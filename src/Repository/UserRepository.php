@@ -57,7 +57,7 @@ class UserRepository extends Repository implements IUserRepository
 
   private function getUserQuery(string $whereClause = ''): string
   {
-    $sql = "SELECT user_id, email, password, username, roles.name as role_name, join_date, picture_url as avatar_url FROM users JOIN roles ON users.role_id = roles.role_id JOIN pictures ON users.avatar_id = pictures.picture_id ";
+    $sql = "SELECT user_id, email, password, username, roles.name as role_name, roles.role_id, join_date, picture_url as avatar_url FROM users JOIN roles ON users.role_id = roles.role_id JOIN pictures ON users.avatar_id = pictures.picture_id ";
     $sql .= $whereClause;
 
     return $sql;

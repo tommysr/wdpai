@@ -209,7 +209,7 @@ class QuestRepository extends Repository implements IQuestRepository
     $q = "SELECT quest_id, creator_id, p.picture_url as picture_url, u.username as creator_name,
             b.name as blockchain, t.name as token, title, description, worth_knowledge, expiry_date, participants_count, participants_limit, pool_amount, max_points, required_minutes, approved, payout_date FROM quests q 
             INNER JOIN blockchains b ON b.blockchain_id = q.blockchain_id 
-            INNER JOIN users t ON t.user_id = q.creator_id
+            INNER JOIN users u ON u.user_id = q.creator_id
             INNER JOIN tokens t ON t.token_id = q.token_id 
             INNER JOIN pictures p on p.picture_id = q.picture_id ";
 

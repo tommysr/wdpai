@@ -22,7 +22,7 @@ class QuestBuilder implements IQuestBuilder
 
   public function reset(): void
   {
-    $this->quest = new Quest(0, '', '', 0, '', 0, '', 0, 0, 0, '', 0, 0, false);
+    $this->quest = new Quest(0, '', '', 0, '', 0, '', 0, 0, 0, '', 0, false, '', 0, '', '');
     $this->questions = [];
   }
 
@@ -56,9 +56,9 @@ class QuestBuilder implements IQuestBuilder
     return $this;
   }
 
-  public function setTimeRequiredMinutes(int $timeRequiredMinutes): self
+  public function setRequiredMinutes(int $timeRequiredMinutes): self
   {
-    $this->quest->setTimeRequiredMinutes($timeRequiredMinutes);
+    $this->quest->setRequiredMinutes($timeRequiredMinutes);
     return $this;
   }
 
@@ -74,9 +74,9 @@ class QuestBuilder implements IQuestBuilder
     return $this;
   }
 
-  public function setParticipantLimit(int $participantLimit): self
+  public function setParticipantsLimit(int $participantLimit): self
   {
-    $this->quest->setParticipantLimit($participantLimit);
+    $this->quest->setParticipantsLimit($participantLimit);
     return $this;
   }
 
@@ -86,9 +86,9 @@ class QuestBuilder implements IQuestBuilder
     return $this;
   }
 
-  public function setPoints(int $points): self
+  public function setMaxPoints(int $points): self
   {
-    $this->quest->setPoints($points);
+    $this->quest->setMaxPoints($points);
     return $this;
   }
 

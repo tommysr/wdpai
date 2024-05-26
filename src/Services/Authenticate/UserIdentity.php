@@ -35,7 +35,7 @@ class UserIdentity implements IIdentity
   public static function fromString(string $identity): IIdentity
   {
     $parts = explode(':', $identity);
-    $role = Role::fromName($parts[1]);
+    $role = new Role($parts[1], -1);
     return new UserIdentity((int) $parts[0], $role);
   }
 }

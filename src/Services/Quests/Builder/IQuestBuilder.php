@@ -12,12 +12,12 @@ interface IQuestBuilder
   public function setDescription(string $description): self;
   public function setWorthKnowledge(int $worthKnowledge): self;
   public function setRequiredWallet(string $requiredWallet): self;
-  public function setTimeRequiredMinutes(int $timeRequiredMinutes): self;
+  public function setRequiredMinutes(int $timeRequiredMinutes): self;
   public function setExpiryDateString(string $expiryDateString): self;
   public function setParticipantsCount(int $participantsCount): self;
-  public function setParticipantLimit(int $participantLimit): self;
+  public function setParticipantsLimit(int $participantLimit): self;
   public function setPoolAmount(float $poolAmount): self;
-  public function setPoints(int $points): self;
+  public function setMaxPoints(int $points): self;
   public function setToken(string $token): self;
   public function setCreatorId(int $creatorId): self;
   public function setIsApproved(bool $isApproved): self;
