@@ -54,12 +54,10 @@ class QuestService implements IQuestService
   {
     $quests = $this->questRepository->getApprovedQuests();
 
-    array_filter($quests, function ($quest) {
-      return $quest->getParticipantsCount() < $quest->getParticipantLimit() &&
-        $quest->getExpiryDateString() > date('Y-m-d H:i:s', time());
+    return array_filter($quests, function ($quest) {
+      return $quest->getParticipantsCount() < $quest->getParticipantsLimit() &&
+        \DateTime::createFromFormat('Y-m-d', $quest->getExpiryDateString()) > new \DateTime();
     });
-
-    return $quests;
   }
 
   public function getCreatorQuests(IIdentity $identity): array
@@ -101,7 +99,7 @@ class QuestService implements IQuestService
           }
           break;
         case 'removed':
-        
+
           $this->optionRepository->deleteAllOptions($question->getQuestionId());
           $this->questionRepository->deleteQuestionById($question->getQuestionId());
           break;
