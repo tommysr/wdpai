@@ -39,6 +39,7 @@ class Router implements IRouter
       if ($route->matches($request, $params)) {
         $controllerName = $route->getController();
         $actionName = $route->getAction();
+        $route->buildMiddlewares();
         $middleware = $route->getMiddleware();
 
         $controllerClassName = "App\\Controllers\\" . $controllerName;

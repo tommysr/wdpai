@@ -6,7 +6,7 @@ use App\Validator\IValidationChain;
 use App\Validator\IValid;
 
 
-abstract class ValidationChain implements IValidationChain
+class ValidationChain implements IValidationChain
 {
   private array $rules = [];
 
@@ -29,11 +29,13 @@ abstract class ValidationChain implements IValidationChain
 
   public function validateField(string $key, $value): bool|string
   {
+
     if (!isset($this->rules[$key])) {
       throw new ValidationRuleNotDefined("No validation rules defined for field $key.");
     }
 
     $rules = $this->getRules($key);
+
     foreach ($rules as $rule) {
       $res = $rule->validate($value);
 
@@ -47,6 +49,12 @@ abstract class ValidationChain implements IValidationChain
 
   public function validateFields(array $fields): array
   {
+    $keys_not_included = array_diff(array_keys($this->rules) , array_keys($fields));
+
+    if (!empty($keys_not_included)) {
+      throw new ValidationRuleNotDefined("Invalid post data");
+    }
+
     $errors = [];
     foreach ($fields as $key => $value) {
       $fieldErrors = $this->validateField($key, $value);
@@ -54,6 +62,8 @@ abstract class ValidationChain implements IValidationChain
         $errors[$key] = $fieldErrors;
       }
     }
+
+
     return $errors;
   }
 }

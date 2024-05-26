@@ -100,7 +100,8 @@ class QuestService implements IQuestService
             $this->optionRepository->saveOption($option);
           }
           break;
-        case 'deleted':
+        case 'removed':
+        
           $this->optionRepository->deleteAllOptions($question->getQuestionId());
           $this->questionRepository->deleteQuestionById($question->getQuestionId());
           break;
@@ -113,7 +114,7 @@ class QuestService implements IQuestService
                 $option->setQuestionId($question->getQuestionId());
                 $this->optionRepository->saveOption($option);
                 break;
-              case 'deleted':
+              case 'removed':
                 $this->optionRepository->deleteOptionById($option->getOptionId());
                 break;
               default:

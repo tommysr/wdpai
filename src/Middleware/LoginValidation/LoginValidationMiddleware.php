@@ -19,6 +19,7 @@ class LoginValidationMiddleware extends InputValidationMiddleware
   public function process(IFullRequest $request, IHandler $handler): IResponse
   {
     $login_method = $request->getParsedBody()['login_method'] ?? 'db';
+    $this->toValidate = $request->getParsedBody();
     $validationChain = $this->validationFactory->createValidationChain($login_method);
     $this->validationChain = $validationChain;
 

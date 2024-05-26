@@ -58,7 +58,8 @@ class OptionsRepository extends Repository implements IOptionsRepository
         $stmt->execute([
           ':question_id' => $option->getQuestionId(),
           ':text' => $option->getText(),
-          ':is_correct' => $option->getIsCorrect(),
+          ':is_correct' => $option->getIsCorrect() ? 1 : 0,
+          ':option_id' => $option->getOptionId(),
         ]);
       }
 
@@ -105,7 +106,7 @@ class OptionsRepository extends Repository implements IOptionsRepository
         $stmt->execute([
           ':question_id' => $questionId,
           ':text' => $option->getText(),
-          ':is_correct' => $option->getIsCorrect(),
+          ':is_correct' => $option->getIsCorrect() ? 1 : 0,
         ]);
       }
 

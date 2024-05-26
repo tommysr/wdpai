@@ -13,14 +13,13 @@ class Route implements IRoute
     private string $path;
     private string $controller;
     private string $action;
-    private ?IMiddleware $middleware;
+    private array $middlewares = [];
+    private ?IMiddleware $middleware = null;
     private array $paramNames = [];
 
-    private function setMiddlewares(array $middlewares): void
-    {   
-        $this->middleware = null;
-
-        foreach ($middlewares as $middleware) {
+    public function buildMiddlewares(): void
+    {
+        foreach ($this->middlewares as $middleware) {
             if (!$middleware instanceof IMiddleware) {
                 throw new \Exception('Middleware must implement IMiddleware');
             }
@@ -31,15 +30,22 @@ class Route implements IRoute
                 $this->middleware = $middleware;
             }
         }
+
+        $last = array_pop($this->middlewares);
+        
+        if ($last) {
+            $last->removeNext();
+        }
     }
 
     public function __construct(string $method, string $path, string $controller, string $action, array $middlewares = [])
     {
-        $this->setMiddlewares($middlewares);
+        // $this->setMiddlewares($middlewares);
         $this->method = $method;
         $this->path = $path;
         $this->controller = $controller;
         $this->action = $action;
+        $this->middlewares = $middlewares;
         $this->paramNames = $this->extractParamNames($path);
     }
 
@@ -75,6 +81,11 @@ class Route implements IRoute
     public function getController(): string
     {
         return $this->controller;
+    }
+
+    public function getMethod(): string
+    {
+        return $this->method;
     }
 
     public function getAction(): string

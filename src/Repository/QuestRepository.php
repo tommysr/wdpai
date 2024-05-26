@@ -33,9 +33,8 @@ class QuestRepository extends Repository implements IQuestRepository
     );
   }
 
-  private function getTokenId(string $tokenName): int
+  private function getTokenId(\PDO &$pdo, string $tokenName): int
   {
-    $pdo = $this->db->connect();
     $token_id = $pdo->query("SELECT token_id FROM tokens WHERE name = '" . $tokenName . "'")->fetchColumn();
 
     if (!$token_id) {
@@ -46,22 +45,20 @@ class QuestRepository extends Repository implements IQuestRepository
     return $token_id;
   }
 
-  private function getBlockchainId(string $blockchainName): int
+  private function getBlockchainId(\PDO &$pdo, string $blockchainName): int
   {
-    $pdo = $this->db->connect();
     $blockchain_id = $pdo->query("SELECT blockchain_id FROM blockchains WHERE name = '" . $blockchainName . "'")->fetchColumn();
 
     if (!$blockchain_id) {
-      $this->db->connect()->query("INSERT INTO blockchains (name) VALUES ('" . $blockchainName . "')");
+      $pdo->query("INSERT INTO blockchains (name) VALUES ('" . $blockchainName . "')");
       $blockchain_id = $pdo->lastInsertId();
     }
 
     return $blockchain_id;
   }
 
-  private function getPictureId(string $pictureUrl): int
+  private function getPictureId(\PDO &$pdo, string $pictureUrl): int
   {
-    $pdo = $this->db->connect();
     $picture_id = $pdo->query("SELECT picture_id FROM pictures WHERE picture_url = '" . $pictureUrl . "'")->fetchColumn();
 
     if (!$picture_id) {
@@ -77,10 +74,11 @@ class QuestRepository extends Repository implements IQuestRepository
     $pdo = $this->db->connect();
     $pdo->beginTransaction();
 
+
     try {
-      $token_id = $this->getTokenId($quest->getToken());
-      $blockchain_id = $this->getBlockchainId($quest->getBlockchain());
-      $picture_id = $this->getPictureId($quest->getPictureUrl());
+      $token_id = $this->getTokenId($pdo, $quest->getToken());
+      $blockchain_id = $this->getBlockchainId($pdo, $quest->getBlockchain());
+      $picture_id = $this->getPictureId($pdo, $quest->getPictureUrl());
 
 
       $sql = "UPDATE quests SET
@@ -94,14 +92,13 @@ class QuestRepository extends Repository implements IQuestRepository
               participants_limit = :participants_limit, 
               pool_amount = :pool_amount, 
               token_id = :token_id, 
-              creator_id = :creator_id, 
               approved = :approved, 
               picture_id = :picture_id, 
               max_points = :max_points, 
               payout_date = :payout_date 
               WHERE quest_id = :quest_id";
 
-      $stmt = $this->db->connect()->prepare($sql);
+      $stmt = $pdo->prepare($sql);
 
       $stmt->execute([
         ':title' => $quest->getTitle(),
@@ -114,16 +111,16 @@ class QuestRepository extends Repository implements IQuestRepository
         ':participants_limit' => $quest->getParticipantsLimit(),
         ':pool_amount' => $quest->getPoolAmount(),
         ':token_id' => $token_id,
-        ':creator_id' => $quest->getCreatorId(),
-        ':approved' => $quest->getIsApproved(),
+        ':approved' => $quest->getIsApproved() ? 1 : 0,
         ':picture_id' => $picture_id,
         ':max_points' => $quest->getMaxPoints(),
         ':payout_date' => $quest->getPayoutDate(),
         ':quest_id' => $quest->getQuestID(),
       ]);
 
+
       $pdo->commit();
-      return $pdo->lastInsertId();
+
     } catch (\PDOException $e) {
       $pdo->rollBack();
 
@@ -137,9 +134,9 @@ class QuestRepository extends Repository implements IQuestRepository
     $pdo->beginTransaction();
 
     try {
-      $token_id = $this->getTokenId($quest->getToken());
-      $blockchain_id = $this->getBlockchainId($quest->getBlockchain());
-      $picture_id = $this->getPictureId($quest->getPictureUrl());
+      $token_id = $this->getTokenId($pdo, $quest->getToken());
+      $blockchain_id = $this->getBlockchainId($pdo, $quest->getBlockchain());
+      $picture_id = $this->getPictureId($pdo, $quest->getPictureUrl());
 
       $sql = "INSERT INTO quests (title, description, worth_knowledge, 
               blockchain_id, required_minutes, expiry_date, participants_count, 

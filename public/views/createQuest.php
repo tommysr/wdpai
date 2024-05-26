@@ -2,7 +2,7 @@
 
 <form id="questForm" action="" class="flex-column-center-center gap-1">
 
-  <div id="error" class="error"></div>
+  <span id="error" class="error-message"></span>
 
   <label for="quizTitle" class="input-description main-text">Quiz Title:</label>
 
@@ -19,7 +19,7 @@
   <input type="number" name="minutesRequired" value="<?= $quest ? $quest->getRequiredMinutes() : '' ?>" required>
 
   <label for="expiryDate" class="input-description main-text">Expiry date:</label>
-  <input type="date" name="expiryDate" value="<?= $quest ? $quest->getExpiryDate() : '' ?>" required>
+  <input type="date" name="expiryDate" value="<?= $quest ? $quest->getExpiryDateString() : '' ?>" required>
 
   <label for="payoutDate" class="input-description main-text">Expiry date:</label>
   <input type="date" name="payoutDate" value="<?= $quest ? $quest->getPayoutDate() : '' ?>" required>

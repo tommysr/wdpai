@@ -23,12 +23,12 @@
 
           <span class="info">
             <i class="fas fa-wallet"></i>
-            <?= $quest->getRequiredWallet(); ?>
+            <?= $quest->getBlockchain(); ?>
           </span>
 
           <span class="info">
             <i class="fas fa-flag-checkered"></i>
-            <?= $quest->getTimeRequiredMinutes(); ?>
+            <?= $quest->getRequiredMinutes(); ?>
           </span>
         </div>
 
@@ -49,7 +49,7 @@
           <?= $quest->getPoolAmount(); ?>
         </span>
 
-        <a href="/createQuest/<?= $quest->getQuestId(); ?>" class="enter-button" style="text-decoration: none;">EDIT</a>
+        <a href="/editQuest/<?= $quest->getQuestId(); ?>" class="enter-button" style="text-decoration: none;">EDIT</a>
       </div>
     </div>
   <?php endforeach; ?>

@@ -16,5 +16,6 @@ interface IQuestion
   public function setType(string $type): void;
   public function getOptions(): array;
   public function addOption(IOption $option): void;
+  public function setOptions(array $options): void;
 }
 

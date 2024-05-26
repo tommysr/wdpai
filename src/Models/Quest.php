@@ -165,9 +165,9 @@ class Quest implements IQuest
     }
 
     // Setters
-    public function setQuestID(int $questID): void
+    public function setQuestID(int $questId): void
     {
-        $this->questID = $questID;
+        $this->questId = $questId;
     }
 
     public function setTitle(string $title): void

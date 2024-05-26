@@ -25,6 +25,7 @@ class RoleAuthorizationMiddleware extends BaseMiddleware
 
   public function process(IFullRequest $request, IHandler $handler): IResponse
   {
+
     $identity = $this->authService->getIdentity();
     $role = $identity ? $identity->getRole()->getName() : (string) UserRole::GUEST;
     $resource = $request->getAttribute('controller');
@@ -35,7 +36,7 @@ class RoleAuthorizationMiddleware extends BaseMiddleware
     }
 
     if ($this->next !== null) {
-      return $this->next->handle($request);
+      return $this->next->process($request, $handler);
     }
 
     return $handler->handle($request);

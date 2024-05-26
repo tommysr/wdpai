@@ -98,9 +98,9 @@ class QuestsController extends AppController implements IQuestsController
     $questResult = $this->questService->createQuest($quest);
 
     if (!$questResult->isSuccess()) {
-      return new JsonResponse(['messages' => $questResult->getMessages()]);
+      return new JsonResponse(['errors' => $questResult->getMessages()]);
     } else {
-      return new RedirectResponse('/showCreatedQuests');
+      return new JsonResponse(['redirectUrl' => '/showCreatedQuests']);
     }
   }
 
@@ -113,9 +113,9 @@ class QuestsController extends AppController implements IQuestsController
     $questResult = $this->questService->editQuest($quest);
 
     if (!$questResult->isSuccess()) {
-      return new JsonResponse(['messages' => $questResult->getMessages()]);
+      return new JsonResponse(['errors' => $questResult->getMessages()]);
     } else {
-      return new RedirectResponse('/showCreatedQuests');
+      return new JsonResponse(['redirectUrl' => '/showCreatedQuests']);
     }
   }
 

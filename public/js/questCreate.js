@@ -1,6 +1,7 @@
 const questionsDiv = document.getElementById("questions");
 const questions = document.querySelectorAll(".question");
 const optionsDiv = document.querySelectorAll(".options");
+const errorDiv = document.querySelector("#error");
 
 let questionsOption = {};
 let lastQuestionId;
@@ -14,7 +15,7 @@ function removeQuestion(callDiv, questionId) {
 
   const input = document.createElement("input");
   input.type = "hidden";
-  input.value = "remove";
+  input.value = "removed";
   input.name = `questions[${questionId}][flag]`;
   questionDiv.appendChild(input);
 
@@ -26,7 +27,7 @@ function removeOption(callDiv, questionId, optionId) {
 
   const input = document.createElement("input");
   input.type = "hidden";
-  input.value = "remove";
+  input.value = "removed";
   input.name = `questions[${questionId}][options][${optionId}][flag]`;
   optionDiv.appendChild(input);
 
@@ -194,20 +195,14 @@ function submitForm(event) {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
-      document.querySelectorAll(".error").forEach((errorDiv) => {
-        errorDiv.textContent = "";
-      });
-
-      if (data.messages) {
-        document.querySelectorAll(".error").forEach((errorDiv) => {
-          errorDiv.textContent = data.messages;
-        });
-      } else {
-        console.log("some error");
+      if (data.errors) {
+        errorDiv.textContent = data.errors[0];
+      } else if (data.redirectUrl) {
+        window.location.href = data.redirectUrl;
       }
     })
     .catch((error) => {
+      errorDiv.textContent = data.errors;
       console.error("Error:", error);
     });
 }

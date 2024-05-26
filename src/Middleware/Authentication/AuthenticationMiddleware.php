@@ -79,6 +79,7 @@ class AuthenticationMiddleware extends BaseMiddleware
         if (!$authenticated && $path === $this->loginPath && $method === 'POST') {
             return $this->attemptAuthenticate($request);
         }
+
         return $this->next ? $this->next->process($request, $handler) : $handler->handle($request);
     }
 }

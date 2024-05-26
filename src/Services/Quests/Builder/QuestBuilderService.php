@@ -31,6 +31,8 @@ class QuestBuilderService implements IQuestBuilderService
 
     if (isset($data['questId'])) {
       $this->questBuilder->setQuestId($data['questId']);
+    } else {
+      $this->questBuilder->setQuestId(0);
     }
 
     $this->questBuilder->setTitle($data['title']);
@@ -53,43 +55,48 @@ class QuestBuilderService implements IQuestBuilderService
 
     $this->questBuilder->setIsApproved(false);
 
-    foreach ($data['questions'] as $questionData) {
-      $question = new Question(
-        0,
-        0,
-        $questionData['text'],
-        QuestionType::UNKNOWN->value,
-        $questionData['score'],
-        isset($questionData['flag']) ? $questionData['flag'] : null
-      );
-
-      $points += $question->getPoints();
-      $correctOptionsCount = 0;
-
-      foreach ($questionData['options'] as $optionData) {
-        $option = new Option(
-          0,
-          0,
-          $optionData['text'],
-          isset($optionData['isCorrect']) ? true : false,
+    if (isset($data['questions'])) {
+      foreach ($data['questions'] as $questionData) {
+        $question = new Question(
+          $questionData['id'] ?? 0,
+          $data['id'] ?? 0,
+          $questionData['text'],
+          QuestionType::UNKNOWN->value,
+          $questionData['score'],
           isset($questionData['flag']) ? $questionData['flag'] : null
         );
-        if (isset($optionData['isCorrect'])) {
-          $correctOptionsCount++;
+
+        $points += $question->getPoints();
+        $correctOptionsCount = 0;
+
+        if (isset($questionData['options'])) {
+          foreach ($questionData['options'] as $optionData) {
+            $option = new Option(
+              $optionData['id'] ?? 0,
+              $question->getQuestionId(),
+              $optionData['text'],
+              isset($optionData['isCorrect']) ? true : false,
+              isset($optionData['flag']) ? $optionData['flag'] : null
+            );
+            if (isset($optionData['isCorrect'])) {
+              $correctOptionsCount++;
+            }
+            $question->addOption($option);
+          }
         }
-        $question->addOption($option);
-      }
 
-      if ($correctOptionsCount === 1) {
-        $question->setType(QuestionType::SINGLE_CHOICE->value);
-      } else if ($correctOptionsCount > 1) {
-        $question->setType(QuestionType::MULTIPLE_CHOICE->value);
-      } else {
-        $question->setType(QuestionType::READ_TEXT->value);
-      }
+        if ($correctOptionsCount === 1) {
+          $question->setType(QuestionType::SINGLE_CHOICE->value);
+        } else if ($correctOptionsCount > 1) {
+          $question->setType(QuestionType::MULTIPLE_CHOICE->value);
+        } else {
+          $question->setType(QuestionType::READ_TEXT->value);
+        }
 
-      $this->questBuilder->addQuestion($question);
+        $this->questBuilder->addQuestion($question);
+      }
     }
+
 
     $this->questBuilder->setMaxPoints($points);
 

@@ -84,6 +84,11 @@ class Question implements IQuestion
     return $this->score;
   }
 
+  public function setOptions(array $options): void
+  {
+    $this->options = $options;
+  }
+
   public function setType(string $type): void
   {
     $this->type = QuestionType::from($type);
