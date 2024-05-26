@@ -9,39 +9,52 @@ use App\Models\Wallet;
 
 class WalletRepository extends Repository implements IWalletRepository
 {
+
   public function getBlockchainWallets(int $userId, string $blockchain): array
   {
-    $sql = "SELECT *
-    FROM UserWallets w
-    WHERE w.UserID = :userId 
-    AND w.Blockchain = :blockchain;";
+    $sql = "SELECT w.wallet_id, w.user_Id, b.name as blockchain, w.address, w.created_at, w.updated_at
+            FROM wallets w
+            INNER JOIN blockchains b ON w.blockchain_id = b.blockchain_id
+            WHERE w.user_id = :user_id 
+            AND blockchain.name = :blockchain";
 
     $stmt = $this->db->connect()->prepare($sql);
-    $stmt->execute(['userId' => $userId, 'blockchain' => $blockchain]);
+    $stmt->execute([':user_id' => $userId, ':blockchain' => $blockchain]);
     $walletsFetched = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     $wallets = [];
     foreach ($walletsFetched as $wallet) {
-      $wallets[] = new Wallet($wallet['walletid'], $wallet['userid'], $wallet['blockchain'], $wallet['walletaddress'], $wallet['createdat'], $wallet['updatedat']);
+      $wallets[] = new Wallet($wallet['wallet_id'], $wallet['user_id'], $wallet['blockchain'], $wallet['address'], $wallet['created_at'], $wallet['updated_at']);
     }
 
     return $wallets;
   }
 
+  private function getBlockchainId(string $blockchain): int
+  {
+    $sql = "SELECT blockchain_id FROM blockchains WHERE name = :blockchain";
+    $stmt = $this->db->connect()->prepare($sql);
+    $stmt->execute([':blockchain' => $blockchain]);
+    $blockchainId = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+    return $blockchainId['blockchain_id'];
+  }
+
   public function addWallet(IWallet $wallet): int
   {
-    $sql = 'INSERT INTO UserWallets (UserID, Blockchain, WalletAddress, CreatedAt, UpdatedAt) VALUES (?, ?, ?, ?, ?);';
-
-    $stmt = $this->db->connect()->prepare($sql);
+    $pdo = $this->db->connect();
+    $blockchainId = $this->getBlockchainId($wallet->getBlockchain());
+    $sql = "INSERT INTO wallets (user_id, blockchain_id, address, created_at, updated_at) VALUES (?, ?, ?, ?, ?)";
+    $stmt = $pdo->prepare($sql);
 
     $stmt->execute([
       $wallet->getUserId(),
-      $wallet->getBlockchain(),
+      $blockchainId,
       $wallet->getWalletAddress(),
       $wallet->getCreatedAt(),
       $wallet->getUpdatedAt()
     ]);
 
-    return $this->db->connect()->lastInsertId();
+    return $pdo->lastInsertId();
   }
 }

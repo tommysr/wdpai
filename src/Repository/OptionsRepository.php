@@ -12,32 +12,34 @@ class OptionsRepository extends Repository implements IOptionsRepository
   public function getCorrectOptionsIdsForQuestionId(int $questionId): array
   {
     $options = [];
-
-    $sql = "SELECT OptionID FROM Options WHERE QuestionID = :questionId AND isCorrect = true";
+    $sql = "SELECT option_id FROM options WHERE question_id = :question_id AND is_correct = true";
 
     $stmt = $this->db->connect()->prepare($sql);
-    $stmt->execute(['questionId' => $questionId]);
+    $stmt->execute([':question_id' => $questionId]);
     $optionsFetched = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     foreach ($optionsFetched as $option) {
-      $options[] = $option['optionid'];
+      $options[] = $option['option_id'];
     }
 
     return $options;
   }
 
+  private function createOption(array $option): IOption
+  {
+    return new Option($option['option_id'], $option['question_id'], $option['text'], $option['is_correct']);
+  }
+
   public function getOptionsByQuestionId(int $questionId): array
   {
     $options = [];
-
-    $sql = "SELECT * FROM Options WHERE QuestionID = :questionId";
-
+    $sql = "SELECT * FROM options WHERE question_id = :question_id";
     $stmt = $this->db->connect()->prepare($sql);
-    $stmt->execute(['questionId' => $questionId]);
+    $stmt->execute(['question_id' => $questionId]);
     $optionsFetched = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     foreach ($optionsFetched as $option) {
-      $options[] = new Option($option['optionid'], $option['questionid'], $option['text'], $option['iscorrect']);
+      $options[] = $this->createOption($option);
     }
 
     return $options;
@@ -49,14 +51,14 @@ class OptionsRepository extends Repository implements IOptionsRepository
     $pdo->beginTransaction();
 
     try {
-      $sql = 'UPDATE options SET questionid = :questionid, text = :text, iscorrect = :iscorrect WHERE optionid = :optionid';
+      $sql = 'UPDATE options SET question_id = :question_id, text = :text, is_correct = :is_correct WHERE option_id = :option_id';
       $stmt = $pdo->prepare($sql);
 
       foreach ($options as $option) {
         $stmt->execute([
-          ':questionid' => $option->getQuestionId(),
+          ':question_id' => $option->getQuestionId(),
           ':text' => $option->getText(),
-          ':iscorrect' => $option->getIsCorrect(),
+          ':is_correct' => $option->getIsCorrect(),
         ]);
       }
 
@@ -73,12 +75,12 @@ class OptionsRepository extends Repository implements IOptionsRepository
     $pdo->beginTransaction();
 
     try {
-      $sql = 'DELETE FROM options WHERE optionid = :optionid';
+      $sql = 'DELETE FROM options WHERE option_id = :option_id';
       $stmt = $pdo->prepare($sql);
 
       foreach ($options as $option) {
         $stmt->execute([
-          ':optionid' => $option->getOptionId(),
+          ':option_id' => $option->getOptionId(),
         ]);
       }
 
@@ -96,14 +98,14 @@ class OptionsRepository extends Repository implements IOptionsRepository
     $pdo->beginTransaction();
 
     try {
-      $sql = 'INSERT INTO options (questionid, text, iscorrect) VALUES (:questionid, :text, :iscorrect)';
+      $sql = 'INSERT INTO options (question_id, text, is_correct) VALUES (:question_id, :text, :is_correct)';
       $stmt = $pdo->prepare($sql);
 
       foreach ($options as $option) {
         $stmt->execute([
-          ':questionid' => $questionId,
+          ':question_id' => $questionId,
           ':text' => $option->getText(),
-          ':iscorrect' => $option->getIsCorrect(),
+          ':is_correct' => $option->getIsCorrect(),
         ]);
       }
 
@@ -115,37 +117,11 @@ class OptionsRepository extends Repository implements IOptionsRepository
     }
   }
 
-  // public function saveOptions(array $options): void
-  // {
-  //   $pdo = $this->db->connect();
-  //   $pdo->beginTransaction();
-
-  //   try {
-  //     $sql = 'INSERT INTO options (questionid, text, iscorrect) VALUES (:questionid, :text, :iscorrect)';
-  //     $stmt = $pdo->prepare($sql);
-
-  //     foreach ($options as $option) {
-  //       $stmt->execute([
-  //         ':questionid' => $option->getOptionId(),
-  //         ':text' => $option->getText(),
-  //         ':iscorrect' => $option->getIsCorrect(),
-  //       ]);
-  //     }
-
-  //     $pdo->commit();
-  //   } catch (\PDOException $e) {
-  //     $pdo->rollBack();
-
-  //     throw new \Exception("Transaction failed: " . $e->getMessage());
-  //   }
-  // }
-
-
   public function deleteOptionById(int $optionId)
   {
     $pdo = $this->db->connect();
 
-    $sql = 'DELETE FROM options WHERE optionid = :optionId';
+    $sql = 'DELETE FROM options WHERE option_id = :optionId';
     $stmt = $pdo->prepare($sql);
 
     $stmt->execute([
@@ -158,7 +134,7 @@ class OptionsRepository extends Repository implements IOptionsRepository
   {
     $pdo = $this->db->connect();
 
-    $sql = 'DELETE FROM options WHERE optionid = :optionId';
+    $sql = 'DELETE FROM options WHERE option_id = :optionId';
     $stmt = $pdo->prepare($sql);
 
     $stmt->execute([
@@ -172,11 +148,11 @@ class OptionsRepository extends Repository implements IOptionsRepository
     $pdo->beginTransaction();
 
     try {
-      $sql = 'DELETE FROM options WHERE questionid = :questionid';
+      $sql = 'DELETE FROM options WHERE question_id = :question_id';
       $stmt = $pdo->prepare($sql);
 
       $stmt->execute([
-        ':questionid' => $questionId,
+        ':question_id' => $questionId,
       ]);
 
 
@@ -190,17 +166,15 @@ class OptionsRepository extends Repository implements IOptionsRepository
 
   public function saveOption(IOption $option): int
   {
-    $sql = 'INSERT INTO options (questionid, text, iscorrect) VALUES (:questionid, :text, :iscorrect)';
+    $sql = 'INSERT INTO options (question_id, text, is_correct) VALUES (:question_id, :text, :is_correct)';
     $stmt = $this->db->connect()->prepare($sql);
 
     $stmt->execute([
-      ':questionid' => $option->getQuestionId(),
+      ':question_id' => $option->getQuestionId(),
       ':text' => $option->getText(),
-      ':iscorrect' => $option->getIsCorrect(),
+      ':is_correct' => $option->getIsCorrect(),
     ]);
 
     return $this->db->connect()->lastInsertId();
   }
-
-
 }

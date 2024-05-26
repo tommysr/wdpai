@@ -25,7 +25,7 @@ class Question implements IQuestion
   }
 
 
-  public function __construct(int $questionId, int $questId, string $text, QuestionType $type, int $score = 0, string $flag = null)
+  public function __construct(int $questionId, int $questId, string $text, QuestionType $type, int $score, string $flag = null)
   {
     $this->questionId = $questionId;
     $this->questId = $questId;
@@ -85,8 +85,13 @@ class Question implements IQuestion
     return $this->options;
   }
 
-  public function setOptions(array $options)
+  public function getPoints(): int
   {
-    $this->options = $options;
+    return $this->score;
+  }
+
+  public function setType(QuestionType $type): void
+  {
+    $this->type = $type;
   }
 }

@@ -71,13 +71,16 @@ class QuestRepository extends Repository implements IQuestRepository
 
   public function updateQuest(IQuest $quest)
   {
-    // would be nice to introduce a transaction here
-    $token_id = $this->getTokenId($quest->getToken());
-    $blockchain_id = $this->getBlockchainId($quest->getBlockchain());
-    $picture_id = $this->getPictureId($quest->getPictureUrl());
+    $pdo = $this->db->connect();
+    $pdo->beginTransaction();
+
+    try {
+      $token_id = $this->getTokenId($quest->getToken());
+      $blockchain_id = $this->getBlockchainId($quest->getBlockchain());
+      $picture_id = $this->getPictureId($quest->getPictureUrl());
 
 
-    $sql = "UPDATE quests SET
+      $sql = "UPDATE quests SET
               title = :title, 
               description = :description, 
               worth_knowledge = :worth_knowledge, 
@@ -95,62 +98,80 @@ class QuestRepository extends Repository implements IQuestRepository
               payout_date = :payout_date 
               WHERE quest_id = :quest_id";
 
-    $stmt = $this->db->connect()->prepare($sql);
+      $stmt = $this->db->connect()->prepare($sql);
 
-    $stmt->execute([
-      ':title' => $quest->getTitle(),
-      ':description' => $quest->getDescription(),
-      ':worth_knowledge' => $quest->getWorthKnowledge(),
-      ':blockchain_id' => $blockchain_id,
-      ':required_minutes' => $quest->getRequiredMinutes(),
-      ':expiry_date' => $quest->getExpiryDateString(),
-      ':participants_count' => $quest->getParticipantsCount(),
-      ':participants_limit' => $quest->getParticipantsLimit(),
-      ':pool_amount' => $quest->getPoolAmount(),
-      ':token_id' => $token_id,
-      ':creator_id' => $quest->getCreatorId(),
-      ':approved' => $quest->getIsApproved(),
-      ':picture_id' => $picture_id,
-      ':max_points' => $quest->getMaxPoints(),
-      ':payout_date' => $quest->getPayoutDate(),
-      ':quest_id' => $quest->getQuestID(),
-    ]);
+      $stmt->execute([
+        ':title' => $quest->getTitle(),
+        ':description' => $quest->getDescription(),
+        ':worth_knowledge' => $quest->getWorthKnowledge(),
+        ':blockchain_id' => $blockchain_id,
+        ':required_minutes' => $quest->getRequiredMinutes(),
+        ':expiry_date' => $quest->getExpiryDateString(),
+        ':participants_count' => $quest->getParticipantsCount(),
+        ':participants_limit' => $quest->getParticipantsLimit(),
+        ':pool_amount' => $quest->getPoolAmount(),
+        ':token_id' => $token_id,
+        ':creator_id' => $quest->getCreatorId(),
+        ':approved' => $quest->getIsApproved(),
+        ':picture_id' => $picture_id,
+        ':max_points' => $quest->getMaxPoints(),
+        ':payout_date' => $quest->getPayoutDate(),
+        ':quest_id' => $quest->getQuestID(),
+      ]);
+
+      $pdo->commit();
+      return $pdo->lastInsertId();
+    } catch (\PDOException $e) {
+      $pdo->rollBack();
+
+      throw new \Exception("Transaction failed: " . $e->getMessage());
+    }
   }
-
 
   public function saveQuest(IQuest $quest): int
   {
-    $token_id = $this->getTokenId($quest->getToken());
-    $blockchain_id = $this->getBlockchainId($quest->getBlockchain());
-    $picture_id = $this->getPictureId($quest->getPictureUrl());
+    $pdo = $this->db->connect();
+    $pdo->beginTransaction();
 
-    $sql = "INSERT INTO quests (title, description, worth_knowledge, 
-            blockchain_id, required_minutes, expiry_date, participants_count, 
-            participants_limit, pool_amount, token_id, creator_id, approved, picture_id, max_points, payout_date) 
-            VALUES (:title, :description, :worth_knowledge, :blockchain_id, 
-            :required_minutes, :expiry_date, :participants_count, :participants_limit, :pool_amount, :token_id, :creator_id, :approved, :picture_id, :max_points, :payout_date)";
+    try {
+      $token_id = $this->getTokenId($quest->getToken());
+      $blockchain_id = $this->getBlockchainId($quest->getBlockchain());
+      $picture_id = $this->getPictureId($quest->getPictureUrl());
 
-    $stmt = $this->db->connect()->prepare($sql);
+      $sql = "INSERT INTO quests (title, description, worth_knowledge, 
+              blockchain_id, required_minutes, expiry_date, participants_count, 
+              participants_limit, pool_amount, token_id, creator_id, approved, picture_id, max_points, payout_date) 
+              VALUES (:title, :description, :worth_knowledge, :blockchain_id, 
+              :required_minutes, :expiry_date, :participants_count, :participants_limit, :pool_amount, :token_id, :creator_id, :approved, :picture_id, :max_points, :payout_date)";
 
-    $stmt->execute([
-      ':title' => $quest->getTitle(),
-      ':description' => $quest->getDescription(),
-      ':worth_knowledge' => $quest->getWorthKnowledge(),
-      ':blockchain_id' => $blockchain_id,
-      ':required_minutes' => $quest->getRequiredMinutes(),
-      ':expiry_date' => $quest->getExpiryDateString(),
-      ':participants_count' => $quest->getParticipantsCount(),
-      ':participants_limit' => $quest->getParticipantsLimit(),
-      ':pool_amount' => $quest->getPoolAmount(),
-      ':token_id' => $token_id,
-      ':creator_id' => $quest->getCreatorId(),
-      ':approved' => $quest->getIsApproved(),
-      ':picture_id' => $picture_id,
-      ':max_points' => $quest->getMaxPoints(),
-      ':payout_date' => $quest->getPayoutDate(),
-    ]);
+      $stmt = $this->db->connect()->prepare($sql);
 
-    return $this->db->connect()->lastInsertId();
+      $stmt->execute([
+        ':title' => $quest->getTitle(),
+        ':description' => $quest->getDescription(),
+        ':worth_knowledge' => $quest->getWorthKnowledge(),
+        ':blockchain_id' => $blockchain_id,
+        ':required_minutes' => $quest->getRequiredMinutes(),
+        ':expiry_date' => $quest->getExpiryDateString(),
+        ':participants_count' => $quest->getParticipantsCount(),
+        ':participants_limit' => $quest->getParticipantsLimit(),
+        ':pool_amount' => $quest->getPoolAmount(),
+        ':token_id' => $token_id,
+        ':creator_id' => $quest->getCreatorId(),
+        ':approved' => $quest->getIsApproved(),
+        ':picture_id' => $picture_id,
+        ':max_points' => $quest->getMaxPoints(),
+        ':payout_date' => $quest->getPayoutDate(),
+      ]);
+
+      $pdo->commit();
+      return $pdo->lastInsertId();
+    } catch (\PDOException $e) {
+      $pdo->rollBack();
+
+      throw new \Exception("Transaction failed: " . $e->getMessage());
+    }
+
   }
 
 

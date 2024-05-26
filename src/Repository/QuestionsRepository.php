@@ -13,29 +13,29 @@ class QuestionsRepository extends Repository implements IQuestionsRepository
   private function constructQuestionModel(array $question): IQuestion
   {
     $type = QuestionTypeUtil::fromString($question['type']);
-    return new Question($question['questionid'], $question['questid'], $question['text'], $type);
+    return new Question($question['question_id'], $question['quest_id'], $question['text'], $type, $question['points']);
   }
 
   public function deleteQuestionById(int $id): void
   {
     $pdo = $this->db->connect();
 
-    $sql = 'DELETE FROM questions WHERE questionid = :questionId';
+    $sql = 'DELETE FROM questions WHERE question_id = :question_id';
     $stmt = $pdo->prepare($sql);
 
     $stmt->execute([
-      ':questionId' => $id,
+      ':question_id' => $id,
     ]);
   }
   public function deleteQuestion(IQuestion $question): void
   {
     $pdo = $this->db->connect();
 
-    $sql = 'DELETE FROM questions WHERE questionid = :questionId';
+    $sql = 'DELETE FROM questions WHERE question_id = :question_id';
     $stmt = $pdo->prepare($sql);
 
     $stmt->execute([
-      ':questionId' => $question->getQuestionId(),
+      ':question_id' => $question->getQuestionId(),
     ]);
   }
 
@@ -45,11 +45,11 @@ class QuestionsRepository extends Repository implements IQuestionsRepository
     $pdo->beginTransaction();
 
     try {
-      $sql = 'DELETE FROM questions WHERE questid = :questid';
+      $sql = 'DELETE FROM questions WHERE quest_id = :quest_id';
       $stmt = $pdo->prepare($sql);
 
       $stmt->execute([
-        ':questid' => $questId,
+        ':quest_id' => $questId,
       ]);
 
       $pdo->commit();
@@ -63,10 +63,10 @@ class QuestionsRepository extends Repository implements IQuestionsRepository
 
   public function getById(int $questionId): ?IQuestion
   {
-    $sql = "SELECT * FROM Questions where QuestionID = :questionId";
+    $sql = "SELECT * FROM questions where question_id = :question_id";
 
     $stmt = $this->db->connect()->prepare($sql);
-    $stmt->bindParam(":questionId", $questionId, \PDO::PARAM_INT);
+    $stmt->bindParam(":question_id", $questionId, \PDO::PARAM_INT);
     $stmt->execute();
     $result = $stmt->fetch(\PDO::FETCH_ASSOC);
 
@@ -81,7 +81,7 @@ class QuestionsRepository extends Repository implements IQuestionsRepository
   public function getQuestionsByQuestId($questId): array
   {
 
-    $sql = "SELECT * FROM Questions WHERE QuestID = :questId";
+    $sql = "SELECT * FROM questions WHERE quest_id = :questId";
 
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute(['questId' => $questId]);
@@ -102,12 +102,12 @@ class QuestionsRepository extends Repository implements IQuestionsRepository
     $pdo->beginTransaction();
 
     try {
-      $sql = 'DELETE FROM questions WHERE questionid = :questionid';
+      $sql = 'DELETE FROM questions WHERE question_id = :question_id';
       $stmt = $pdo->prepare($sql);
 
       foreach ($questions as $question) {
         $stmt->execute([
-          ':questionid' => $question->getQuestionId(),
+          ':question_id' => $question->getQuestionId(),
         ]);
       }
 
@@ -125,11 +125,11 @@ class QuestionsRepository extends Repository implements IQuestionsRepository
     $pdo->beginTransaction();
 
     try {
-      $sql = 'DELETE FROM questions WHERE questid = :questid';
+      $sql = 'DELETE FROM questions WHERE quest_id = :quest_id';
       $stmt = $pdo->prepare($sql);
 
       $stmt->execute([
-        ':questid' => $questId,
+        ':quest_id' => $questId,
       ]);
 
       $pdo->commit();
@@ -146,14 +146,15 @@ class QuestionsRepository extends Repository implements IQuestionsRepository
     $pdo->beginTransaction();
 
     try {
-      $sql = 'UPDATE questions SET text = :text, type = :type WHERE questionid = :questionid';
+      $sql = 'UPDATE questions SET text = :text, type = :type, points = :points WHERE question_id = :question_id';
       $stmt = $pdo->prepare($sql);
 
       foreach ($questions as $question) {
         $stmt->execute([
-          ':questionid' => $question->getQuestionId(),
+          ':question_id' => $question->getQuestionId(),
           ':text' => $question->getText(),
           ':type' => QuestionTypeUtil::toString($question->getType()),
+          ':points' => $question->getPoints(),
         ]);
       }
 
@@ -171,13 +172,14 @@ class QuestionsRepository extends Repository implements IQuestionsRepository
     $pdo->beginTransaction();
 
     try {
-      $sql = 'INSERT INTO questions (questid, text, type) VALUES (:questid, :text, :type)';
+      $sql = 'INSERT INTO questions (quest_id, text, type, points) VALUES (:quest_id, :text, :type, :points)';
       $stmt = $pdo->prepare($sql);
 
       $stmt->execute([
-        ':questid' => $question->getQuestId(),
+        ':quest_id' => $question->getQuestId(),
         ':text' => $question->getText(),
         ':type' => QuestionTypeUtil::toString($question->getType()),
+        ':points' => $question->getPoints(),
       ]);
 
       $pdo->commit();
@@ -196,14 +198,15 @@ class QuestionsRepository extends Repository implements IQuestionsRepository
     $pdo->beginTransaction();
 
     try {
-      $sql = 'INSERT INTO questions (questid, text, type) VALUES (:questid, :text, :type)';
+      $sql = 'INSERT INTO questions (quest_id, text, type, points) VALUES (:quest_id, :text, :type, :points)';
       $stmt = $pdo->prepare($sql);
 
       foreach ($questions as $question) {
         $stmt->execute([
-          ':questid' => $question->getQuestId(),
+          ':quest_id' => $question->getQuestId(),
           ':text' => $question->getText(),
           ':type' => QuestionTypeUtil::toString($question->getType()),
+          ':points' => $question->getPoints(),
         ]);
       }
 

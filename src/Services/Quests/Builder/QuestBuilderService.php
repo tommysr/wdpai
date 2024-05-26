@@ -6,6 +6,7 @@ namespace App\Services\Quests\Builder;
 use App\Models\IQuest;
 use App\Models\Option;
 use App\Models\Question;
+use App\Models\QuestionType;
 use App\Models\QuestionTypeUtil;
 use App\Services\Quests\Builder\IQuestBuilderService;
 
@@ -55,10 +56,11 @@ class QuestBuilderService implements IQuestBuilderService
         0,
         0,
         $questionData['text'],
-        QuestionTypeUtil::fromString($questionData['type']),
         $questionData['score'],
         isset($questionData['flag']) ? $questionData['flag'] : null
       );
+
+      $correctOptionsCount = 0;
 
       foreach ($questionData['options'] as $optionData) {
         $option = new Option(
@@ -68,8 +70,20 @@ class QuestBuilderService implements IQuestBuilderService
           $optionData['isCorrect'],
           isset($questionData['flag']) ? $questionData['flag'] : null
         );
+        if ($optionData['isCorrect']) {
+          $correctOptionsCount++;
+        }
         $question->addOption($option);
       }
+
+      if ($correctOptionsCount === 1) {
+        $question->setType(QuestionType::SINGLE_CHOICE);
+      } else if ($correctOptionsCount > 1) {
+        $question->setType(QuestionType::MULTIPLE_CHOICE);
+      } else {
+        $question->setType(QuestionType::READ_TEXT);
+      }
+
       $this->questBuilder->addQuestion($question);
     }
 
