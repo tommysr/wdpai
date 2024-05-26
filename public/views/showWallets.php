@@ -30,8 +30,16 @@
 
     <span class="wallet-name"> <?= $blockchain; ?> </span>
 
-    <form action="/startQuest/<?= $questId; ?>" method="post" class="flex-column-center-center gap-1-5">
-      <select id="walletSelect" name="walletSelect" onchange="handleWalletSelect(this)" class="login-input">
+    <form id="add-wallet-form" action="/addWallet/<?= $blockchain; ?>" method="post"
+      class="flex-column-center-center gap-1-5">
+      <input id="walletAddress" name="walletAddress" type="text" class="login-input" placeholder="wallet address" />
+
+      <button class="main-button" type="submit">Add wallet</button>
+    </form>
+
+    <form action="/enterQuest/<?= $questId; ?>" method="post" class="flex-column-center-center gap-1-5"
+      style="margin-top: 1em;">
+      <select id="walletSelect" name="walletId" onchange="handleWalletSelect(this)" class="login-input">
         <?php foreach ($wallets as $wallet): ?>
           <option value="<?= $wallet->getWalletId(); ?>">
             <?= $wallet->getWalletAddress(); ?>
@@ -41,13 +49,12 @@
         <option value="new">Insert new</option>
       </select>
 
-      <input id="newWalletInput" name="newWalletAddress" type="text" class="login-input" placeholder="wallet address" />
-      <button class="main-button">Start</button>
+      <button class="main-button">Start the quest</button>
 
-      <div class="error-message">
-        <?= isset($message) ? $message : '' ?>
-      </div>
     </form>
+
+
+    <span class="error-message" id="error"></span>
   </div>
 </body>
 

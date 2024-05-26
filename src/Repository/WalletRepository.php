@@ -16,7 +16,7 @@ class WalletRepository extends Repository implements IWalletRepository
             FROM wallets w
             INNER JOIN blockchains b ON w.blockchain_id = b.blockchain_id
             WHERE w.user_id = :user_id 
-            AND blockchain.name = :blockchain";
+            AND b.name = :blockchain";
 
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute([':user_id' => $userId, ':blockchain' => $blockchain]);
@@ -30,10 +30,10 @@ class WalletRepository extends Repository implements IWalletRepository
     return $wallets;
   }
 
-  private function getBlockchainId(string $blockchain): int
+  private function getBlockchainId(\PDO &$pdo, string $blockchain): int
   {
     $sql = "SELECT blockchain_id FROM blockchains WHERE name = :blockchain";
-    $stmt = $this->db->connect()->prepare($sql);
+    $stmt = $pdo->prepare($sql);
     $stmt->execute([':blockchain' => $blockchain]);
     $blockchainId = $stmt->fetch(\PDO::FETCH_ASSOC);
 
@@ -43,7 +43,7 @@ class WalletRepository extends Repository implements IWalletRepository
   public function addWallet(IWallet $wallet): int
   {
     $pdo = $this->db->connect();
-    $blockchainId = $this->getBlockchainId($wallet->getBlockchain());
+    $blockchainId = $this->getBlockchainId($pdo, $wallet->getBlockchain());
     $sql = "INSERT INTO wallets (user_id, blockchain_id, address, created_at, updated_at) VALUES (?, ?, ?, ?, ?)";
     $stmt = $pdo->prepare($sql);
 

@@ -59,6 +59,7 @@ foreach ($rolesFromDatabase as $role) {
 
 $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'createQuest');
 $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'editQuest');
+$acl->allow((string) UserRole::NORMAL->value, 'QuestsController', 'showQuestWallets');
 
 $roleAuthorizationMiddleware = new RoleAuthorizationMiddleware($acl, $authService);
 
@@ -76,6 +77,8 @@ Router::get('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $r
 Router::get('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddleware, $roleAuthorizationMiddleware]);
 Router::post('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $roleAuthorizationMiddleware, $questValidationMiddleware]);
 Router::post('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddleware, $roleAuthorizationMiddleware, $questValidationMiddleware]);
+Router::get('/showQuestWallets/{questId}', 'QuestsController@showQuestWallets', [$authMiddleware, $questAuthorizeMiddleware]);
+Router::post('/addWallet/{blockchain}', 'QuestsController@addWallet', [$authMiddleware]);
 
 $request = new Request($_SERVER, $_GET, $_POST);
 $response = Router::dispatch($request);
@@ -83,7 +86,6 @@ $emitter = new Emitter();
 $emitter->emit($response);
 
 
-// Router::get('showQuestWallets', 'QuestsController');
 // Router::get('startQuest', 'QuestsController');
 // // PROFILE
 // Router::get('dashboard', 'QuestsController');

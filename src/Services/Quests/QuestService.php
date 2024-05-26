@@ -10,6 +10,7 @@ use App\Models\QuestionType;
 use App\Models\QuestionTypeUtil;
 use App\Repository\IOptionsRepository;
 use App\Repository\IWalletRepository;
+use App\Repository\WalletRepository;
 use App\Services\Authenticate\IIdentity;
 use App\Services\Quests\IQuestService;
 use App\Repository\IQuestRepository;
@@ -33,10 +34,12 @@ class QuestService implements IQuestService
     IQuestRepository $questRepository = null,
     IQuestionsRepository $questionRepository = null,
     IOptionsRepository $optionRepository = null,
+    IWalletRepository $walletRepository = null
   ) {
     $this->questRepository = $questRepository ?: new QuestRepository();
     $this->questionRepository = $questionRepository ?: new QuestionsRepository();
     $this->optionRepository = $optionRepository ?: new OptionsRepository();
+    $this->walletRepository = $walletRepository ?: new WalletRepository();
   }
 
   public function getQuestsToApproval(): array
@@ -70,15 +73,15 @@ class QuestService implements IQuestService
     });
   }
 
-  public function getQuestWallets(IIdentity $identity, int $questId): array
+  public function getQuestBlockchain(int $questId): string
   {
     $quest = $this->questRepository->getQuestById($questId);
 
     if (!$quest) {
-      return [];
+      throw new \Exception('Quest not found');
     }
 
-    return $this->walletRepository->getBlockchainWallets($identity->getId(), $quest->getBlockchain());
+    return $quest->getBlockchain();
   }
 
   public function editQuest(IQuest $quest): IQuestResult

@@ -24,7 +24,7 @@ class QuestAuthorizationMiddleware extends BaseMiddleware
     $params = $request->getAttribute('params');
     $requestAction = $request->getAttribute('action');
     $questRequest = QuestRequest::from($requestAction);
-    $questId = $params[0] ? (int) $params[0] : null;
+    $questId = isset($params[0]) ? (int) $params[0] : null;
 
     if ($questRequest !== null) {
       $authResult = $this->questAuthorizeService->authorizeQuest($questRequest, $questId);
@@ -35,7 +35,7 @@ class QuestAuthorizationMiddleware extends BaseMiddleware
     }
 
     if ($this->next !== null) {
-      return $this->next->handle($request);
+      return $this->next->process($request, $handler);
     }
 
     return $handler->handle($request);
