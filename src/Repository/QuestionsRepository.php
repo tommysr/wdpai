@@ -12,8 +12,7 @@ class QuestionsRepository extends Repository implements IQuestionsRepository
 {
   private function constructQuestionModel(array $question): IQuestion
   {
-    $type = QuestionTypeUtil::fromString($question['type']);
-    return new Question($question['question_id'], $question['quest_id'], $question['text'], $type, $question['points']);
+    return new Question($question['question_id'], $question['quest_id'], $question['text'], $question['type'], $question['points']);
   }
 
   public function deleteQuestionById(int $id): void
@@ -153,7 +152,7 @@ class QuestionsRepository extends Repository implements IQuestionsRepository
         $stmt->execute([
           ':question_id' => $question->getQuestionId(),
           ':text' => $question->getText(),
-          ':type' => QuestionTypeUtil::toString($question->getType()),
+          ':type' => $question->getType(),
           ':points' => $question->getPoints(),
         ]);
       }
@@ -178,7 +177,7 @@ class QuestionsRepository extends Repository implements IQuestionsRepository
       $stmt->execute([
         ':quest_id' => $question->getQuestId(),
         ':text' => $question->getText(),
-        ':type' => QuestionTypeUtil::toString($question->getType()),
+        ':type' => $question->getType(),
         ':points' => $question->getPoints(),
       ]);
 
@@ -205,7 +204,7 @@ class QuestionsRepository extends Repository implements IQuestionsRepository
         $stmt->execute([
           ':quest_id' => $question->getQuestId(),
           ':text' => $question->getText(),
-          ':type' => QuestionTypeUtil::toString($question->getType()),
+          ':type' => $question->getType(),
           ':points' => $question->getPoints(),
         ]);
       }

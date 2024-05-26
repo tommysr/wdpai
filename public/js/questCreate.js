@@ -42,7 +42,7 @@ function addQuestion(questionId) {
   newQuestionDiv.innerHTML = `
       <label for="questionText" class="input-description main-text">Question Text:</label>
       <textarea name="questions[${questionId}][text]" class="questionText main-text" cols="30" rows="10" required> </textarea>
-      <input type="number" name="questions[${questionId}][points]" class="questionPoints" placeholder="points" required>
+      <input type="number" name="questions[${questionId}][score]" class="questionPoints" placeholder="points" required>
       <input type="hidden" name="questions[${questionId}][flag]" value="added">
 
       <div class="options"></div>

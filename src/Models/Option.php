@@ -29,6 +29,10 @@ class Option implements IOption
     $this->flag = $flag;
   }
 
+  public function setQuestionId(int $id)
+  {
+    $this->questionId = $id;
+  }
 
   public function setFlag(string $flag): void
   {

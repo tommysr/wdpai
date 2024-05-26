@@ -167,14 +167,15 @@ class OptionsRepository extends Repository implements IOptionsRepository
   public function saveOption(IOption $option): int
   {
     $sql = 'INSERT INTO options (question_id, text, is_correct) VALUES (:question_id, :text, :is_correct)';
-    $stmt = $this->db->connect()->prepare($sql);
+    $pdo = $this->db->connect();
+    $stmt = $pdo->prepare($sql);
 
     $stmt->execute([
       ':question_id' => $option->getQuestionId(),
       ':text' => $option->getText(),
-      ':is_correct' => $option->getIsCorrect(),
+      ':is_correct' => $option->getIsCorrect() ? 1 : 0,
     ]);
 
-    return $this->db->connect()->lastInsertId();
+    return $pdo->lastInsertId();
   }
 }

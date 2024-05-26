@@ -37,7 +37,7 @@ interface IQuest
     public function setTitle(string $title): void;
     public function setDescription(string $description): void;
     public function setWorthKnowledge(int $worthKnowledge): void;
-    public function setRequiredWallet(string $requiredWallet): void;
+    public function setBlockchain(string $blockchain): void;
     public function setRequiredMinutes(int $timeRequiredMinutes): void;
     public function setExpiryDateString(string $expiryDateString): void;
     public function setParticipantsCount(int $participantsCount): void;

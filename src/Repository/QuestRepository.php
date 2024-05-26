@@ -35,11 +35,12 @@ class QuestRepository extends Repository implements IQuestRepository
 
   private function getTokenId(string $tokenName): int
   {
-    $token_id = $this->db->connect()->query("SELECT token_id FROM tokens WHERE name = '" . $tokenName . "'")->fetchColumn();
+    $pdo = $this->db->connect();
+    $token_id = $pdo->query("SELECT token_id FROM tokens WHERE name = '" . $tokenName . "'")->fetchColumn();
 
-    if ($token_id === false) {
-      $this->db->connect()->query("INSERT INTO tokens (name) VALUES ('" . $tokenName . "')");
-      $token_id = $this->db->connect()->lastInsertId();
+    if (!$token_id) {
+      $pdo->query("INSERT INTO tokens (name) VALUES ('" . $tokenName . "')");
+      $token_id = $pdo->lastInsertId();
     }
 
     return $token_id;
@@ -47,11 +48,12 @@ class QuestRepository extends Repository implements IQuestRepository
 
   private function getBlockchainId(string $blockchainName): int
   {
-    $blockchain_id = $this->db->connect()->query("SELECT blockchain_id FROM blockchains WHERE name = '" . $blockchainName . "'")->fetchColumn();
+    $pdo = $this->db->connect();
+    $blockchain_id = $pdo->query("SELECT blockchain_id FROM blockchains WHERE name = '" . $blockchainName . "'")->fetchColumn();
 
-    if ($blockchain_id === false) {
+    if (!$blockchain_id) {
       $this->db->connect()->query("INSERT INTO blockchains (name) VALUES ('" . $blockchainName . "')");
-      $blockchain_id = $this->db->connect()->lastInsertId();
+      $blockchain_id = $pdo->lastInsertId();
     }
 
     return $blockchain_id;
@@ -59,11 +61,12 @@ class QuestRepository extends Repository implements IQuestRepository
 
   private function getPictureId(string $pictureUrl): int
   {
-    $picture_id = $this->db->connect()->query("SELECT picture_id FROM pictures WHERE picture_url = '" . $pictureUrl . "'")->fetchColumn();
+    $pdo = $this->db->connect();
+    $picture_id = $pdo->query("SELECT picture_id FROM pictures WHERE picture_url = '" . $pictureUrl . "'")->fetchColumn();
 
-    if ($picture_id === false) {
-      $this->db->connect()->query("INSERT INTO pictures (picture_url) VALUES ('" . $pictureUrl . "')");
-      $picture_id = $this->db->connect()->lastInsertId();
+    if (!$picture_id) {
+      $pdo->query("INSERT INTO pictures (picture_url) VALUES ('" . $pictureUrl . "')");
+      $picture_id = $pdo->lastInsertId();
     }
 
     return $picture_id;
@@ -144,7 +147,7 @@ class QuestRepository extends Repository implements IQuestRepository
               VALUES (:title, :description, :worth_knowledge, :blockchain_id, 
               :required_minutes, :expiry_date, :participants_count, :participants_limit, :pool_amount, :token_id, :creator_id, :approved, :picture_id, :max_points, :payout_date)";
 
-      $stmt = $this->db->connect()->prepare($sql);
+      $stmt = $pdo->prepare($sql);
 
       $stmt->execute([
         ':title' => $quest->getTitle(),
@@ -158,7 +161,7 @@ class QuestRepository extends Repository implements IQuestRepository
         ':pool_amount' => $quest->getPoolAmount(),
         ':token_id' => $token_id,
         ':creator_id' => $quest->getCreatorId(),
-        ':approved' => $quest->getIsApproved(),
+        ':approved' => $quest->getIsApproved() ? 1 : 0,
         ':picture_id' => $picture_id,
         ':max_points' => $quest->getMaxPoints(),
         ':payout_date' => $quest->getPayoutDate(),

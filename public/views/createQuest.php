@@ -6,24 +6,26 @@
 
   <label for="quizTitle" class="input-description main-text">Quiz Title:</label>
 
-  <input type="text" id="quizTitle" name="quizTitle" placeholder="title" value="<?= $quest ? $quest->getTitle() : '' ?>"
+  <input type="text" id="quizTitle" name="title" placeholder="title" value="<?= $quest ? $quest->getTitle() : '' ?>"
     required><br>
   <label for="quizDescription" class="input-description main-text">Quiz Description:</label>
-  <textarea name="quizDescription" id="quizDescription" class="main-text" cols="50" rows="10" placeholder="description"
+  <textarea name="description" id="description" class="main-text" cols="50" rows="10" placeholder="description"
     required><?= $quest ? $quest->getDescription() : '' ?></textarea>
   <label for="requiredWallet" class="input-description main-text">Required wallet:</label>
-  <input type="text" name="requiredWallet" placeholder="required wallet"
-    value="<?= $quest ? $quest->getRequiredWallet() : '' ?>" required><br>
+  <input type="text" name="blockchain" placeholder="required blockchain wallet"
+    value="<?= $quest ? $quest->getBlockchain() : '' ?>" required><br>
 
   <label for="timeRequired" class="input-description main-text">Required minutes:</label>
-  <input type="number" name="timeRequired" value="<?= $quest ? $quest->getTimeRequiredMinutes() : '' ?>" required>
+  <input type="number" name="minutesRequired" value="<?= $quest ? $quest->getRequiredMinutes() : '' ?>" required>
 
   <label for="expiryDate" class="input-description main-text">Expiry date:</label>
-  <input type="date" name="expiryDate" value="<?= $quest ? $quest->getExpiryDateString() : '' ?>" required>
+  <input type="date" name="expiryDate" value="<?= $quest ? $quest->getExpiryDate() : '' ?>" required>
 
+  <label for="payoutDate" class="input-description main-text">Expiry date:</label>
+  <input type="date" name="payoutDate" value="<?= $quest ? $quest->getPayoutDate() : '' ?>" required>
 
   <label for="participantsLimit" class="input-description main-text">Participants limit:</label>
-  <input type="number" name="participantsLimit" value="<?= $quest ? $quest->getParticipantLimit() : '' ?>" required>
+  <input type="number" name="participantsLimit" value="<?= $quest ? $quest->getParticipantsLimit() : '' ?>" required>
 
   <label for="poolAmount" class="input-description main-text">Amount in pool:</label>
   <input type="text" name="poolAmount" value="<?= $quest ? $quest->getPoolAmount() : '' ?>" required>
@@ -50,6 +52,10 @@
           <input type="hidden" name="questions[<?= $counter; ?>][id]" value="<?= $questionId; ?>">
           <textarea name="questions[<?= $counter; ?>][text]" class="questionText main-text" cols="30" rows="10"
             required><?= $question->getText(); ?></textarea>
+
+          <label for="questionText" class="input-description main-text">Question points</label>
+          <input type="number" name="questions[<?= $counter; ?>][score]" value="<?= $question->getPoints() ?>" required>
+
           <div class="options">
             <?php
             foreach ($question->getOptions() as $option):
@@ -63,6 +69,8 @@
                 <input type="text" class="optionText"
                   name="questions[<?= $counter; ?>][options][<?= $optionCounter; ?>][text]" value="<?= $option->getText() ?>"
                   required>
+
+
                 <label class="option-container">
                   <input type="checkbox" name="questions[<?= $counter; ?>][options][<?= $optionCounter; ?>][isCorrect]"
                     <?= $option->getIsCorrect() ? 'checked' : '' ?> value=true />

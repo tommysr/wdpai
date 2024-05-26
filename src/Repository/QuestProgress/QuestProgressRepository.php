@@ -50,10 +50,11 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
 
   public function saveQuestProgress(IQuestProgress $questProgress): int
   {
+    $pdo = $this->db->connect();
     $sql = "INSERT INTO quest_progress (wallet_id, quest_id, score, completion_date, last_question_id, state)
               VALUES (:wallet_id, :quest_id, :score, :completion_date, :last_question_id, :state)";
 
-    $stmt = $this->db->connect()->prepare($sql);
+    $stmt = $pdo->prepare($sql);
     $stmt->execute([
       ':quest_id' => $questProgress->getQuestId(),
       ':wallet_id' => $questProgress->getWalletId(),
@@ -63,7 +64,7 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
       ':state' => $questProgress->getState()->getStateId()
     ]);
 
-    return (int) $this->db->connect()->lastInsertId();
+    return $pdo->lastInsertId();
   }
 
   public function updateQuestProgress(IQuestProgress $questProgress)

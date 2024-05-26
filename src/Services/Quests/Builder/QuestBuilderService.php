@@ -35,16 +35,17 @@ class QuestBuilderService implements IQuestBuilderService
 
     $this->questBuilder->setTitle($data['title']);
     $this->questBuilder->setDescription($data['description']);
-    $this->questBuilder->setWorthKnowledge($data['worthKnowledge']);
-    $this->questBuilder->setRequiredWallet($data['requiredWallet']);
-    $this->questBuilder->setRequiredMinutes($data['timeRequired']);
+    $this->questBuilder->setWorthKnowledge(0);
+    $this->questBuilder->setBlockchain($data['blockchain']);
+    $this->questBuilder->setRequiredMinutes($data['minutesRequired']);
     $this->questBuilder->setExpiryDateString($data['expiryDate']);
+    $this->questBuilder->setPayoutDate($data['payoutDate']);
     $this->questBuilder->setParticipantsCount(0);
-    $this->questBuilder->setParticipantsLimit($data['participantLimit']);
+    $this->questBuilder->setParticipantsLimit($data['participantsLimit']);
     $this->questBuilder->setPoolAmount($data['poolAmount']);
     $this->questBuilder->setToken($data['token']);
 
-    if (isset($data['questId'])) {
+    if (isset($data['creatorId'])) {
       $this->questBuilder->setCreatorId($data['creatorId']);
     }
 
@@ -57,6 +58,7 @@ class QuestBuilderService implements IQuestBuilderService
         0,
         0,
         $questionData['text'],
+        QuestionType::UNKNOWN->value,
         $questionData['score'],
         isset($questionData['flag']) ? $questionData['flag'] : null
       );
@@ -69,21 +71,21 @@ class QuestBuilderService implements IQuestBuilderService
           0,
           0,
           $optionData['text'],
-          $optionData['isCorrect'],
+          isset($optionData['isCorrect']) ? true : false,
           isset($questionData['flag']) ? $questionData['flag'] : null
         );
-        if ($optionData['isCorrect']) {
+        if (isset($optionData['isCorrect'])) {
           $correctOptionsCount++;
         }
         $question->addOption($option);
       }
 
       if ($correctOptionsCount === 1) {
-        $question->setType(QuestionType::SINGLE_CHOICE);
+        $question->setType(QuestionType::SINGLE_CHOICE->value);
       } else if ($correctOptionsCount > 1) {
-        $question->setType(QuestionType::MULTIPLE_CHOICE);
+        $question->setType(QuestionType::MULTIPLE_CHOICE->value);
       } else {
-        $question->setType(QuestionType::READ_TEXT);
+        $question->setType(QuestionType::READ_TEXT->value);
       }
 
       $this->questBuilder->addQuestion($question);

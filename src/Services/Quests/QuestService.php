@@ -80,7 +80,7 @@ class QuestService implements IQuestService
       return [];
     }
 
-    return $this->walletRepository->getBlockchainWallets($identity->getId(), $quest->getRequiredWallet());
+    return $this->walletRepository->getBlockchainWallets($identity->getId(), $quest->getBlockchain());
   }
 
   public function editQuest(IQuest $quest): IQuestResult

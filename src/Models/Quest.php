@@ -185,14 +185,9 @@ class Quest implements IQuest
         $this->worthKnowledge = $worthKnowledge;
     }
 
-    public function setRequiredWallet(string $requiredWallet): void
+    public function setBlockchain(string $blockchain): void
     {
-        $this->requiredWallet = $requiredWallet;
-    }
-
-    public function setTimeRequiredMinutes(int $timeRequiredMinutes): void
-    {
-        $this->timeRequiredMinutes = $timeRequiredMinutes;
+        $this->blockchain = $blockchain;
     }
 
     public function setExpiryDateString(string $expiryDateString): void
@@ -205,9 +200,9 @@ class Quest implements IQuest
         $this->participantsCount = $participantsCount;
     }
 
-    public function setParticipantsLimit(int $participantLimit): void
+    public function setParticipantsLimit(int $participantsLimit): void
     {
-        $this->participantLimit = $participantLimit;
+        $this->participantsLimit = $participantsLimit;
     }
 
     public function setPoolAmount(float $poolAmount): void
@@ -260,9 +255,9 @@ class Quest implements IQuest
         $this->payoutDate = $payoutDate;
     }
 
-    public function setRequiredMinutes(int $timeRequiredMinutes): void
+    public function setRequiredMinutes(int $requiredMinutes): void
     {
-        $this->timeRequiredMinutes = $timeRequiredMinutes;
+        $this->requiredMinutes = $requiredMinutes;
     }
 }
 

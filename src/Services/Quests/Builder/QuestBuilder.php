@@ -50,9 +50,9 @@ class QuestBuilder implements IQuestBuilder
     return $this;
   }
 
-  public function setRequiredWallet(string $requiredWallet): self
+  public function setBlockchain(string $blockchain): self
   {
-    $this->quest->setRequiredWallet($requiredWallet);
+    $this->quest->setBlockchain($blockchain);
     return $this;
   }
 
@@ -104,6 +104,12 @@ class QuestBuilder implements IQuestBuilder
     return $this;
   }
 
+  public function setPayoutDate(string $payoutDate): self
+  {
+    $this->quest->setPayoutDate($payoutDate);
+    return $this;
+  }
+
   public function setIsApproved(bool $isApproved): self
   {
     $this->quest->setIsApproved($isApproved);
@@ -115,6 +121,7 @@ class QuestBuilder implements IQuestBuilder
     $this->questions[] = $question;
     return $this;
   }
+
 
   public function setFlag(?string $flag): self
   {

@@ -17,20 +17,14 @@ class Question implements IQuestion
 
   private $options = array();
 
-  public function __equals(IQuestion $other): bool
-  {
-    return $this->questionId === $other->getQuestionId()
-      && $this->text === $other->getText()
-      && $this->type === $other->getType();
-  }
 
 
-  public function __construct(int $questionId, int $questId, string $text, QuestionType $type, int $score, string $flag = null)
+  public function __construct(int $questionId, int $questId, string $text, string $type, int $score, string $flag = null)
   {
     $this->questionId = $questionId;
     $this->questId = $questId;
     $this->text = $text;
-    $this->type = $type;
+    $this->type = QuestionType::from($type);
     $this->score = $score;
     $this->flag = $flag;
   }
@@ -75,9 +69,9 @@ class Question implements IQuestion
     return $this->text;
   }
 
-  public function getType(): QuestionType
+  public function getType(): string
   {
-    return $this->type;
+    return $this->type->value;
   }
 
   public function getOptions(): array
@@ -90,8 +84,8 @@ class Question implements IQuestion
     return $this->score;
   }
 
-  public function setType(QuestionType $type): void
+  public function setType(string $type): void
   {
-    $this->type = $type;
+    $this->type = QuestionType::from($type);
   }
 }
