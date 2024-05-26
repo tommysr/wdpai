@@ -8,11 +8,18 @@ use App\Middleware\JsonResponse;
 use App\Middleware\RedirectResponse;
 use App\Models\IQuest;
 use App\Models\IQuestion;
+use App\Models\Option;
+use App\Models\Question;
+use App\Models\QuestionTypeUtil;
 use App\Request\IFullRequest;
 use App\Request\IRequest;
 use App\Middleware\IResponse;
 use App\Services\Authenticate\AuthenticateService;
 use App\Services\Authenticate\IAuthService;
+use App\Services\Quests\Builder\IQuestBuilder;
+use App\Services\Quests\Builder\IQuestBuilderService;
+use App\Services\Quests\Builder\QuestBuilder;
+use App\Services\Quests\Builder\QuestBuilderService;
 use App\Services\Quests\IQuestService;
 use App\Services\Quests\QuestService;
 
@@ -20,12 +27,14 @@ class QuestsController extends AppController implements IQuestsController
 {
   private IQuestService $questService;
   private IAuthService $authService;
+  private IQuestBuilderService $questBuilderService;
 
-  public function __construct(IFullRequest $request, IQuestService $questService = null, IAuthService $authService = null)
+  public function __construct(IFullRequest $request, IQuestService $questService = null, IAuthService $authService = null, IQuestBuilderService $questBuilderService = null)
   {
     parent::__construct($request);
     $this->questService = $questService ?: new QuestService();
     $this->authService = $authService ?: new AuthenticateService($this->sessionService);
+    $this->questBuilderService = $questBuilderService ?: new QuestBuilderService(new QuestBuilder());
   }
 
   /*
@@ -84,7 +93,9 @@ class QuestsController extends AppController implements IQuestsController
     $formData = $this->request->getBody();
     $parsedData = json_decode($formData, true);
     $creatorId = $this->authService->getIdentity()->getId();
-    $questResult = $this->questService->createQuest($parsedData, $creatorId);
+    $parsedData['creatorId'] = $creatorId;
+    $quest = $this->questBuilderService->buildQuest($parsedData);
+    $questResult = $this->questService->createQuest($quest);
 
     if (!$questResult->isSuccess()) {
       return new JsonResponse(['messages' => $questResult->getMessages()]);
@@ -97,8 +108,9 @@ class QuestsController extends AppController implements IQuestsController
   {
     $formData = $this->request->getBody();
     $parsedData = json_decode($formData, true);
-    $creatorId = $this->authService->getIdentity()->getId();
-    $questResult = $this->questService->editQuest($parsedData, $creatorId, $questId);
+    $parsedData['questId'] = $questId;
+    $quest = $this->questBuilderService->buildQuest($parsedData);
+    $questResult = $this->questService->editQuest($quest);
 
     if (!$questResult->isSuccess()) {
       return new JsonResponse(['messages' => $questResult->getMessages()]);

@@ -6,11 +6,11 @@ use App\Models\IOption;
 
 class Option implements IOption
 {
+  private ?string $flag = null;
   private int $optionId;
   private int $questionId;
   private string $text;
   private bool $isCorrect;
-  private int $scoreMultiplier;
 
   public function __equals(IOption $other): bool
   {
@@ -20,18 +20,24 @@ class Option implements IOption
       && $this->isCorrect === $other->getIsCorrect();
   }
 
-  public function __construct(int $optionId, int $questionId, string $text, bool $isCorrect)
+  public function __construct(int $optionId, int $questionId, string $text, bool $isCorrect, string $flag = null)
   {
     $this->optionId = $optionId;
     $this->questionId = $questionId;
     $this->text = $text;
     $this->isCorrect = $isCorrect;
+    $this->flag = $flag;
+  }
 
-    if ($this->isCorrect) {
-      $this->scoreMultiplier = 2;
-    } else {
-      $this->scoreMultiplier = 0;
-    }
+
+  public function setFlag(string $flag): void
+  {
+    $this->flag = $flag;
+  }
+
+  public function getFlag(): string|null
+  {
+    return $this->flag;
   }
 
   public function setOptionId(int $id)

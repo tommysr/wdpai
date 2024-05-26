@@ -8,6 +8,7 @@ use App\Models\IQuestion;
 
 class Question implements IQuestion
 {
+  private ?string $flag = null;
   private int $questionId;
   private int $questId;
   private string $text;
@@ -24,13 +25,29 @@ class Question implements IQuestion
   }
 
 
-  public function __construct(int $questionId, int $questId, string $text, QuestionType $type, int $score = 0)
+  public function __construct(int $questionId, int $questId, string $text, QuestionType $type, int $score = 0, string $flag = null)
   {
     $this->questionId = $questionId;
     $this->questId = $questId;
     $this->text = $text;
     $this->type = $type;
     $this->score = $score;
+    $this->flag = $flag;
+  }
+
+  public function addOption(IOption $option): void
+  {
+    $this->options[] = $option;
+  }
+
+  public function setFlag(string $flag): void
+  {
+    $this->flag = $flag;
+  }
+
+  public function getFlag(): string|null
+  {
+    return $this->flag;
   }
 
   public function setQuestionId(int $id)

@@ -15,6 +15,6 @@ interface IQuestService
   public function getQuestWithQuestions(int $questId): ?IQuest;
   public function getQuest(int $questId): ?IQuest;
   public function publishQuest(int $questId): void;
-  public function createQuest(array $data, int $creatorId): IQuestResult;
-  public function editQuest(array $data, int $creatorId, int $questId): IQuestResult;
+  public function createQuest(IQuest $quest): IQuestResult;
+  public function editQuest(IQuest $quest): IQuestResult;
 }

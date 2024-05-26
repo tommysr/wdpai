@@ -4,6 +4,9 @@ namespace App\Models;
 
 interface IOption
 {
+  public function setFlag(string $flag): void;
+
+  public function getFlag(): ?string;
   public function getOptionId(): int;
   public function setOptionId(int $id);
   public function getQuestionId(): int;

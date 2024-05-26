@@ -7,6 +7,7 @@ use App\Models\IQuest;
 class Quest implements IQuest
 {
 
+    private ?string $flag;
     private int $questID;
     private string $title;
     private string $description;
@@ -38,7 +39,8 @@ class Quest implements IQuest
         string $token,
         int $points,
         int $creatorId,
-        bool $approved
+        bool $approved,
+        string $flag = null
     ) {
         $this->questID = $questID;
         $this->title = $title;
@@ -54,6 +56,17 @@ class Quest implements IQuest
         $this->points = $points;
         $this->creatorId = $creatorId;
         $this->approved = $approved;
+        $this->flag = $flag;
+    }
+
+    public function getFlag(): string|null
+    {
+        return $this->flag;
+    }
+
+    public function setFlag(string $flag): void
+    {
+        $this->flag = $flag;
     }
 
     public function getQuestID(): int
@@ -153,4 +166,77 @@ class Quest implements IQuest
             && $this->creatorId === $other->getCreatorId()
             && $this->approved === $other->getIsApproved();
     }
+
+    // Setters
+    public function setQuestID(int $questID): void
+    {
+        $this->questID = $questID;
+    }
+
+    public function setTitle(string $title): void
+    {
+        $this->title = $title;
+    }
+
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
+    }
+
+    public function setWorthKnowledge(int $worthKnowledge): void
+    {
+        $this->worthKnowledge = $worthKnowledge;
+    }
+
+    public function setRequiredWallet(string $requiredWallet): void
+    {
+        $this->requiredWallet = $requiredWallet;
+    }
+
+    public function setTimeRequiredMinutes(int $timeRequiredMinutes): void
+    {
+        $this->timeRequiredMinutes = $timeRequiredMinutes;
+    }
+
+    public function setExpiryDateString(string $expiryDateString): void
+    {
+        $this->expiryDate = $expiryDateString;
+    }
+
+    public function setParticipantsCount(int $participantsCount): void
+    {
+        $this->participantsCount = $participantsCount;
+    }
+
+    public function setParticipantLimit(int $participantLimit): void
+    {
+        $this->participantLimit = $participantLimit;
+    }
+
+    public function setPoolAmount(float $poolAmount): void
+    {
+        $this->poolAmount = $poolAmount;
+    }
+
+    public function setPoints(int $points): void
+    {
+        $this->points = $points;
+    }
+
+    public function setToken(string $token): void
+    {
+        $this->token = $token;
+    }
+
+    public function setCreatorId(int $creatorId): void
+    {
+        $this->creatorId = $creatorId;
+    }
+
+    public function setIsApproved(bool $isApproved): void
+    {
+        $this->approved = $isApproved;
+    }
 }
+
+
