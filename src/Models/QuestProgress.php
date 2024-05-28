@@ -73,8 +73,33 @@ class QuestProgress implements IQuestProgress
     $this->completion_date = $completion_date;
   }
 
-  public function setScore(int $score)
+  public function setScore(int $score): void
   {
     $this->score = $score;
+  }
+
+  public function isCompleted(): bool
+  {
+    return $this->state !== QuestState::InProgress;
+  }
+
+  public function setState(IQuestState $state): void
+  {
+    $this->state = $state;
+  }
+
+  public function setLastQuestionId(int $last_question_id)
+  {
+    $this->last_question_id = $last_question_id;
+  }
+
+  public function setNextQuestionId(int $questionId): void
+  {
+    $this->last_question_id = $questionId;
+  }
+
+  public function setCompletionDateToNow(): void
+  {
+    $this->completion_date = date('Y-m-d H:i:s');
   }
 }

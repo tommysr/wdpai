@@ -8,14 +8,14 @@ use App\Repository\QuestProgress\IQuestProgressRepository;
 use App\Services\Authenticate\IAuthService;
 use App\Services\Authorize\AuthorizationResult;
 use App\Services\Authorize\IAuthResult;
-use App\Services\Authorize\Quest\IAuthorizationStrategy;
+use App\Services\Authorize\Quest\IQuestAuthorizeStrategy;
 use App\Services\Session\ISessionService;
 
 /**
  * Strategy for authorizing quests.
  */
 
-class PlayAuthorizationStrategy implements IAuthorizationStrategy
+class PlayAuthorizationStrategy implements IQuestAuthorizeStrategy
 {
   private ISessionService $session;
   private IAuthService $authService;

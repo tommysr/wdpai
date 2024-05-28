@@ -18,4 +18,5 @@ interface IQuestService
   public function publishQuest(int $questId): void;
   public function createQuest(IQuest $quest): IQuestResult;
   public function editQuest(IQuest $quest): IQuestResult;
+  public function addParticipant(int $questId): bool;
 }

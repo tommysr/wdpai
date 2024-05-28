@@ -33,9 +33,9 @@ class SessionService implements ISessionService
     return isset($_SESSION[$key]);
   }
 
-  public static function get($key)
+  public static function get($key, $default = null)
   {
-    return isset($_SESSION[$key]) ? $_SESSION[$key] : null;
+    return isset($_SESSION[$key]) ? $_SESSION[$key] : $default;
   }
 
   public static function delete($key)

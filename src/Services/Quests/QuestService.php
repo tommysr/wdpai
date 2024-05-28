@@ -150,6 +150,26 @@ class QuestService implements IQuestService
     return new QuestResult([], [], true);
   }
 
+  public function addParticipant(int $questId): bool
+  {
+    $quest = $this->questRepository->getQuestById($questId);
+
+    if ($quest === null) {
+      return false;
+    }
+
+    $participantsCount = $quest->getParticipantsCount();
+
+    if ($participantsCount >= $quest->getParticipantsLimit()) {
+      return false;
+    }
+
+    $quest->setParticipantsCount($participantsCount + 1);
+    $this->questRepository->updateQuest($quest);
+
+    return true;
+  }
+
   public function getQuestWithQuestions(int $questId): ?IQuest
   {
     $quest = $this->questRepository->getQuestById($questId);

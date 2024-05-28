@@ -15,4 +15,8 @@ interface IQuestionsRepository
   public function updateQuestions(array $questions): void;
   public function saveQuestion(IQuestion $question): int;
   public function saveQuestions(array $questions): void;
+  public function getFirstQuestionId(int $questId): ?int;
+  public function getNextQuestionId(int $questId, int $currentQuestionId): ?int;
+  public function getNextQuestion(int $questId, int $currentQuestionId): ?IQuestion;
+  public function getLastQuestionId(int $questId): ?int;
 }

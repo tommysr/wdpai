@@ -60,25 +60,35 @@ foreach ($rolesFromDatabase as $role) {
 $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'createQuest');
 $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'editQuest');
 $acl->allow((string) UserRole::NORMAL->value, 'QuestsController', 'showQuestWallets');
+$acl->allow((string) UserRole::NORMAL->value, 'QuestsController', 'enterQuest');
+$acl->allow((string) UserRole::NORMAL->value, 'QuestsController', 'addWallet');
 
 $roleAuthorizationMiddleware = new RoleAuthorizationMiddleware($acl, $authService);
 
-// ROUTES
+// GENERAL ROUTES
 Router::get('/error/{code}', 'ErrorController@error');
-Router::get('/', 'QuestsController@index', [$authMiddleware]);
+Router::get('/', 'QuestsController@showQuests', [$authMiddleware, $questAuthorizeMiddleware, $questAuthorizeMiddleware]);
+
+// AUTHENTICATION ROUTES
 Router::get('/login', 'LoginController@login', [$authMiddleware]);
-Router::post('/login', 'LoginController@login', [$loginValidationMiddleware, $authMiddleware]);
 Router::get('/logout', 'LoginController@logout', [$authMiddleware]);
 Router::get('/register', 'RegisterController@register', [$authMiddleware]);
+Router::post('/login', 'LoginController@login', [$loginValidationMiddleware, $authMiddleware]);
 Router::post('/register', 'RegisterController@register', [$authMiddleware, $registerValidationMiddleware]);
-Router::get('/showQuests', 'QuestsController@index', [$authMiddleware]);
-Router::get('/showCreatedQuests', 'QuestsController@showCreatedQuests', [$authMiddleware]);
+
+// CREATOR ROUTES
+Router::get('/showCreatedQuests', 'QuestsController@showCreatedQuests', [$authMiddleware, $roleAuthorizationMiddleware]);
 Router::get('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $roleAuthorizationMiddleware]);
 Router::get('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddleware, $roleAuthorizationMiddleware]);
 Router::post('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $roleAuthorizationMiddleware, $questValidationMiddleware]);
 Router::post('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddleware, $roleAuthorizationMiddleware, $questValidationMiddleware]);
-Router::get('/showQuestWallets/{questId}', 'QuestsController@showQuestWallets', [$authMiddleware, $questAuthorizeMiddleware]);
-Router::post('/addWallet/{blockchain}', 'QuestsController@addWallet', [$authMiddleware]);
+
+// NORMAL USER ROUTES
+Router::get('/showQuests', 'QuestsController@showQuests', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
+Router::get('/showQuestWallets/{questId}', 'QuestsController@showQuestWallets', [$authMiddleware, $questAuthorizeMiddleware, $questAuthorizeMiddleware]);
+Router::post('/addWallet/{blockchain}', 'QuestsController@addWallet', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
+Router::post('/enterQuest/{questId}', 'QuestsController@enterQuest', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
+Router::get('/play/{questId}', 'GameController@play', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]); 
 
 $request = new Request($_SERVER, $_GET, $_POST);
 $response = Router::dispatch($request);

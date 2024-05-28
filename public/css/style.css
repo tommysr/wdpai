@@ -9,9 +9,6 @@ body {
   background-color: #121d0b;
 }
 
-#add-wallet-form {
-  display: none;
-}
 
 .full-container {
   height: 100vh;

@@ -24,7 +24,7 @@ class AuthorizationFactory implements IAuthorizationStrategyFactory
     $this->questRepository = $questRepository;
   }
 
-  public function create(QuestRequest $request): IAuthorizationStrategy
+  public function create(QuestRequest $request): IQuestAuthorizeStrategy
   {
     switch ($request) {
       case QuestRequest::ACCESS:

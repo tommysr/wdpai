@@ -1,218 +1,155 @@
 <?php
 
-require_once "AppController.php";
-require_once __DIR__ . '/../services/GameService.php';
-require_once __DIR__ . '/../services/QuestAuthorizationService.php';
-require_once __DIR__ . '/../services/SessionService.php';
-require_once __DIR__ . '/../repository/QuestionsRepository.php';
-require_once __DIR__ . '/../repository/QuestStatisticsRepository.php';
-require_once __DIR__ . '/../repository/OptionsRepository.php';
-require_once __DIR__ . '/../exceptions/Quests.php';
+namespace App\Controllers;
+
+use App\Controllers\AppController;
+use App\Controllers\Interfaces\IGameController;
+use App\Middleware\IResponse;
+use App\Middleware\JsonResponse;
+use App\Middleware\RedirectResponse;
+use App\Models\Interfaces\IQuestProgress;
+use App\Models\IQuestion;
+use App\Models\QuestionType;
+use App\Models\QuestProgress;
+use App\Models\Rating;
+use App\Repository\IOptionsRepository;
+use App\Repository\IQuestionsRepository;
+use App\Repository\OptionsRepository;
+use App\Repository\QuestionsRepository;
+use App\Request\IFullRequest;
+use App\Request\IRequest;
+use App\Services\Authenticate\AuthenticateService;
+use App\Services\Authenticate\IAuthService;
+use App\Services\QuestProgress\IQuestProgressService;
+use App\Services\QuestProgress\QuestProgressService;
+use App\Services\Rating\IRatingService;
+use App\Services\Rating\RatingService;
+use App\Services\Session\ISessionService;
 
 
-class GameController extends AppController
+class GameController extends AppController implements IGameController
 {
-  private $gameService;
-  private $questionsRepository;
-  private $optionsRepository;
-  private $questAuthorizationService;
-  private $questStatisticsRepository;
+  private IQuestProgressService $questProgressService;
+  private IAuthService $authService;
+  private IRatingService $ratingService;
 
-  public function __construct()
+
+  public function __construct(IFullRequest $request, ISessionService $sessionService = null, IQuestProgressService $questProgressService = null, IAuthService $authService = null, IRatingService $ratingService = null)
   {
-    parent::__construct();
-    $this->gameService = new GameService();
-    $this->questionsRepository = new QuestionsRepository();
-    $this->questAuthorizationService = new QuestAuthorizationService();
-    $this->optionsRepository = new OptionsRepository();
-    $this->questStatisticsRepository = new QuestStatisticsRepository();
+    parent::__construct($request, $sessionService);
+    $this->questProgressService = $questProgressService ?: new QuestProgressService($this->sessionService);
+    $this->authService = $authService ?: new AuthenticateService($this->sessionService);
+    $this->ratingService = $ratingService ?: new RatingService();
   }
 
-  private function getStateFromSession(): ?QuestStatistics
+  public function getIndex(IRequest $request): IResponse
   {
-    $stateFromSession = SessionService::get('gameplayState');
-
-    if (!$stateFromSession) {
-      return null;
-    }
-
-    return QuestStatistics::fromArray($stateFromSession);
+    return new JsonResponse([]);
   }
 
-  private function getUserGameplayState(int $userId, int $questId): ?QuestStatistics
+  public function getPlay(IRequest $request): IResponse
   {
-    $sessionState = $this->getStateFromSession();
-
-    if ($sessionState) {
-      return $sessionState;
-    }
-
-    return $this->questStatisticsRepository->getQuestStatistic($userId, $questId);
+    $questProgress = $this->questProgressService->getCurrentProgressFromSession();
+    return $this->showNextQuestion($questProgress);
   }
 
-  public function gameplay(int $questId)
+  private function showNextQuestion(IQuestProgress $questProgress): IResponse
   {
-    try {
-      $userId = $this->questAuthorizationService->authorizeQuestAction(QuestAuthorizeRequest::PLAY, $questId);
+    $question = $this->questProgressService->getNextQuestion($questProgress->getQuestId(), $$questProgress->getLastQuestionId());
 
-      $gameplayState = $this->getUserGameplayState($userId, $questId);
-
-      if ($gameplayState) {
-        $this->resumeGameplay($userId, $gameplayState);
-      } else {
-        $walletId = $this->request->query('walletId');
-
-        if (!$walletId) {
-          throw new Exception('Wallet ID is required to start a new gameplay');
-        }
-
-        $this->startNewGameplay($userId, $questId, $walletId);
-      }
-    } catch (NotLoggedInException $e) {
-      $this->redirectWithParams('login', ['message' => 'You need to be logged in to play']);
-    } catch (GameplayInProgressException $id) {
-      $this->redirect('gameplay/' . $id->getMessage());
-    } catch (Exception $e) {
-      $this->redirectWithParams('error', ['message' => $e->getMessage()]);
+    switch ($question->getType()) {
+      case QuestionType::SINGLE_CHOICE:
+        return $this->renderSingleChoiceQuestion($question);
+      case QuestionType::MULTIPLE_CHOICE:
+        return $this->renderMultipleChoiceQuestion($question);
+      default:
+        return $this->renderReadTextQuestion($question);
     }
   }
 
-  private function resumeGameplay(int $userId, QuestStatistics $gameplayState)
+  private function renderSingleChoiceQuestion(IQuestion $question): IResponse
   {
-    $questId = $gameplayState->getQuestId();
-    $lastQuestionId = $gameplayState->getLastQuestionId();
-    $questions = $this->questionsRepository->getQuestionsByQuestId($questId);
-
-    $this->renderQuestion($questions[$lastQuestionId]);
+    return $this->render('singleChoiceQuestion', ['question' => $question]);
   }
 
-  private function startNewGameplay(int $userId, int $questId, int $walletId)
+  private function renderMultipleChoiceQuestion(IQuestion $question): IResponse
   {
-    $this->questStatisticsRepository->addParticipation($userId, $questId, $walletId);
-    $this->redirect('gameplay/' . $questId);
+    return $this->render('multipleChoiceQuestion', ['question' => $question]);
   }
 
-  public function updateGameplayState(int $userId, int $questId, int $lastQuestionId, int $score)
+  private function renderReadTextQuestion(IQuestion $question): IResponse
   {
-    // $this->questStatisticsRepository->updateGameplayState($userId, $questId, $lastQuestionId, $score);
-
-    // Update user gameplay state in the database
-    // Example query: UPDATE user_gameplay_state SET last_question_id = $lastQuestionId, score = $score WHERE user_id = $userId AND quest_id = $questId
+    return $this->render('readText', ['question' => $question]);
   }
 
 
-
-  //   $currentQuestionId = SessionService::get("currentQuestion") ?? 0;
-  //   SessionService::set("currentQuestion", $currentQuestionId);
-
-  //   $questions = $this->questionsRepository->getQuestionsByQuestId($questId);
-  //   $questions_count = count($questions);
-
-  //   if ($questions_count === 0) {
-  //     throw new NoQuestionsException('no questions in database');
-  //   }
-
-  //   $this->renderQuestion($questions[$currentQuestionId]);
-  // }
-
-  public function processUserResponse($questionId)
+  public function postAnswer(IRequest $request, int $questionId): IResponse
   {
-    if (!$_SESSION['awaiting_response']) {
-      return;
+    $userId = $this->authService->getIdentity()->getId();
+    $selectedOptions = $this->request->getParsedBodyParam('options') ?? [];
+
+    $result = $this->questProgressService->evaluateOptions($questionId, $selectedOptions);
+    $this->questProgressService->updateQuestProgress($result['points']);
+    $this->questProgressService->recordResponses($userId, $result['options']);
+
+    $questProgress = $this->questProgressService->getCurrentProgressFromSession();
+    $maxScore = $this->questProgressService->getMaxScore($questProgress->getQuestId());
+
+    if (!$questProgress->isCompleted()) {
+      return $this->renderQuestionSummary($result['points'], $result['maxPoints'], $questProgress->getScore(), $maxScore);
+    } else {
+      return $this->getRating($request);
     }
-
-    $optionId = $_POST['option'] ? [$_POST['option']] : [];
-
-    foreach ($_POST as $key => $value) {
-      if (strpos($key, 'option') === 0) {
-        $optionId[] = $value;
-      }
-    }
-
-    if (!isset($_SESSION['user_score'])) {
-      $_SESSION['user_score'] = 0;
-    }
-
-    $result = $this->gameService->processUserResponse($questionId, $optionId);
-
-    $_SESSION['user_score'] += $result['score'];
-    $_SESSION['max_score'] += $result['maxScore'];
-
-    if ($result['correctPercentage'] > 75) {
-      $_SESSION['correct_answers'] += 1;
-    }
-
-    $this->renderQuestionSummary($result['score'], $result['maxScore'], $result['stars']);
   }
 
-  private function renderQuestionSummary(int $questionScore, int $questionMaxScore, int $stars)
+  private function renderQuestionSummary(int $questionScore, int $questionMaxScore, int $score, int $maxScore): IResponse
   {
-    $overallScore = $_SESSION['user_score'];
-    $maxScoreUntilNow = $_SESSION['max_score'];
-    $overallMaxScore = $_SESSION['quest_points'];
+    $stars = 0;
+    if ($questionMaxScore > 0) {
+      $percentage = ($questionScore / $questionMaxScore) * 100;
+      $stars = min(3, max(0, floor($percentage / 25)));
+    }
 
-    $this->render('questionSummary', [
+    return $this->render('questionSummary', [
       'stars' => $stars,
-      'score' => $questionScore,
-      'maxScore' => $questionMaxScore,
-      'overallScore' => $overallScore,
-      'overallMaxScore' => $overallMaxScore,
-      'maxScoreUntilNow' => $maxScoreUntilNow
+      'questionScore' => $questionScore,
+      'questionMaxScore' => $questionMaxScore,
+      'score' => $score,
+      'questMaxScore' => $maxScore,
     ]);
   }
 
-  // public function nextQuestion()
-  // {
-  //   $questId = SessionService::get('questId');
-  //   $currentQuestion = SessionService::get('currentQuestion');
-  //   $nextQuestion = $currentQuestion + 1;
-
-
-  //   $questions = $this->questionsRepository->getQuestionsByQuestId($questId);
-  //   $questions_count = count($questions);
-
-  //   if ($nextQuestion === $questions_count) {
-  //     return $this->render('questSummary');
-  //   }
-
-  //   SessionService::set('currentQuestion', $nextQuestion);
-  //   $this->renderQuestion($questions[$nextQuestion]);
-  // }
-
-
-  private function renderQuestion(Question $question)
+  private function getSummary(IRequest $request): IResponse
   {
-    $question_type = $question->getType();
-    $options = $this->optionsRepository->getOptionsByQuestionId($question->getQuestionId());
-    // $_SESSION['awaiting_response'] = true;
+    $questProgress = $this->questProgressService->getCurrentProgressFromSession();
 
-
-    switch ($question_type) {
-      case QuestionType::SINGLE_CHOICE:
-        $this->renderSingleChoiceQuestion($question, $options);
-        break;
-      case QuestionType::MULTIPLE_CHOICE:
-        $this->renderMultipleChoiceQuestion($question, $options);
-        break;
-      default:
-        // $_SESSION['awaiting_response'] = false;
-        $this->renderReadTextQuestion($question);
+    if (!$questProgress->isCompleted()) {
+      return new RedirectResponse('/error/404');
     }
+
+    // $questSummary = $this->questProgressService->getQuestSummary($questProgress->getQuestId(), $this->authService->getUserId());
+    return $this->render('questSummary', ['points' => $questProgress->getScore()]);
   }
 
-  private function renderSingleChoiceQuestion($question, $options)
+  public function postRating(IRequest $request): IResponse
   {
-    $this->render('singleChoiceQuestion', ['question' => $question, 'options' => $options]);
+    $userId = $this->authService->getIdentity()->getId();
+    $questProgress = $this->questProgressService->getCurrentProgressFromSession();
+
+    if (!$questProgress->isCompleted()) {
+      return new RedirectResponse('/error/404');
+    }
+
+    $rating = $this->request->getParsedBodyParam('rating');
+    $rating = new Rating($userId, $questProgress->getQuestId(), $rating);
+    $this->ratingService->addRating($rating);
+
+    return new RedirectResponse('/summary');
   }
 
-  private function renderMultipleChoiceQuestion($question, $options)
+  public function getRating(IRequest $request): IResponse
   {
-    $this->render('multipleChoiceQuestion', ['question' => $question, 'options' => $options]);
-  }
-
-  private function renderReadTextQuestion($question)
-  {
-    $this->render('readText', ['question' => $question]);
+    return $this->render('rating');
   }
 }
 

@@ -7,17 +7,15 @@ use App\Controllers\Interfaces\IQuestsController;
 use App\Middleware\JsonResponse;
 use App\Middleware\RedirectResponse;
 use App\Models\IQuest;
-use App\Models\IQuestion;
-use App\Models\Option;
-use App\Models\Question;
-use App\Models\QuestionTypeUtil;
 use App\Models\Wallet;
+use App\Repository\IUserRepository;
 use App\Request\IFullRequest;
 use App\Request\IRequest;
 use App\Middleware\IResponse;
 use App\Services\Authenticate\AuthenticateService;
 use App\Services\Authenticate\IAuthService;
-use App\Services\Quests\Builder\IQuestBuilder;
+use App\Services\QuestProgress\IQuestProgressService;
+use App\Services\QuestProgress\QuestProgressService;
 use App\Services\Quests\Builder\IQuestBuilderService;
 use App\Services\Quests\Builder\QuestBuilder;
 use App\Services\Quests\Builder\QuestBuilderService;
@@ -32,16 +30,18 @@ class QuestsController extends AppController implements IQuestsController
   private IAuthService $authService;
   private IQuestBuilderService $questBuilderService;
   private IWalletService $walletService;
+  private IQuestProgressService $questProgressService;
+  private IUserRepository $userRepository;
 
-  public function __construct(IFullRequest $request, IQuestService $questService = null, IAuthService $authService = null, IQuestBuilderService $questBuilderService = null, IWalletService $walletService = null)
+  public function __construct(IFullRequest $request, IQuestService $questService = null, IAuthService $authService = null, IQuestBuilderService $questBuilderService = null, IWalletService $walletService = null, IQuestProgressService $questProgressService = null)
   {
     parent::__construct($request);
     $this->questService = $questService ?: new QuestService();
     $this->authService = $authService ?: new AuthenticateService($this->sessionService);
     $this->questBuilderService = $questBuilderService ?: new QuestBuilderService(new QuestBuilder());
     $this->walletService = $walletService ?: new WalletService();
+    $this->questProgressService = $questProgressService ?: new QuestProgressService($this->sessionService);
   }
-
 
   /*
       User actions
@@ -155,30 +155,22 @@ class QuestsController extends AppController implements IQuestsController
   }
 
 
+  public function postEnterQuest(IRequest $request, int $questId): IResponse
+  {
+    $walletId = $this->request->getParsedBodyParam('walletId');
 
-  // public function startQuest(int $questId)
-  // {
+    if (!$walletId) {
+      return new RedirectResponse('/error/404', );
+    }
 
-  //     $walletSelect = $this->request->post('walletSelect');
-  //     $walletId = $walletSelect;
+    try {
+      $this->questProgressService->startProgress($questId, (int) $walletId);
 
-  //     if ($walletSelect === 'new') {
-  //       $newWalletAddress = $this->request->post('newWalletAddress');
-
-  //       if (!$newWalletAddress) {
-  //         $this->redirectWithParams('error', ['message' => 'something went wrong', 'code' => 404]);
-  //       }
-
-  //       $walletId = $this->addNewWallet($userId, $questId, $newWalletAddress);
-  //     }
-
-  //     // // set user id, quest id, wallet id and score to 0
-  //     // $this->questStatisticsRepository->addParticipation($userId, $questId, $walletId);
-
-
-  // }
-
-
+      return new RedirectResponse('/play/' . $questId);
+    } catch (\Exception $e) {
+      return new RedirectResponse('/error/404');
+    }
+  }
 
   public function postAddWallet(IRequest $request, string $blockchain): IResponse
   {
@@ -190,22 +182,15 @@ class QuestsController extends AppController implements IQuestsController
     return new JsonResponse(['walletId' => $walletId, 'walletAddress' => $walletAddress]);
   }
 
-  // public function dashboard()
-  // {
-  //   try {
-  //     $id = $this->questAuthorizationService->authorizeQuestRole(QuestRole::NORMAL);
-  //     $user = $this->userRepository->getUserById($id);
-  //     $joinDate = DateTime::createFromFormat('Y-m-d', $user->getJoinDate())->format('F Y');
+  public function getDashboard()
+  {
+    $userId = $this->authService->getIdentity()->getId();
+    $user = $this->userRepository->getUserById($userId);
+    $joinDate = \DateTime::createFromFormat('Y-m-d', $user->getJoinDate())->format('F Y');
 
-  //     $this->render('layout', ['title' => 'dashboard', 'username' => $user->getName(), 'joinDate' => $joinDate, 'points' => 4525], 'dashboard');
-  //   } catch (NotLoggedInException $e) {
-  //     $this->redirectWithParams('login', ['message' => 'first, you need to log in']);
-  //   } catch (Exception $e) {
-  //     $this->redirectWithParams('error', ['message' => $e->getMessage()]);
-  //   }
-  // }
+    // somehow get user points
+    // there is also list of quests user has participated in
+    $this->render('layout', ['title' => 'dashboard', 'username' => $user->getName(), 'joinDate' => $joinDate, 'points' => 4525], 'dashboard');
 
-
-
-
+  }
 }

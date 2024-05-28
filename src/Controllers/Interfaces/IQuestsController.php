@@ -27,4 +27,5 @@ interface IQuestsController extends IRootController
   public function getShowQuestsToApproval(IRequest $request): IResponse;
   public function postPublish(IRequest $request, int $questId): IResponse;
   public function postAddWallet(IRequest $request, string $blockchain): IResponse;
+  public function postEnterQuest(IRequest $request, int $walletId): IResponse;
 }

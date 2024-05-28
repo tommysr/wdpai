@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Repository\Repository;
 use App\Models\IQuestion;
 use App\Models\Question;
-use App\Models\QuestionTypeUtil;
 
 
 class QuestionsRepository extends Repository implements IQuestionsRepository
@@ -215,5 +214,61 @@ class QuestionsRepository extends Repository implements IQuestionsRepository
 
       throw new \Exception("Transaction failed: " . $e->getMessage());
     }
+  }
+
+  public function getFirstQuestionId(int $questId): ?int
+  {
+    $sql = "SELECT question_id FROM questions WHERE quest_id = :quest_id ORDER BY question_id ASC LIMIT 1";
+
+    $stmt = $this->db->connect()->prepare($sql);
+    $stmt->execute(['quest_id' => $questId]);
+    $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+    if (empty($result)) {
+      return null;
+    }
+
+    return $result['question_id'];
+  }
+
+  public function getNextQuestionId(int $questId, int $currentQuestionId): ?int
+  {
+    $sql = "SELECT question_id FROM questions WHERE quest_id = :quest_id AND question_id > :current_question_id ORDER BY question_id ASC LIMIT 1";
+
+    $stmt = $this->db->connect()->prepare($sql);
+    $stmt->execute(['quest_id' => $questId, 'current_question_id' => $currentQuestionId]);
+    $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+    if (empty($result)) {
+      return null;
+    }
+
+    return $result['question_id'];
+  }
+
+  public function getLastQuestionId(int $questId): ?int
+  {
+    $sql = "SELECT question_id FROM questions WHERE quest_id = :quest_id ORDER BY question_id DESC LIMIT 1";
+
+    $stmt = $this->db->connect()->prepare($sql);
+    $stmt->execute(['quest_id' => $questId]);
+    $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+    if (empty($result)) {
+      return null;
+    }
+
+    return $result['question_id'];
+  }
+
+  public function getNextQuestion(int $questId, int $currentQuestionId): ?IQuestion
+  {
+    $nextQuestionId = $this->getNextQuestionId($questId, $currentQuestionId);
+
+    if (!$nextQuestionId) {
+      return null;
+    }
+
+    return $this->getById($nextQuestionId);
   }
 }

@@ -29,6 +29,12 @@ class QuestAuthorizationMiddleware extends BaseMiddleware
     if ($questRequest !== null) {
       $authResult = $this->questAuthorizeService->authorizeQuest($questRequest, $questId);
 
+      $redirect = $authResult->getRedirectUrl();
+
+      if ($redirect !== null && $redirect !== $request->getPath()) {
+        return new RedirectResponse($redirect);
+      }
+
       if (!$authResult->isValid()) {
         return new RedirectResponse('/error/401');
       }

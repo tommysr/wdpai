@@ -34,7 +34,7 @@
   </div>
 
   <div class="flex-column-center-center">
-    <form action="/nextQuestion<?= $question->getQuestionId(); ?>" method="post" class="question-container">
+    <form action="/answer/<?= $question->getQuestionId(); ?>" method="post" class="question-container">
       <div class="text-background">
         <span class="read-text">
           <?= $question->getText(); ?>

@@ -14,6 +14,7 @@ enum QuestRequest
       case 'editQuest':
         return self::EDIT;
       case 'showQuests':
+      case 'enterQuest':
         return self::ACCESS;
       default:
         return null;
