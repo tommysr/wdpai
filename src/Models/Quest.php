@@ -7,58 +7,91 @@ use App\Models\IQuest;
 class Quest implements IQuest
 {
 
-    private int $questID;
+    private ?string $flag;
+    private int $questId;
     private string $title;
     private string $description;
     private int $worthKnowledge;
-    private string $requiredWallet;
-    private int $timeRequiredMinutes;
+    private string $blockchain;
+    private int $requiredMinutes;
     private string $expiryDate;
     private int $participantsCount;
-    private int $participantLimit;
+    private int $participantsLimit;
+    private int $maxPoints;
     private float $poolAmount;
     private string $token;
-    private int $points;
+    private string $payoutDate;
+    private string $creatorName;
     private int $creatorId;
     private bool $approved;
+    private string $pictureUrl;
 
     private $questions = array();
 
     public function __construct(
-        int $questID,
+        int $questId,
         string $title,
         string $description,
         int $worthKnowledge,
-        string $requiredWallet,
-        int $timeRequiredMinutes,
+        string $blockchain,
+        int $requiredMinutes,
         string $expiryDate,
         int $participantsCount,
-        int $participantLimit,
+        int $participantsLimit,
         float $poolAmount,
         string $token,
-        int $points,
         int $creatorId,
-        bool $approved
+        bool $approved,
+        string $pictureUrl,
+        int $maxPoints,
+        string $payoutDate,
+        string $creatorName,
+        string $flag = null
     ) {
-        $this->questID = $questID;
+        $this->questId = $questId;
         $this->title = $title;
         $this->description = $description;
         $this->worthKnowledge = $worthKnowledge;
-        $this->requiredWallet = $requiredWallet;
-        $this->timeRequiredMinutes = $timeRequiredMinutes;
+        $this->blockchain = $blockchain;
+        $this->requiredMinutes = $requiredMinutes;
         $this->expiryDate = $expiryDate;
         $this->participantsCount = $participantsCount;
-        $this->participantLimit = $participantLimit;
+        $this->participantsLimit = $participantsLimit;
         $this->poolAmount = $poolAmount;
         $this->token = $token;
-        $this->points = $points;
         $this->creatorId = $creatorId;
         $this->approved = $approved;
+        $this->pictureUrl = $pictureUrl;
+        $this->flag = $flag;
+        $this->maxPoints = $maxPoints;
+        $this->payoutDate = $payoutDate;
+        $this->creatorName = $creatorName;
+    }
+
+
+    public function getCreatorName(): string
+    {
+        return $this->creatorName;
+    }
+
+    public function setCreatorName(string $creatorName): void
+    {
+        $this->creatorName = $creatorName;
+    }
+
+    public function getFlag(): string|null
+    {
+        return $this->flag;
+    }
+
+    public function setFlag(string $flag): void
+    {
+        $this->flag = $flag;
     }
 
     public function getQuestID(): int
     {
-        return $this->questID;
+        return $this->questId;
     }
 
     public function getTitle(): string
@@ -76,14 +109,14 @@ class Quest implements IQuest
         return $this->worthKnowledge;
     }
 
-    public function getRequiredWallet(): string
+    public function getBlockchain(): string
     {
-        return $this->requiredWallet;
+        return $this->blockchain;
     }
 
-    public function getTimeRequiredMinutes(): int
+    public function getRequiredMinutes(): int
     {
-        return $this->timeRequiredMinutes;
+        return $this->requiredMinutes;
     }
 
     public function getExpiryDateString(): string
@@ -96,19 +129,14 @@ class Quest implements IQuest
         return $this->participantsCount;
     }
 
-    public function getParticipantLimit(): int
+    public function getParticipantsLimit(): int
     {
-        return $this->participantLimit;
+        return $this->participantsLimit;
     }
 
     public function getPoolAmount(): float
     {
         return $this->poolAmount;
-    }
-
-    public function getPoints(): int
-    {
-        return $this->points;
     }
 
     public function getToken(): string
@@ -136,21 +164,101 @@ class Quest implements IQuest
         $this->questions = $questions;
     }
 
-    public function __equals(IQuest $other): bool
+    // Setters
+    public function setQuestID(int $questId): void
     {
-        return $this->questID === $other->getQuestID()
-            && $this->title === $other->getTitle()
-            && $this->description === $other->getDescription()
-            && $this->worthKnowledge === $other->getWorthKnowledge()
-            && $this->requiredWallet === $other->getRequiredWallet()
-            && $this->timeRequiredMinutes === $other->getTimeRequiredMinutes()
-            && $this->expiryDate === $other->getExpiryDateString()
-            && $this->participantsCount === $other->getParticipantsCount()
-            && $this->participantLimit === $other->getParticipantLimit()
-            && $this->poolAmount === $other->getPoolAmount()
-            && $this->points === $other->getPoints()
-            && $this->token === $other->getToken()
-            && $this->creatorId === $other->getCreatorId()
-            && $this->approved === $other->getIsApproved();
+        $this->questId = $questId;
+    }
+
+    public function setTitle(string $title): void
+    {
+        $this->title = $title;
+    }
+
+    public function setDescription(string $description): void
+    {
+        $this->description = $description;
+    }
+
+    public function setWorthKnowledge(int $worthKnowledge): void
+    {
+        $this->worthKnowledge = $worthKnowledge;
+    }
+
+    public function setBlockchain(string $blockchain): void
+    {
+        $this->blockchain = $blockchain;
+    }
+
+    public function setExpiryDateString(string $expiryDateString): void
+    {
+        $this->expiryDate = $expiryDateString;
+    }
+
+    public function setParticipantsCount(int $participantsCount): void
+    {
+        $this->participantsCount = $participantsCount;
+    }
+
+    public function setParticipantsLimit(int $participantsLimit): void
+    {
+        $this->participantsLimit = $participantsLimit;
+    }
+
+    public function setPoolAmount(float $poolAmount): void
+    {
+        $this->poolAmount = $poolAmount;
+    }
+
+    public function setToken(string $token): void
+    {
+        $this->token = $token;
+    }
+
+    public function setCreatorId(int $creatorId): void
+    {
+        $this->creatorId = $creatorId;
+    }
+
+    public function setIsApproved(bool $isApproved): void
+    {
+        $this->approved = $isApproved;
+    }
+
+    public function getPictureUrl(): string
+    {
+        return $this->pictureUrl;
+    }
+
+    public function setPictureUrl(string $pictureUrl): void
+    {
+        $this->pictureUrl = $pictureUrl;
+    }
+
+    public function getMaxPoints(): int
+    {
+        return $this->maxPoints;
+    }
+
+    public function setMaxPoints(int $maxPoints): void
+    {
+        $this->maxPoints = $maxPoints;
+    }
+
+    public function getPayoutDate(): string
+    {
+        return $this->payoutDate;
+    }
+
+    public function setPayoutDate(string $payoutDate): void
+    {
+        $this->payoutDate = $payoutDate;
+    }
+
+    public function setRequiredMinutes(int $requiredMinutes): void
+    {
+        $this->requiredMinutes = $requiredMinutes;
     }
 }
+
+

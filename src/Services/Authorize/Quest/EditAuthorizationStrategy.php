@@ -6,9 +6,9 @@ use App\Repository\IQuestRepository;
 use App\Services\Authenticate\IAuthService;
 use App\Services\Authorize\AuthorizationResult;
 use App\Services\Authorize\IAuthResult;
-use App\Services\Authorize\Quest\IAuthorizationStrategy;
+use App\Services\Authorize\Quest\IQuestAuthorizeStrategy;
 
-class EditAuthorizationStrategy implements IAuthorizationStrategy
+class EditAuthorizationStrategy implements IQuestAuthorizeStrategy
 {
   private IAuthService $authService;
   private IQuestRepository $questRepository;

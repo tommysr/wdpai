@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Middleware;
+
 use App\Request\IFullRequest;
 use App\Middleware\IResponse;
 
@@ -21,4 +22,5 @@ interface IMiddleware
    * @return IMiddleware Returns the next middleware.
    */
   public function setNext(IMiddleware $middleware): IMiddleware;
+  public function removeNext(): void;
 }

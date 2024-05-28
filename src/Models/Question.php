@@ -8,6 +8,7 @@ use App\Models\IQuestion;
 
 class Question implements IQuestion
 {
+  private ?string $flag = null;
   private int $questionId;
   private int $questId;
   private string $text;
@@ -16,21 +17,31 @@ class Question implements IQuestion
 
   private $options = array();
 
-  public function __equals(IQuestion $other): bool
-  {
-    return $this->questionId === $other->getQuestionId()
-      && $this->text === $other->getText()
-      && $this->type === $other->getType();
-  }
 
 
-  public function __construct(int $questionId, int $questId, string $text, QuestionType $type, int $score = 0)
+  public function __construct(int $questionId, int $questId, string $text, string $type, int $score, string $flag = null)
   {
     $this->questionId = $questionId;
     $this->questId = $questId;
     $this->text = $text;
-    $this->type = $type;
+    $this->type = QuestionType::from($type);
     $this->score = $score;
+    $this->flag = $flag;
+  }
+
+  public function addOption(IOption $option): void
+  {
+    $this->options[] = $option;
+  }
+
+  public function setFlag(string $flag): void
+  {
+    $this->flag = $flag;
+  }
+
+  public function getFlag(): string|null
+  {
+    return $this->flag;
   }
 
   public function setQuestionId(int $id)
@@ -58,9 +69,9 @@ class Question implements IQuestion
     return $this->text;
   }
 
-  public function getType(): QuestionType
+  public function getType(): string
   {
-    return $this->type;
+    return $this->type->value;
   }
 
   public function getOptions(): array
@@ -68,8 +79,18 @@ class Question implements IQuestion
     return $this->options;
   }
 
-  public function setOptions(array $options)
+  public function getPoints(): int
+  {
+    return $this->score;
+  }
+
+  public function setOptions(array $options): void
   {
     $this->options = $options;
+  }
+
+  public function setType(string $type): void
+  {
+    $this->type = QuestionType::from($type);
   }
 }

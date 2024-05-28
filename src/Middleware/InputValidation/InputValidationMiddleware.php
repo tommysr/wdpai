@@ -13,16 +13,18 @@ abstract class InputValidationMiddleware extends BaseMiddleware
 {
   protected IValidationChain $validationChain;
 
-  public function process(IFullRequest $request, IHandler $handler): IResponse
-  {
-    try {
-      $errors = $this->validationChain->validateFields($request->getParsedBody());
+  protected array $toValidate = [];
 
+  public function process(IFullRequest $request, IHandler $handler): IResponse
+  { 
+    try {
+      $errors = $this->validationChain->validateFields($this->toValidate);
+ 
       if (count($errors) > 0) {
         return new JsonResponse(['errors' => $errors]);
       }
     } catch (\Exception $e) {
-      return new JsonResponse(['errors' => $e->getMessage()]);
+      return new JsonResponse(['errors' => [$e->getMessage()]]);
     }
 
     if ($this->next !== null) {

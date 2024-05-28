@@ -10,6 +10,7 @@ use App\Models\QuestionType;
 use App\Models\QuestionTypeUtil;
 use App\Repository\IOptionsRepository;
 use App\Repository\IWalletRepository;
+use App\Repository\WalletRepository;
 use App\Services\Authenticate\IIdentity;
 use App\Services\Quests\IQuestService;
 use App\Repository\IQuestRepository;
@@ -33,10 +34,12 @@ class QuestService implements IQuestService
     IQuestRepository $questRepository = null,
     IQuestionsRepository $questionRepository = null,
     IOptionsRepository $optionRepository = null,
+    IWalletRepository $walletRepository = null
   ) {
     $this->questRepository = $questRepository ?: new QuestRepository();
     $this->questionRepository = $questionRepository ?: new QuestionsRepository();
     $this->optionRepository = $optionRepository ?: new OptionsRepository();
+    $this->walletRepository = $walletRepository ?: new WalletRepository();
   }
 
   public function getQuestsToApproval(): array
@@ -54,12 +57,10 @@ class QuestService implements IQuestService
   {
     $quests = $this->questRepository->getApprovedQuests();
 
-    array_filter($quests, function ($quest) {
-      return $quest->getParticipantsCount() < $quest->getParticipantLimit() &&
-        $quest->getExpiryDateString() > date('Y-m-d H:i:s', time());
+    return array_filter($quests, function ($quest) {
+      return $quest->getParticipantsCount() < $quest->getParticipantsLimit() &&
+        \DateTime::createFromFormat('Y-m-d', $quest->getExpiryDateString()) > new \DateTime();
     });
-
-    return $quests;
   }
 
   public function getCreatorQuests(IIdentity $identity): array
@@ -67,227 +68,106 @@ class QuestService implements IQuestService
     $creatorId = $identity->getId();
     $quests = $this->questRepository->getCreatorQuests($creatorId);
 
-    array_filter($quests, function ($quest) {
+    return array_filter($quests, function ($quest) {
       return !$quest->getIsApproved();
     });
-
-    return $quests;
   }
 
-  public function getQuestWallets(IIdentity $identity, int $questId): array
+  public function getQuestBlockchain(int $questId): string
   {
     $quest = $this->questRepository->getQuestById($questId);
 
     if (!$quest) {
-      return [];
+      throw new \Exception('Quest not found');
     }
 
-    return $this->walletRepository->getBlockchainWallets($identity->getId(), $quest->getRequiredWallet());
+    return $quest->getBlockchain();
   }
 
-  private function saveQuestion(array $data, int $questId): IQuestion
+  public function editQuest(IQuest $quest): IQuestResult
   {
-    $question = new Question(
-      0,
-      $questId,
-      $data['text'],
-      QuestionTypeUtil::fromString($data['type']),
-      $data['score'],
-    );
-
-    $id = $this->questionRepository->saveQuestion($question);
-
-    $question->setQuestionId($id);
-
-    return $question;
-  }
-
-  private function updateQuestFromData(array $data, int $creatorId, int $questId)
-  {
-    $quest = new Quest(
-      $questId,
-      $data['title'],
-      $data['description'],
-      $data['worthKnowledge'],
-      $data['requiredWallet'],
-      $data['timeRequired'],
-      $data['expiryDate'],
-      0,
-      $data['participantsLimit'],
-      $data['poolAmount'],
-      $data['token'],
-      $data['points'],
-      $creatorId,
-      false
-    );
-
+    // Update quest without flag
     $this->questRepository->updateQuest($quest);
-  }
 
-  private function saveQuest(array $data, int $creatorId): int
-  {
-    $quest = new Quest(
-      0,
-      $data['title'],
-      $data['description'],
-      $data['worthKnowledge'],
-      $data['requiredWallet'],
-      $data['timeRequired'],
-      $data['expiryDate'],
-      0,
-      $data['participantsLimit'],
-      $data['poolAmount'],
-      $data['token'],
-      $data['points'],
-      $creatorId,
-      false
-    );
-
-    return $this->questRepository->saveQuest($quest);
-  }
-
-  private function saveOption(array $data, int $questionId): IOption
-  {
-    $option = new Option(
-      0,
-      $questionId,
-      $data['text'],
-      $data['isCorrect']
-    );
-
-    $id = $this->optionRepository->saveOption($option);
-
-    $option->setOptionId($id);
-
-    return $option;
-  }
-
-  private function updateQuestionFromData(array $data)
-  {
-    $question = new Question(
-      $data['questionId'],
-      $data['questId'],
-      $data['text'],
-      QuestionTypeUtil::fromString($data['type']),
-      $data['score'],
-    );
-
-    $this->questionRepository->updateQuestions([$question]);
-  }
-
-
-  private function updateOptionsFromData(array $options, int $questionId)
-  {
-    foreach ($options as $option) {
-      if (!$option) {
-        continue;
-      }
-
-      switch ($option['flag']) {
+    // Handle questions and options
+    foreach ($quest->getQuestions() as $question) {
+      switch ($question->getFlag()) {
         case 'added':
-          $this->saveOption($option, $questionId);
+          $question->setQuestId($quest->getQuestID());
+          $questionId = $this->questionRepository->saveQuestion($question);
+
+          foreach ($question->getOptions() as $option) {
+            $option->setQuestionId($questionId);
+            $this->optionRepository->saveOption($option);
+          }
           break;
-        case 'deleted':
-          $this->optionRepository->deleteOptionById($option['id']);
+        case 'removed':
+
+          $this->optionRepository->deleteAllOptions($question->getQuestionId());
+          $this->questionRepository->deleteQuestionById($question->getQuestionId());
           break;
         default:
-          $option = new Option(
-            $option['id'],
-            $questionId,
-            $option['text'],
-            $option['isCorrect']
-          );
+          $this->questionRepository->updateQuestions([$question]);
 
-          $this->optionRepository->updateOptions([$option]);
-      }
-    }
-  }
-
-  public function editQuest(array $data, int $creatorId, int $questId): IQuestResult
-  {
-    $this->updateQuestFromData($data, $creatorId, $questId);
-
-    $questions = $data['questions'];
-
-    if (empty($questions)) {
-      return new QuestResult(['Questions are required.']);
-    }
-
-
-    foreach ($questions as $question) {
-      if (!$question) {
-        continue;
-      }
-
-      switch ($question['flag']) {
-        case 'added':
-          $question = $this->saveQuestion($question, $questId);
-
-          $options = $question['options'];
-
-          if ($question->getType() != QuestionType::READ_TEXT && empty($options)) {
-            return new QuestResult(['Options are required.']);
-          }
-
-          foreach ($options as $option) {
-            if (!$option) {
-              continue;
+          foreach ($question->getOptions() as $option) {
+            switch ($option->getFlag()) {
+              case 'added':
+                $option->setQuestionId($question->getQuestionId());
+                $this->optionRepository->saveOption($option);
+                break;
+              case 'removed':
+                $this->optionRepository->deleteOptionById($option->getOptionId());
+                break;
+              default:
+                $this->optionRepository->updateOptions([$option]);
             }
-
-            $this->saveOption($option, $question->getQuestionId());
           }
+      }
+    }
+    return new QuestResult([], [], true);
+  }
 
-          break;
-        case 'deleted':
-          $id = $question['id'];
-          $this->questionRepository->deleteQuestionById($id);
-          $this->optionRepository->deleteAllOptions($id);
-          break;
-        default:
-          $this->updateQuestionFromData($question);
-          $options = $question['options'];
-          if (!empty($options)) {
-            $this->updateOptionsFromData($options, $question['id']);
-          }
+  public function createQuest(IQuest $quest): IQuestResult
+  {
+    $questId = $this->questRepository->saveQuest($quest);
+    $questions = $quest->getQuestions();
+
+    if (sizeof($questions) == 0) {
+      return new QuestResult(['questions cant be empty']);
+    }
+
+    // Handle questions and options
+    foreach ($quest->getQuestions() as $question) {
+      $question->setQuestId($questId);
+      $questionId = $this->questionRepository->saveQuestion($question);
+
+      foreach ($question->getOptions() as $option) {
+        $option->setQuestionId($questionId);
+        $this->optionRepository->saveOption($option);
       }
     }
 
     return new QuestResult([], [], true);
   }
 
-  public function createQuest(array $data, int $creatorId): IQuestResult
+  public function addParticipant(int $questId): bool
   {
-    $questId = $this->saveQuest($data, $creatorId);
+    $quest = $this->questRepository->getQuestById($questId);
 
-    $questions = $data['questions'];
-
-    if (empty($questions)) {
-      return new QuestResult(['Questions are required.']);
+    if ($quest === null) {
+      return false;
     }
 
-    foreach ($questions as $question) {
-      if (!$question) {
-        continue;
-      }
+    $participantsCount = $quest->getParticipantsCount();
 
-      $question = $this->saveQuestion($question, $questId);
-
-      $options = $question['options'];
-
-      if ($question->getType() != QuestionType::READ_TEXT && empty($options)) {
-        return new QuestResult(['Options are required.']);
-      }
-
-      foreach ($options as $option) {
-        if (!$option) {
-          continue;
-        }
-
-        $this->saveOption($option, $question->getQuestionId());
-      }
+    if ($participantsCount >= $quest->getParticipantsLimit()) {
+      return false;
     }
 
-    return new QuestResult([], [], true);
+    $quest->setParticipantsCount($participantsCount + 1);
+    $this->questRepository->updateQuest($quest);
+
+    return true;
   }
 
   public function getQuestWithQuestions(int $questId): ?IQuest

@@ -46,4 +46,14 @@ interface IQuestProgress
 
 
   public function getState(): IQuestState;
+
+  public function isCompleted(): bool;
+
+  public function setState(IQuestState $state): void;
+
+  public function setScore(int $score): void;
+
+  public function setNextQuestionId(int $questionId): void;
+
+  public function setCompletionDateToNow(): void;
 }

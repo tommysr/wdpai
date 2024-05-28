@@ -4,11 +4,11 @@ namespace App\Models;
 
 use App\Models\Interfaces\IQuestState;
 
-enum QuestState implements IQuestState
+enum QuestState: int implements IQuestState
 {
   case InProgress = 1;
   case Finished = 2;
-  case Abandoned = 3; 
+  case Abandoned = 3;
 
   public function getStateId(): int
   {

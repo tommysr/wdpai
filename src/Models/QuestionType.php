@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-enum QuestionType
+enum QuestionType: string
 {
-  case SINGLE_CHOICE;
-  case MULTIPLE_CHOICE;
-  case READ_TEXT;
-  case UNKNOWN;
+  case SINGLE_CHOICE = 'single_choice';
+  case MULTIPLE_CHOICE = 'multiple_choice';
+  case READ_TEXT = 'read_text';
+  case UNKNOWN = 'unknown';
 }

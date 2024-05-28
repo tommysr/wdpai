@@ -13,113 +13,188 @@ class QuestRepository extends Repository implements IQuestRepository
   private function constructQuestModel(array $data): IQuest
   {
     return new Quest(
-      $data['questid'],
+      $data['quest_id'],
       $data['title'],
       $data['description'],
-      $data['worthknowledge'],
-      $data['requiredwallet'],
-      $data['timerequired_minutes'],
-      $data['expirydate'],
-      $data['participantscount'],
-      $data['participantlimit'],
-      $data['poolamount'],
+      $data['worth_knowledge'],
+      $data['blockchain'],
+      $data['required_minutes'],
+      $data['expiry_date'],
+      $data['participants_count'],
+      $data['participants_limit'],
+      $data['pool_amount'],
       $data['token'],
-      $data['points'],
-      $data['creator'],
-      $data['approved']
+      $data['creator_id'],
+      $data['approved'],
+      $data['picture_url'],
+      $data['max_points'],
+      $data['payout_date'],
+      $data['creator_name']
     );
+  }
+
+  private function getTokenId(\PDO &$pdo, string $tokenName): int
+  {
+    $token_id = $pdo->query("SELECT token_id FROM tokens WHERE name = '" . $tokenName . "'")->fetchColumn();
+
+    if (!$token_id) {
+      $pdo->query("INSERT INTO tokens (name) VALUES ('" . $tokenName . "')");
+      $token_id = $pdo->lastInsertId();
+    }
+
+    return $token_id;
+  }
+
+  private function getBlockchainId(\PDO &$pdo, string $blockchainName): int
+  {
+    $blockchain_id = $pdo->query("SELECT blockchain_id FROM blockchains WHERE name = '" . $blockchainName . "'")->fetchColumn();
+
+    if (!$blockchain_id) {
+      $pdo->query("INSERT INTO blockchains (name) VALUES ('" . $blockchainName . "')");
+      $blockchain_id = $pdo->lastInsertId();
+    }
+
+    return $blockchain_id;
+  }
+
+  private function getPictureId(\PDO &$pdo, string $pictureUrl): int
+  {
+    $picture_id = $pdo->query("SELECT picture_id FROM pictures WHERE picture_url = '" . $pictureUrl . "'")->fetchColumn();
+
+    if (!$picture_id) {
+      $pdo->query("INSERT INTO pictures (picture_url) VALUES ('" . $pictureUrl . "')");
+      $picture_id = $pdo->lastInsertId();
+    }
+
+    return $picture_id;
   }
 
   public function updateQuest(IQuest $quest)
   {
-    $sql = "UPDATE quests SET
+    $pdo = $this->db->connect();
+    $pdo->beginTransaction();
+
+
+    try {
+      $token_id = $this->getTokenId($pdo, $quest->getToken());
+      $blockchain_id = $this->getBlockchainId($pdo, $quest->getBlockchain());
+      $picture_id = $this->getPictureId($pdo, $quest->getPictureUrl());
+
+
+      $sql = "UPDATE quests SET
               title = :title, 
               description = :description, 
-              worthknowledge = :worthknowledge, 
-              requiredwallet = :requiredwallet, 
-              expirydate = :expirydate, 
-              participantscount = :participantscount, 
-              participantlimit = :participantlimit, 
-              poolamount = :poolamount, 
-              token = :token, 
-              points = :points, 
-              timerequired_minutes = :timerequired_minutes,
-              creator = :creator, 
-              approved = :approved 
-              WHERE questid = :questid";
+              worth_knowledge = :worth_knowledge, 
+              blockchain_id = :blockchain_id, 
+              required_minutes = :required_minutes, 
+              expiry_date = :expiry_date, 
+              participants_count = :participants_count, 
+              participants_limit = :participants_limit, 
+              pool_amount = :pool_amount, 
+              token_id = :token_id, 
+              approved = :approved, 
+              picture_id = :picture_id, 
+              max_points = :max_points, 
+              payout_date = :payout_date 
+              WHERE quest_id = :quest_id";
 
-    $stmt = $this->db->connect()->prepare($sql);
+      $stmt = $pdo->prepare($sql);
 
-    $stmt->execute([
-      ':questid' => $quest->getQuestID(),
-      ':title' => $quest->getTitle(),
-      ':description' => $quest->getDescription(),
-      ':worthknowledge' => $quest->getWorthKnowledge(),
-      ':requiredwallet' => $quest->getRequiredWallet(),
-      ':expirydate' => $quest->getExpiryDateString(),
-      ':participantscount' => $quest->getParticipantsCount(),
-      ':participantlimit' => $quest->getParticipantLimit(),
-      ':poolamount' => $quest->getPoolAmount(),
-      ':token' => $quest->getToken(),
-      ':points' => $quest->getPoints(),
-      ':timerequired_minutes' => $quest->getTimeRequiredMinutes(),
-      ':creator' => $quest->getCreatorId(),
-      ':approved' => (int) $quest->getIsApproved(),
-    ]);
+      $stmt->execute([
+        ':title' => $quest->getTitle(),
+        ':description' => $quest->getDescription(),
+        ':worth_knowledge' => $quest->getWorthKnowledge(),
+        ':blockchain_id' => $blockchain_id,
+        ':required_minutes' => $quest->getRequiredMinutes(),
+        ':expiry_date' => $quest->getExpiryDateString(),
+        ':participants_count' => $quest->getParticipantsCount(),
+        ':participants_limit' => $quest->getParticipantsLimit(),
+        ':pool_amount' => $quest->getPoolAmount(),
+        ':token_id' => $token_id,
+        ':approved' => $quest->getIsApproved() ? 1 : 0,
+        ':picture_id' => $picture_id,
+        ':max_points' => $quest->getMaxPoints(),
+        ':payout_date' => $quest->getPayoutDate(),
+        ':quest_id' => $quest->getQuestID(),
+      ]);
 
+
+      $pdo->commit();
+
+    } catch (\PDOException $e) {
+      $pdo->rollBack();
+
+      throw new \Exception("Transaction failed: " . $e->getMessage());
+    }
   }
-
 
   public function saveQuest(IQuest $quest): int
   {
-    $sql = "INSERT INTO quests (title, description, worthknowledge, requiredwallet, expirydate, participantscount, participantlimit, poolamount, token, points, timerequired_minutes, creator, approved)
-    VALUES (:title, :description, :worthknowledge, :requiredwallet, :expirydate, :participantscount, :participantlimit, :poolamount, :token, :points, :timerequired_minutes, :creator, :approved)";
+    $pdo = $this->db->connect();
+    $pdo->beginTransaction();
 
-    $stmt = $this->db->connect()->prepare($sql);
+    try {
+      $token_id = $this->getTokenId($pdo, $quest->getToken());
+      $blockchain_id = $this->getBlockchainId($pdo, $quest->getBlockchain());
+      $picture_id = $this->getPictureId($pdo, $quest->getPictureUrl());
 
-    $stmt->execute([
-      ':title' => $quest->getTitle(),
-      ':description' => $quest->getDescription(),
-      ':worthknowledge' => $quest->getWorthKnowledge(),
-      ':requiredwallet' => $quest->getRequiredWallet(),
-      ':expirydate' => $quest->getExpiryDateString(),
-      ':participantscount' => $quest->getParticipantsCount(),
-      ':participantlimit' => $quest->getParticipantLimit(),
-      ':poolamount' => $quest->getPoolAmount(),
-      ':token' => $quest->getToken(),
-      ':points' => $quest->getPoints(),
-      ':timerequired_minutes' => $quest->getTimeRequiredMinutes(),
-      ':creator' => $quest->getCreatorId(),
-      ':approved' => $quest->getIsApproved(),
-    ]);
+      $sql = "INSERT INTO quests (title, description, worth_knowledge, 
+              blockchain_id, required_minutes, expiry_date, participants_count, 
+              participants_limit, pool_amount, token_id, creator_id, approved, picture_id, max_points, payout_date) 
+              VALUES (:title, :description, :worth_knowledge, :blockchain_id, 
+              :required_minutes, :expiry_date, :participants_count, :participants_limit, :pool_amount, :token_id, :creator_id, :approved, :picture_id, :max_points, :payout_date)";
 
+      $stmt = $pdo->prepare($sql);
 
-    return $this->db->connect()->lastInsertId();
+      $stmt->execute([
+        ':title' => $quest->getTitle(),
+        ':description' => $quest->getDescription(),
+        ':worth_knowledge' => $quest->getWorthKnowledge(),
+        ':blockchain_id' => $blockchain_id,
+        ':required_minutes' => $quest->getRequiredMinutes(),
+        ':expiry_date' => $quest->getExpiryDateString(),
+        ':participants_count' => $quest->getParticipantsCount(),
+        ':participants_limit' => $quest->getParticipantsLimit(),
+        ':pool_amount' => $quest->getPoolAmount(),
+        ':token_id' => $token_id,
+        ':creator_id' => $quest->getCreatorId(),
+        ':approved' => $quest->getIsApproved() ? 1 : 0,
+        ':picture_id' => $picture_id,
+        ':max_points' => $quest->getMaxPoints(),
+        ':payout_date' => $quest->getPayoutDate(),
+      ]);
+
+      $pdo->commit();
+      return $pdo->lastInsertId();
+    } catch (\PDOException $e) {
+      $pdo->rollBack();
+
+      throw new \Exception("Transaction failed: " . $e->getMessage());
+    }
+
   }
 
 
   public function approve(int $questId)
   {
-    $sql = "UPDATE quests SET
-    approved = :approved 
-    WHERE questid = :questid";
+    $sql = "UPDATE quests 
+            SET approved = :approved 
+            WHERE quest_id = :quest_id";
 
     $stmt = $this->db->connect()->prepare($sql);
 
     $stmt->execute([
       ':approved' => (int) true,
-      ':questid' => $questId,
+      ':quest_id' => $questId,
     ]);
   }
 
   public function getQuestById($questId): ?IQuest
   {
-    $sql = "SELECT * FROM quests WHERE QuestID = :questId";
-
+    $sql = $this->getQuestQuery('WHERE quest_id = :quest_id');
     $stmt = $this->db->connect()->prepare($sql);
-    $stmt->execute(['questId' => $questId]);
+    $stmt->execute([':quest_id' => $questId]);
     $questFetched = $stmt->fetch(\PDO::FETCH_ASSOC);
-
 
     if ($questFetched === false) {
       return null;
@@ -128,11 +203,26 @@ class QuestRepository extends Repository implements IQuestRepository
     return $this->constructQuestModel($questFetched);
   }
 
+  private function getQuestQuery(string $whereClause = ''): string
+  {
+
+    $q = "SELECT quest_id, creator_id, p.picture_url as picture_url, u.username as creator_name,
+            b.name as blockchain, t.name as token, title, description, worth_knowledge, expiry_date, participants_count, participants_limit, pool_amount, max_points, required_minutes, approved, payout_date FROM quests q 
+            INNER JOIN blockchains b ON b.blockchain_id = q.blockchain_id 
+            INNER JOIN users u ON u.user_id = q.creator_id
+            INNER JOIN tokens t ON t.token_id = q.token_id 
+            INNER JOIN pictures p on p.picture_id = q.picture_id ";
+
+    $q .= $whereClause;
+
+    return $q;
+  }
+
   public function getQuests(): array
   {
     $quests = [];
-    $stmt = $this->db->connect()->prepare('SELECT * FROM quests');
-    $stmt->execute();
+    $sql = $this->getQuestQuery();
+    $stmt = $this->db->connect()->query($sql);
     $fetched = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     foreach ($fetched as $fetched_quest) {
@@ -145,7 +235,8 @@ class QuestRepository extends Repository implements IQuestRepository
   public function getCreatorQuests(int $creator): array
   {
     $quests = [];
-    $stmt = $this->db->connect()->prepare('SELECT * FROM quests WHERE creator = :creator');
+    $sql = $this->getQuestQuery('WHERE creator_id = :creator');
+    $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute([':creator' => $creator]);
     $fetched = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -169,8 +260,9 @@ class QuestRepository extends Repository implements IQuestRepository
   private function getQuestByApprovedFlag(bool $isApproved): array
   {
     $quests = [];
-    $stmt = $this->db->connect()->prepare('SELECT * FROM quests WHERE approved = :approved');
-    $stmt->execute(['approved' => $isApproved]);
+    $sql = $this->getQuestQuery('WHERE approved = :approved');
+    $stmt = $this->db->connect()->prepare($sql);
+    $stmt->execute([':approved' => $isApproved]);
     $fetched = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     foreach ($fetched as $fetched_quest) {

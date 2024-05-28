@@ -6,8 +6,9 @@ use App\Models\Interfaces\IQuestProgress;
 
 interface IQuestProgressRepository
 {
-  public function saveQuestProgress(IQuestProgress $questProgress): int;
+  public function saveQuestProgress(IQuestProgress $questProgress);
   public function updateQuestProgress(IQuestProgress $questProgress);
   public function getQuestProgress(int $userId, int $questId): ?IQuestProgress;
   public function getInProgress(int $userId): ?IQuestProgress;
+  public function saveResponses(int $userId, array $responses): void;
 }

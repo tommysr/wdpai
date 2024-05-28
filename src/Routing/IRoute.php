@@ -10,4 +10,6 @@ interface IRoute
     public function getMiddleware(): ?IMiddleware;
     public function getController(): string;
     public function getAction(): string;
+    public function getMethod(): string;   
+    public function buildMiddlewares(): void;
 }

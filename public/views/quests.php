@@ -15,12 +15,12 @@
 
           <span class="info">
             <i class="fas fa-wallet"></i>
-            <?= $quest->getRequiredWallet(); ?>
+            <?= $quest->getBlockchain(); ?>
           </span>
 
           <span class="info">
             <i class="fas fa-flag-checkered"></i>
-            <?= $quest->getTimeRequiredMinutes(); ?>
+            <?= $quest->getRequiredMinutes(); ?>
           </span>
         </div>
 
@@ -34,7 +34,8 @@
 
         <span class="info">
           <i class="fas fa-running"></i>
-          <?= $quest->getParticipantsCount(); ?>
+          <?= $quest->getParticipantsCount(); ?> /
+          <?= $quest->getParticipantsLimit(); ?>
         </span>
         <span class="info">
           <i class="fas fa-coins"></i>

@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Models\Role;
 use App\Repository\IUserRepository;
 use App\Models\Interfaces\IUser;
 use App\Models\User;
@@ -27,25 +28,28 @@ class UserRepository extends Repository implements IUserRepository
     // default role_id and avatar_id are 0
     $stmt = $this->db->connect()->prepare('
       INSERT INTO Users (email, username, password, join_date, role_id, avatar_id)
-      VALUES (?, ?, ?, ?, 1, 1)
+      VALUES (?, ?, ?, ?, ?, 1)
     ');
 
     $stmt->execute([
       $user->getEmail(),
       $user->getName(),
       $user->getPassword(),
-      $user->getJoinDate()
+      $user->getJoinDate(),
+      $user->getRole()->getId()
     ]);
   }
 
   private function constructUser(array $data): IUser
   {
+    $role = new Role($data['role_name'], $data['role_id']);
+
     return new User(
       $data['user_id'],
       $data['email'],
       $data['password'],
       $data['username'],
-      $data['role_name'],
+      $role,
       $data['join_date'],
       $data['avatar_url']
     );
@@ -53,7 +57,7 @@ class UserRepository extends Repository implements IUserRepository
 
   private function getUserQuery(string $whereClause = ''): string
   {
-    $sql = "SELECT user_id, email, password, username, roles.name as role_name, join_date, picture_url as avatar_url FROM users JOIN roles ON users.role_id = roles.role_id JOIN pictures ON users.avatar_id = pictures.picture_id ";
+    $sql = "SELECT user_id, email, password, username, roles.name as role_name, roles.role_id, join_date, picture_url as avatar_url FROM users JOIN roles ON users.role_id = roles.role_id JOIN pictures ON users.avatar_id = pictures.picture_id ";
     $sql .= $whereClause;
 
     return $sql;
