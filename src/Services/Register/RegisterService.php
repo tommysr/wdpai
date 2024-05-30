@@ -21,7 +21,8 @@ class RegisterService implements IRegisterService
 
   public function register(): IRegisterResult
   {
-    $method = $this->request->getParsedBodyParam('register_method');
+    $method = $this->request->getParsedBodyParam('registration_method');
+
     $strategy = $this->registerStrategyFactory->create($method);
     return $strategy->register();
   }

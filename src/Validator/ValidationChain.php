@@ -9,7 +9,12 @@ use App\Validator\IValid;
 class ValidationChain implements IValidationChain
 {
   private array $rules = [];
+  protected bool $strict = false;
 
+  public function __construct(bool $strict = false)
+  {
+    $this->strict = $strict;
+  }
   public function getRules(string $key): array
   {
     return $this->rules[$key] ?? [];
@@ -49,11 +54,14 @@ class ValidationChain implements IValidationChain
 
   public function validateFields(array $fields): array
   {
-    $keys_not_included = array_diff(array_keys($this->rules) , array_keys($fields));
+    if ($this->strict) {
+      $keys_not_included = array_diff(array_keys($this->rules), array_keys($fields));
 
-    if (!empty($keys_not_included)) {
-      throw new ValidationRuleNotDefined("Invalid post data");
+      if (!empty($keys_not_included)) {
+        throw new ValidationRuleNotDefined("Invalid post data");
+      }
     }
+
 
     $errors = [];
     foreach ($fields as $key => $value) {

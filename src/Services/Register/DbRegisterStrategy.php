@@ -59,7 +59,7 @@ class DbRegisterStrategy implements IRegisterStrategy
 
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-    $defaultRole = $this->roleRepository->getRole(UserRole::NORMAL);
+    $defaultRole = $this->roleRepository->getRole(UserRole::NORMAL->value);
     $user = new User(0, $email, $password_hash, $username, $defaultRole);
     $this->userRepository->addUser($user);
 

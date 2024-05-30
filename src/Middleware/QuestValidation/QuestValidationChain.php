@@ -12,6 +12,7 @@ class QuestValidationChain extends ValidationChain
 {
   public function __construct()
   {
+    $this->strict = true;
     $this->addRules('title', [new RequiredValidationRule(), new MinMaxLengthValidationRule(3, 100)]);
     $this->addRules('description', [new RequiredValidationRule(), new MinMaxLengthValidationRule(3, 200)]);
     $this->addRules('blockchain', [new RequiredValidationRule(), new MinMaxLengthValidationRule(3, 20)]);
