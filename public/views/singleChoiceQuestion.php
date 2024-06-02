@@ -42,18 +42,18 @@
         $colorClasses = array("pink", "orange", "cyan", "purple");
 
         $counter = 0;
-
+        $options = $question->getOptions();
         foreach ($options as $option):
           ?>
           <label class="option-container">
-            <input type="radio" name="option" value="<?= $option->getOptionId(); ?>" />
+            <input type="radio" name="options[]" value="<?= $option->getOptionId(); ?>" />
             <span class="checkmark <?= $colorClasses[$counter % count($colorClasses)]; ?>"></span>
             <span class="option-text"><?= $option->getText(); ?></span>
           </label>
           <?php
           $counter++;
         endforeach;
-        ?>
+        ?>`
       </div>
 
       <button class="main-button">Continue</button>
