@@ -13,7 +13,6 @@ use App\Repository\OptionsRepository;
 use App\Repository\QuestionsRepository;
 use App\Repository\QuestProgress\IQuestProgressRepository;
 use App\Repository\QuestProgress\QuestProgressRepository;
-use App\Services\Authenticate\IIdentity;
 use App\Services\QuestProgress\IQuestProgressService;
 use App\Services\Quests\IQuestService;
 use App\Services\Quests\QuestService;
@@ -36,6 +35,20 @@ class QuestProgressService implements IQuestProgressService
     $this->questService = $questService ?: new QuestService();
   }
 
+  public function getQuestSummary(int $userId): array
+  {
+    $questProgress = $this->getCurrentProgressFromSession();
+    $questId = $questProgress->getQuestId();
+    $quest = $this->questService->getQuest($questId);
+    $percentileRank = $this->questProgressRepository->getPercentileRank($userId, $questId);
+
+    return [
+      'score' => $questProgress->getScore(),
+      'maxScore' => $quest->getMaxPoints(),
+      'better_than' => $percentileRank,
+    ];
+  }
+
   public function getCurrentProgress(int $userId, int $questId): IQuestProgress
   {
     $sessionProgress = $this->sessionService->get('questProgress');
@@ -43,10 +56,6 @@ class QuestProgressService implements IQuestProgressService
 
     if (!$progress) {
       throw new \Exception("Quest progress not found");
-    }
-
-    if ($progress->isCompleted()) {
-      throw new \Exception("Quest is already completed");
     }
 
     return $progress;
@@ -60,25 +69,39 @@ class QuestProgressService implements IQuestProgressService
       throw new \Exception("Quest progress not found");
     }
 
-    if ($progress->isCompleted()) {
-      throw new \Exception("Quest is already completed");
-    }
-
     return $progress;
   }
 
-  public function getNextQuestion(int $questId, int $questionId): IQuestion
+  public function getQuestion(int $questId, int $questionId): ?IQuestion
   {
-    $nextQuestion = $this->questionsRepository->getNextQuestion($questId, $questionId);
+    $question = $this->questionsRepository->getById($questionId);
 
-    if (!$nextQuestion) {
-      throw new \Exception("Next question not found");
+    if (!$question) {
+      return null;
     }
 
-    $options = $this->optionsRepository->getOptionsByQuestionId($nextQuestion->getQuestionId());
-    $nextQuestion->setOptions($options);
+    $options = $this->optionsRepository->getOptionsByQuestionId($questionId);
+    $question->setOptions($options);
+    return $question;
+  }
 
-    return $nextQuestion;
+  // public function getNextQuestion(int $questId, int $questionId): ?IQuestion
+  // {
+  //   $nextQuestion = $this->questionsRepository->getNextQuestion($questId, $questionId);
+
+  //   if (!$nextQuestion) {
+  //     return null;
+  //   }
+
+  //   $options = $this->optionsRepository->getOptionsByQuestionId($nextQuestion->getQuestionId());
+  //   $nextQuestion->setOptions($options);
+
+  //   return $nextQuestion;
+  // }
+
+  public function resetSession(): void
+  {
+    $this->sessionService->delete('questProgress');
   }
 
   public function startProgress(int $questId, int $walletId): void
@@ -93,7 +116,8 @@ class QuestProgressService implements IQuestProgressService
       throw new \Exception("Failed to add participant to quest");
     }
 
-    $questProgress = new QuestProgress(null, 0, $questId, $walletId, 0, QuestState::InProgress);
+    $nextQuestionId = $this->questionsRepository->getNextQuestion($questId, 0)->getQuestionId();
+    $questProgress = new QuestProgress(null, 0, $questId, $walletId, $nextQuestionId, QuestState::InProgress);
 
     $this->questProgressRepository->saveQuestProgress($questProgress);
     $this->sessionService->set('questProgress', $questProgress);
@@ -101,17 +125,15 @@ class QuestProgressService implements IQuestProgressService
 
   public function evaluateOptions(int $questionId, array $selectedOptions): array
   {
-
     $question = $this->questionsRepository->getById($questionId);
 
     if ($question->getType() === QuestionType::READ_TEXT) {
-      return ['points' => $question->getPoints(), 'options' => []];
+      return ['points' => $question->getPoints(), 'options' => [], 'maxPoints' => $question->getPoints()];
     }
 
     $options = $this->optionsRepository->getOptionsByQuestionId($questionId);
     $optionIds = array_map(fn($option) => $option->getOptionId(), $options);
     $correctIds = $this->optionsRepository->getCorrectOptionsIdsForQuestionId($questionId);
-
     $correctCount = count($correctIds);
     $chosenCount = count(array_intersect($correctIds, $selectedOptions));
 
@@ -149,18 +171,21 @@ class QuestProgressService implements IQuestProgressService
     $this->questProgressRepository->updateQuestProgress($questProgress);
   }
 
-  public function recordResponses(int $userId, array $selectedOptions): void
+  public function recordResponses(int $userId, array $selectedOptionsIds): void
+  {
+    $this->questProgressRepository->saveResponses($userId, $selectedOptionsIds);
+  }
+
+  public function adjustQuestProgress(int $questionId): void
   {
     $questProgress = $this->getCurrentProgressFromSession();
     $questionId = $this->questionsRepository->getNextQuestionId($questProgress->getQuestId(), $questProgress->getLastQuestionId());
 
     if (!$questionId) {
-      $this->completeQuest();
-      return;
+      $questProgress->setState(QuestState::Unrated);
+    } else {
+      $questProgress->setNextQuestionId($questionId);
     }
-
-    $this->questProgressRepository->saveResponses($userId, $selectedOptions);
-    $questProgress->setNextQuestionId($questionId);
 
     $this->sessionService->set('questProgress', $questProgress);
     $this->questProgressRepository->updateQuestProgress($questProgress);
