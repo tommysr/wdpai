@@ -37,7 +37,7 @@ class PlayAuthorizationStrategy implements IQuestAuthorizeStrategy
 
     if ($progress) {
       $result = new AuthorizationResult(['you have a gameplay in progress']);
-      $result->setRedirectUrl('/play/' . $progress->getQuestId());
+      $result->setRedirectUrl('/play');
       return $result;
     }
 
@@ -46,7 +46,7 @@ class PlayAuthorizationStrategy implements IQuestAuthorizeStrategy
     if ($questInProgress !== null) {
       $this->session->set('questProgress', $questInProgress);
       $result = new AuthorizationResult(['you have a gameplay in progress']);
-      $result->setRedirectUrl('/play/' . $questInProgress->getQuestId());
+      $result->setRedirectUrl('/play');
       return $result;
     }
 

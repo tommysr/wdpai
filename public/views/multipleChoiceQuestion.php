@@ -14,13 +14,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Lekton:ital,wght@0,400;0,700;1,400&display=swap"
     rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
   <title><?= $title; ?></title>
 </head>
 
 <body class="flex-column-center-center">
   <div class="backBar">
-    <a href="#" class=""><img src="/public/assets/back_arrow.svg" /></a>
+    <a href="#" class=""><i class="fas fa-arrow-left"></i></a>
     <span class="back-text">Choose answers</span>
   </div>
 
@@ -33,32 +34,29 @@
     <img src="/public/assets/follow-bar/arrow_left.svg" />
   </div>
 
-  <div class="flex-column-center-center">
-    <form action="/answer/<?= $question->getQuestionId(); ?>" method="post" class="question-container">
-      <span class="question-text"><?= $question->getText(); ?></span>
+  <form action="/answer/<?= $question->getQuestionId(); ?>" method="post" class="question-container">
+    <span class="question-text"><?= $question->getText(); ?></span>
 
-      <div class="options-container">
-        <?php
-        $colorClasses = array("pink", "orange", "cyan", "purple");
+    <div class="options-container">
+      <?php
+      $colorClasses = array("pink", "orange", "cyan", "purple");
 
-        $counter = 0;
-
-        foreach ($options as $option):
-          ?>
-          <label class="option-container">
-            <input type="checkbox" name="option[<?= $counter; ?>]" value="<?= $option->getOptionId(); ?>" />
-            <span class="checkmark <?= $colorClasses[$counter % count($colorClasses)]; ?>"></span>
-            <span class="option-text"><?= $option->getText(); ?></span>
-          </label>
-          <?php
-          $counter++;
-        endforeach;
+      $counter = 0;
+      $options = $question->getOptions();
+      foreach ($options as $option):
         ?>
-      </div>
+        <label class="option-container">
+          <input type="checkbox" name="options[<?= $counter; ?>]" value="<?= $option->getOptionId(); ?>" />
+          <span class="checkmark <?= $colorClasses[$counter % count($colorClasses)]; ?>"></span>
+          <span class="option-text"><?= $option->getText(); ?></span>
+        </label>
+        <?php
+        $counter++;
+      endforeach;
+      ?>
+    </div>
 
-      <button class="main-button">Continue</button>
-    </form>
-  </div>
+    <button class="main-button">Continue</button>
+  </form>
 </body>
-
 </html>

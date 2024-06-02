@@ -11,6 +11,7 @@ use App\Models\Interfaces\IQuestProgress;
 use App\Models\IQuestion;
 use App\Models\QuestionType;
 use App\Models\QuestProgress;
+use App\Models\QuestState;
 use App\Models\Rating;
 use App\Repository\IOptionsRepository;
 use App\Repository\IQuestionsRepository;
@@ -47,59 +48,92 @@ class GameController extends AppController implements IGameController
     return new JsonResponse([]);
   }
 
+
+  public function postEnterQuest(IRequest $request, int $questId): IResponse
+  {
+    $walletId = $this->request->getParsedBodyParam('walletId');
+
+    if (!$walletId) {
+      return new RedirectResponse('/error/404', );
+    }
+
+    try {
+      $this->questProgressService->startProgress($questId, (int) $walletId);
+
+      return new RedirectResponse('/play');
+    } catch (\Exception $e) {
+      return new RedirectResponse('/error/404');
+    }
+  }
+
   public function getPlay(IRequest $request): IResponse
   {
     $questProgress = $this->questProgressService->getCurrentProgressFromSession();
-    return $this->showNextQuestion($questProgress);
+
+    switch ($questProgress->getState()) {
+      case QuestState::InProgress:
+        $question = $this->questProgressService->getQuestion($questProgress->getQuestId(), $questProgress->getLastQuestionId());
+        return $this->getNextQuestion($question);
+      case QuestState::Unrated:
+        return $this->getRating($request);
+      case QuestState::Finished:
+        return $this->getSummary($request);
+      case QuestState::Abandoned:
+        return new RedirectResponse('/error/404');
+      default:
+        return new RedirectResponse('/error/404');
+    }
   }
 
-  private function showNextQuestion(IQuestProgress $questProgress): IResponse
+  private function getNextQuestion(IQuestion $question): IResponse
   {
-    $question = $this->questProgressService->getNextQuestion($questProgress->getQuestId(), $$questProgress->getLastQuestionId());
-
     switch ($question->getType()) {
-      case QuestionType::SINGLE_CHOICE:
+      case QuestionType::SINGLE_CHOICE->value:
         return $this->renderSingleChoiceQuestion($question);
-      case QuestionType::MULTIPLE_CHOICE:
+      case QuestionType::MULTIPLE_CHOICE->value:
         return $this->renderMultipleChoiceQuestion($question);
-      default:
+      case QuestionType::READ_TEXT->value:
         return $this->renderReadTextQuestion($question);
+      default:
+        throw new \Exception('unknown question type');
     }
   }
 
   private function renderSingleChoiceQuestion(IQuestion $question): IResponse
   {
-    return $this->render('singleChoiceQuestion', ['question' => $question]);
+    return $this->render('singleChoiceQuestion', ['question' => $question, 'title' => 'Choose answer']);
   }
 
   private function renderMultipleChoiceQuestion(IQuestion $question): IResponse
   {
-    return $this->render('multipleChoiceQuestion', ['question' => $question]);
+    return $this->render('multipleChoiceQuestion', ['question' => $question, 'title' => 'Choose answers']);
   }
 
   private function renderReadTextQuestion(IQuestion $question): IResponse
   {
-    return $this->render('readText', ['question' => $question]);
+    return $this->render('readText', ['question' => $question, 'title' => 'Read text']);
   }
-
 
   public function postAnswer(IRequest $request, int $questionId): IResponse
   {
-    $userId = $this->authService->getIdentity()->getId();
+    $questProgress = $this->questProgressService->getCurrentProgressFromSession();
+
+    if ($questProgress->getLastQuestionId() !== $questionId) {
+      return new RedirectResponse('/error/404');
+    }
+
     $selectedOptions = $this->request->getParsedBodyParam('options') ?? [];
-
-    $result = $this->questProgressService->evaluateOptions($questionId, $selectedOptions);
+    $selectedOptionsInt = array_map('intval', $selectedOptions);
+    $result = $this->questProgressService->evaluateOptions($questionId, $selectedOptionsInt);
     $this->questProgressService->updateQuestProgress($result['points']);
-    $this->questProgressService->recordResponses($userId, $result['options']);
 
+    $userId = $this->authService->getIdentity()->getId();
+    $this->questProgressService->recordResponses($userId, $result['options']);
+    $this->questProgressService->adjustQuestProgress($questionId);
     $questProgress = $this->questProgressService->getCurrentProgressFromSession();
     $maxScore = $this->questProgressService->getMaxScore($questProgress->getQuestId());
 
-    if (!$questProgress->isCompleted()) {
-      return $this->renderQuestionSummary($result['points'], $result['maxPoints'], $questProgress->getScore(), $maxScore);
-    } else {
-      return $this->getRating($request);
-    }
+    return $this->renderQuestionSummary($result['points'], $result['maxPoints'], $questProgress->getScore(), $maxScore);
   }
 
   private function renderQuestionSummary(int $questionScore, int $questionMaxScore, int $score, int $maxScore): IResponse
@@ -113,22 +147,24 @@ class GameController extends AppController implements IGameController
     return $this->render('questionSummary', [
       'stars' => $stars,
       'questionScore' => $questionScore,
-      'questionMaxScore' => $questionMaxScore,
       'score' => $score,
-      'questMaxScore' => $maxScore,
+      'maxScore' => $maxScore,
+      'title' => 'Points gained'
     ]);
+  }
+
+  public function getReset(IRequest $request): IResponse
+  {
+    $this->questProgressService->resetSession();
+    return new RedirectResponse('/showQuests');
   }
 
   private function getSummary(IRequest $request): IResponse
   {
-    $questProgress = $this->questProgressService->getCurrentProgressFromSession();
 
-    if (!$questProgress->isCompleted()) {
-      return new RedirectResponse('/error/404');
-    }
+    $summary = $this->questProgressService->getQuestSummary($this->authService->getIdentity()->getId());
 
-    // $questSummary = $this->questProgressService->getQuestSummary($questProgress->getQuestId(), $this->authService->getUserId());
-    return $this->render('questSummary', ['points' => $questProgress->getScore()]);
+    return $this->render('questSummary', ['score' => $summary['score'], 'maxScore' => $summary['maxScore'], 'title' => 'Quest summary', 'better_than' => $summary['better_than']]);
   }
 
   public function postRating(IRequest $request): IResponse
@@ -141,10 +177,12 @@ class GameController extends AppController implements IGameController
     }
 
     $rating = $this->request->getParsedBodyParam('rating');
-    $rating = new Rating($userId, $questProgress->getQuestId(), $rating);
+    $rating = new Rating($userId, $questProgress->getQuestId(), (int) $rating);
     $this->ratingService->addRating($rating);
 
-    return new RedirectResponse('/summary');
+    $this->questProgressService->completeQuest();
+
+    return new RedirectResponse('/play');
   }
 
   public function getRating(IRequest $request): IResponse

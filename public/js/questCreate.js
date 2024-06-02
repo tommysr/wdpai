@@ -4,7 +4,7 @@ const optionsDiv = document.querySelectorAll(".options");
 const errorDiv = document.querySelector("#error");
 
 let questionsOption = {};
-let lastQuestionId;
+let lastQuestionId = null;
 
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("questForm").addEventListener("submit", submitForm);
@@ -61,6 +61,7 @@ function addQuestion(questionId) {
         questionsOption[questionId] = 0;
       }
 
+      console.log(questionsOption[questionId])
       addOption(newQuestionDiv, questionId, questionsOption[questionId]);
     });
 
@@ -72,7 +73,7 @@ function addQuestion(questionId) {
 }
 
 function addQuestionRaw(questionId) {
-  if (lastQuestionId) {
+  if (lastQuestionId != null) {
     lastQuestionId += 1;
   } else {
     lastQuestionId = questionId;
@@ -89,6 +90,8 @@ function addOptionRaw(callDiv, questionId, optionId) {
   } else {
     questionsOption[questionId] = optionId;
   }
+
+  questionsOption[questionId]
 
   addOption(optionsDiv, questionId, questionsOption[questionId]);
 }

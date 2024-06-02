@@ -22,7 +22,7 @@ class DefaultDBConfig extends Config implements IDatabaseConfig
     $this->setValue(self::USERNAME_KEY, 'docker');
     $this->setValue(self::PASSWORD_KEY, 'docker');
     $this->setValue(self::HOST_KEY, 'db');
-    $this->setValue(self::DATABASE_KEY, 'db2');
+    $this->setValue(self::DATABASE_KEY, 'db');
     $this->setValue(self::PORT_KEY, '5432');
   }
 

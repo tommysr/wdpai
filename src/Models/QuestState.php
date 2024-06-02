@@ -7,15 +7,17 @@ use App\Models\Interfaces\IQuestState;
 enum QuestState: int implements IQuestState
 {
   case InProgress = 1;
-  case Finished = 2;
-  case Abandoned = 3;
+  case Unrated = 2;
+  case Finished = 3;
+  case Abandoned = 4;
 
   public function getStateId(): int
   {
     return match ($this) {
       self::InProgress => 1,
-      self::Finished => 2,
-      self::Abandoned => 3,
+      self::Unrated => 2,
+      self::Finished => 3,
+      self::Abandoned => 4,
     };
   }
 
@@ -23,8 +25,9 @@ enum QuestState: int implements IQuestState
   {
     return match ($stateId) {
       1 => self::InProgress,
-      2 => self::Finished,
-      3 => self::Abandoned,
+      2 => self::Unrated,
+      3 => self::Finished,
+      4 => self::Abandoned,
     };
   }
 }

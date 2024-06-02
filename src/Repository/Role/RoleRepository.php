@@ -12,10 +12,10 @@ class RoleRepository extends Repository implements IRoleRepository
 
   public function getRole(string $role): IRole
   {
-    $sql = "SELECT * FROM roles WHERE role = :role";
+    $sql = "SELECT * FROM roles WHERE name = :name";
 
     $stmt = $this->db->connect()->prepare($sql);
-    $stmt->bindParam(':role', $role, \PDO::PARAM_STR);
+    $stmt->bindParam(':name', $role, \PDO::PARAM_STR);
     $stmt->execute();
 
     $result = $stmt->fetch();

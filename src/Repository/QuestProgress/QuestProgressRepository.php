@@ -100,4 +100,41 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
       ':state' => $questProgress->getState()->getStateId()
     ]);
   }
+
+  public function getPercentileRank(int $userId, int $questId): int
+  {
+    $sql = "WITH total_participants AS (
+              SELECT COUNT(*) AS total
+              FROM public.quest_progress
+              WHERE quest_id = :quest_id
+            ),
+            better_than_count AS (
+              SELECT COUNT(*) AS better_than
+              FROM public.quest_progress
+              WHERE quest_id = :quest_id
+                AND score < (
+                    SELECT score
+                    FROM public.quest_progress
+                    INNER JOIN wallets ON quest_progress.wallet_id = wallets.wallet_id
+                    WHERE wallets.user_id = :user_id AND quest_id = :quest_id 
+                )
+            )
+            SELECT 
+              CASE 
+                  WHEN total = 0 THEN NULL
+                  ELSE (better_than::decimal / total::decimal) * 100 
+              END AS percentile_rank
+            FROM 
+                total_participants, better_than_count;";
+
+    $stmt = $this->db->connect()->prepare($sql);
+    $stmt->execute([':user_id' => $userId, ':quest_id' => $questId]);
+    $qp = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+    if (!$qp) {
+      return 0;
+    }
+
+    return (int) $qp['percentile_rank'];
+  }
 }

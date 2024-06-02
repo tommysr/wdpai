@@ -48,8 +48,14 @@
           <i class="fas fa-coins"></i>
           <?= $quest->getPoolAmount(); ?>
         </span>
-
-        <a href="/editQuest/<?= $quest->getQuestId(); ?>" class="enter-button" style="text-decoration: none;">EDIT</a>
+        <?php if ($quest->getIsApproved()): ?>
+          <span class="info">
+            <i class="fas fa-check"></i>
+            Published
+          </span>
+        <?php else: ?>
+          <a href="/editQuest/<?= $quest->getQuestId(); ?>" class="enter-button" style="text-decoration: none;">EDIT</a>
+        <?php endif; ?>
       </div>
     </div>
   <?php endforeach; ?>

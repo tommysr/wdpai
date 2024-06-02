@@ -66,11 +66,11 @@ class QuestService implements IQuestService
   public function getCreatorQuests(IIdentity $identity): array
   {
     $creatorId = $identity->getId();
-    $quests = $this->questRepository->getCreatorQuests($creatorId);
+    return $this->questRepository->getCreatorQuests($creatorId);
 
-    return array_filter($quests, function ($quest) {
-      return !$quest->getIsApproved();
-    });
+    // return array_filter($quests, function ($quest) {
+    //   return !$quest->getIsApproved();
+    // });
   }
 
   public function getQuestBlockchain(int $questId): string
@@ -132,12 +132,8 @@ class QuestService implements IQuestService
     $questId = $this->questRepository->saveQuest($quest);
     $questions = $quest->getQuestions();
 
-    if (sizeof($questions) == 0) {
-      return new QuestResult(['questions cant be empty']);
-    }
-
     // Handle questions and options
-    foreach ($quest->getQuestions() as $question) {
+    foreach ($questions as $question) {
       $question->setQuestId($questId);
       $questionId = $this->questionRepository->saveQuestion($question);
 
