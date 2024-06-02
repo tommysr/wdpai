@@ -88,8 +88,12 @@ Router::post('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddlew
 Router::get('/showQuests', 'QuestsController@showQuests', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
 Router::get('/showQuestWallets/{questId}', 'QuestsController@showQuestWallets', [$authMiddleware, $questAuthorizeMiddleware, $questAuthorizeMiddleware]);
 Router::post('/addWallet/{blockchain}', 'QuestsController@addWallet', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
-Router::post('/enterQuest/{questId}', 'QuestsController@enterQuest', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
-Router::get('/play/{questId}', 'GameController@play', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]); 
+Router::post('/enterQuest/{questId}', 'GameController@enterQuest', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
+Router::get('/play', 'GameController@play', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
+Router::post('/answer/{questionId}', 'GameController@answer', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
+Router::post('/rating', 'GameController@rating', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
+//temp routes
+Router::get('/reset', 'GameController@reset', [$authMiddleware]);
 
 $request = new Request($_SERVER, $_GET, $_POST);
 $response = Router::dispatch($request);
