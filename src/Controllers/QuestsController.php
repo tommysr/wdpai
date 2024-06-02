@@ -83,6 +83,10 @@ class QuestsController extends AppController implements IQuestsController
       return new RedirectResponse('/error/404', 0);
     }
 
+    if ($quest->getIsApproved()) {
+      return new RedirectResponse('/error/401');
+    }
+
     return $this->renderEditAndCreateView($quest);
   }
 
@@ -155,22 +159,6 @@ class QuestsController extends AppController implements IQuestsController
   }
 
 
-  public function postEnterQuest(IRequest $request, int $questId): IResponse
-  {
-    $walletId = $this->request->getParsedBodyParam('walletId');
-
-    if (!$walletId) {
-      return new RedirectResponse('/error/404', );
-    }
-
-    try {
-      $this->questProgressService->startProgress($questId, (int) $walletId);
-
-      return new RedirectResponse('/play/' . $questId);
-    } catch (\Exception $e) {
-      return new RedirectResponse('/error/404');
-    }
-  }
 
   public function postAddWallet(IRequest $request, string $blockchain): IResponse
   {
