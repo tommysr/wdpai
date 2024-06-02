@@ -73,7 +73,7 @@ body {
   border-radius: 10px;
 }
 
-.modal > p {
+.modal>p {
   font-family: "Lekton";
   font-style: normal;
   font-weight: 700;
@@ -95,7 +95,7 @@ body {
   color: #58c3b5;
 }
 
-.follow-bar > img {
+.follow-bar>img {
   display: inline-block;
 }
 
@@ -188,6 +188,7 @@ textarea {
   box-sizing: border-box;
   border: 2px solid #387161;
 }
+
 .progress {
   width: 0%;
   height: 30px;
@@ -243,7 +244,7 @@ textarea {
   color: #000000;
 }
 
-.logo > img {
+.logo>img {
   width: 240px;
 }
 
@@ -340,11 +341,11 @@ form select {
   background: #7052e9;
 }
 
-.option-container:hover input ~ .checkmark {
+.option-container:hover input~.checkmark {
   background-color: #58c3b5;
 }
 
-.option-container input:checked ~ .checkmark {
+.option-container input:checked~.checkmark {
   background-color: #8eec13;
 }
 
@@ -354,7 +355,7 @@ form select {
   display: none;
 }
 
-.option-container input:checked ~ .checkmark:after {
+.option-container input:checked~.checkmark:after {
   display: block;
 }
 
@@ -395,6 +396,13 @@ form select {
   font-size: 16px;
   letter-spacing: 0.15em;
 }
+
+a.main-button {
+  text-decoration: none;
+  text-align: center;
+  align-content: center;
+}
+
 
 .main-button-style {
   text-transform: uppercase;
@@ -441,15 +449,15 @@ form select {
   color: #ebf6e5;
 }
 
-.tos-text > a {
+.tos-text>a {
   text-decoration: underline;
 }
 
-.tos-text > a:link {
+.tos-text>a:link {
   color: white;
 }
 
-.tos-text > a:visited {
+.tos-text>a:visited {
   color: royalblue;
 }
 
@@ -468,10 +476,8 @@ form select {
 .card-background {
   justify-content: center;
   display: grid;
-  grid-template-columns: minmax(300px, 1fr) minmax(400px, 2fr) minmax(
-      300px,
-      1fr
-    );
+  grid-template-columns: minmax(300px, 1fr) minmax(400px, 2fr) minmax(300px,
+      1fr);
   background: rgba(41, 112, 80, 0.2);
   border: 1px solid #297050;
   box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
@@ -526,11 +532,9 @@ i {
 }
 
 .card-right-background {
-  background: linear-gradient(
-    180deg,
-    rgba(176, 218, 153, 0.3) 0%,
-    rgba(101, 204, 184, 0.3) 100%
-  );
+  background: linear-gradient(180deg,
+      rgba(176, 218, 153, 0.3) 0%,
+      rgba(101, 204, 184, 0.3) 100%);
   border-radius: 0px 20px 20px 0px;
 
   display: flex;
@@ -636,6 +640,7 @@ i {
 }
 
 @media screen and (max-width: 1200px) {
+
   /* new */
   .profile-container {
     margin-top: 100px;
@@ -652,7 +657,7 @@ i {
   }
 
   .quest-info i {
-    margin: 0!important;
+    margin: 0 !important;
   }
 }
 
@@ -802,7 +807,7 @@ i {
   border-radius: 20px 0px;
 }
 
-.image-background > img {
+.image-background>img {
   width: 80%;
   height: 80%;
   border-radius: 20px 0 20px 0;
@@ -871,4 +876,49 @@ i {
   font-weight: 400;
   font-size: 1em;
   color: #ffffff;
+}
+
+.star {
+  width: 60px;
+  height: 60px;
+}
+
+.rating-options {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.rating-option {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.rating-option input[type="radio"] {
+  display: none;
+}
+
+.rating-number {
+  display: block;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border-radius: 50%;
+  background-color: #ddd;
+  font-size: 1.2em;
+  transition: background-color 0.3s, color 0.3s;
+  cursor: pointer;
+}
+
+.rating-option input[type="radio"]:checked+.rating-number {
+  background-color: #4caf50;
+  color: white;
+}
+
+.rating-option input[type="radio"]:hover+.rating-number {
+  background-color: #a5d6a7;
 }
