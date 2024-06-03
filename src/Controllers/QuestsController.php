@@ -178,8 +178,11 @@ class QuestsController extends AppController implements IQuestsController
     $user = $this->userRepository->getUserById($userId);
     $joinDate = \DateTime::createFromFormat('Y-m-d', $user->getJoinDate())->format('F Y');
 
+    $stats = $this->questProgressService->getUserQuests($userId);
+
+
     // somehow get user points
     // there is also list of quests user has participated in
-    return $this->render('layout', ['title' => 'dashboard', 'username' => $user->getName(), 'joinDate' => $joinDate, 'points' => 4525], 'dashboard');
+    return $this->render('layout', ['title' => 'dashboard', 'username' => $user->getName(), 'joinDate' => $joinDate, 'points' => sizeof($stats)], 'dashboard');
   }
 }

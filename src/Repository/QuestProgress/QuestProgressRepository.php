@@ -137,4 +137,22 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
 
     return (int) $qp['percentile_rank'];
   }
+
+  public function getUserEntries(int $userId): array
+  {
+    $sql = "SELECT * FROM quest_progress qp
+              INNER JOIN wallets w ON qp.wallet_id = w.wallet_id
+              INNER JOIN users u ON w.user_id = u.user_id
+              WHERE u.user_id = :user_id";
+    $stmt = $this->db->connect()->prepare($sql);
+    $stmt->execute([':user_id' => $userId]);
+    $entries = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    $progresses = [];
+    foreach ($entries as $qp) {
+      $progresses[] = new QuestProgress($qp['completion_date'], $qp['score'], $qp['quest_id'], $qp['wallet_id'], $qp['last_question_id'], QuestState::fromId($qp['state']));
+    }
+
+    return $progresses;
+  }
 }

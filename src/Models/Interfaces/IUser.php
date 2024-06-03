@@ -12,4 +12,6 @@ interface IUser
   public function getJoinDate(): string;
   public function getRole(): IRole;
   public function getAvatarUrl(): string;
+  public function setPoints(int $points): void;
+  public function getPoints(): int;
 }

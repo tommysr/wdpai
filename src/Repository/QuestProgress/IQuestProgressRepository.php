@@ -12,4 +12,5 @@ interface IQuestProgressRepository
   public function getInProgress(int $userId): ?IQuestProgress;
   public function saveResponses(int $userId, array $responses): void;
   public function getPercentileRank(int $userId, int $questId): int;
+  public function getUserEntries(int $userId): array;
 }
