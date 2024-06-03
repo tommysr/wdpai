@@ -85,6 +85,7 @@ Router::post('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $
 Router::post('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddleware, $roleAuthorizationMiddleware, $questValidationMiddleware]);
 
 // NORMAL USER ROUTES
+Router::get('/dashboard', 'QuestsController@dashboard', [$authMiddleware, $questAuthorizeMiddleware]);
 Router::get('/showQuests', 'QuestsController@showQuests', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
 Router::get('/showQuestWallets/{questId}', 'QuestsController@showQuestWallets', [$authMiddleware, $questAuthorizeMiddleware, $questAuthorizeMiddleware]);
 Router::post('/addWallet/{blockchain}', 'QuestsController@addWallet', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);

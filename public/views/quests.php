@@ -1,4 +1,9 @@
 <main class="flex-column-center-center">
+
+  <?php if (sizeof($quests) == 0): ?>
+    <h1 class="main-text">No records exist</h1>
+  <?php endif; ?>
+
   <?php foreach ($quests as $quest): ?>
 
     <div class="card-background">
@@ -42,7 +47,8 @@
           <?= $quest->getPoolAmount(); ?>
         </span>
 
-        <a href="/showQuestWallets/<?= $quest->getQuestId(); ?>" class="enter-button" style="text-decoration: none;">ENTER</a>
+        <a href="/showQuestWallets/<?= $quest->getQuestId(); ?>" class="enter-button"
+          style="text-decoration: none;">ENTER</a>
       </div>
     </div>
   <?php endforeach; ?>
