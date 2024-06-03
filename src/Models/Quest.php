@@ -11,7 +11,7 @@ class Quest implements IQuest
     private int $questId;
     private string $title;
     private string $description;
-    private int $worthKnowledge;
+    private float $avgRating;
     private string $blockchain;
     private int $requiredMinutes;
     private string $expiryDate;
@@ -32,7 +32,7 @@ class Quest implements IQuest
         int $questId,
         string $title,
         string $description,
-        int $worthKnowledge,
+        float $avgRating,
         string $blockchain,
         int $requiredMinutes,
         string $expiryDate,
@@ -51,7 +51,7 @@ class Quest implements IQuest
         $this->questId = $questId;
         $this->title = $title;
         $this->description = $description;
-        $this->worthKnowledge = $worthKnowledge;
+        $this->avgRating = $avgRating;
         $this->blockchain = $blockchain;
         $this->requiredMinutes = $requiredMinutes;
         $this->expiryDate = $expiryDate;
@@ -104,9 +104,9 @@ class Quest implements IQuest
         return $this->description;
     }
 
-    public function getWorthKnowledge(): int
+    public function getAvgRating(): float
     {
-        return $this->worthKnowledge;
+        return $this->avgRating;
     }
 
     public function getBlockchain(): string
@@ -180,9 +180,9 @@ class Quest implements IQuest
         $this->description = $description;
     }
 
-    public function setWorthKnowledge(int $worthKnowledge): void
+    public function setAvgRating(float $avgRating): void
     {
-        $this->worthKnowledge = $worthKnowledge;
+        $this->avgRating = $avgRating;
     }
 
     public function setBlockchain(string $blockchain): void

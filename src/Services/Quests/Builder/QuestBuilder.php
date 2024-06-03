@@ -44,12 +44,6 @@ class QuestBuilder implements IQuestBuilder
     return $this;
   }
 
-  public function setWorthKnowledge(int $worthKnowledge): self
-  {
-    $this->quest->setWorthKnowledge($worthKnowledge);
-    return $this;
-  }
-
   public function setBlockchain(string $blockchain): self
   {
     $this->quest->setBlockchain($blockchain);
@@ -68,12 +62,6 @@ class QuestBuilder implements IQuestBuilder
     return $this;
   }
 
-  public function setParticipantsCount(int $participantsCount): self
-  {
-    $this->quest->setParticipantsCount($participantsCount);
-    return $this;
-  }
-
   public function setParticipantsLimit(int $participantLimit): self
   {
     $this->quest->setParticipantsLimit($participantLimit);
@@ -83,12 +71,6 @@ class QuestBuilder implements IQuestBuilder
   public function setPoolAmount(float $poolAmount): self
   {
     $this->quest->setPoolAmount($poolAmount);
-    return $this;
-  }
-
-  public function setMaxPoints(int $points): self
-  {
-    $this->quest->setMaxPoints($points);
     return $this;
   }
 
