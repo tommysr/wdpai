@@ -3,7 +3,7 @@
 <div id="mySidenav" class="sidenav">
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()"><img src="/public/assets/back_arrow.svg" /></a>
 
-  <div class="menu-items">
+  <div class="menu-items flex-column-center-center">
     <a class="nav-link" href="/showQuests">
       Quests
       <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">

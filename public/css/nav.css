@@ -29,12 +29,11 @@ nav {
 }
 
 body {
-  margin-top: calc(70px);
+  margin-top: calc(70px)!important;
   height: calc(100vh - 70px);
 }
 
 .nav-link {
-  padding-bottom: 1em;
   font-family: "Lekton";
   font-style: normal;
   font-weight: 700;
@@ -66,7 +65,7 @@ body {
   height: calc(100% - 70px);
   width: 300px;
   z-index: 1000;
-  background-color: #28361d;
+  background-color: #0e130e;
   overflow-x: hidden;
   transform: translateX(-100%);
   transition: transform 0.5s ease;
@@ -119,7 +118,7 @@ body {
   right: 25px;
 }
 
-@media screen and (max-width: 450px) {
+@media screen and (max-width: 960px) {
   .mobile_logo {
     padding: 10px;
     width: 60px;

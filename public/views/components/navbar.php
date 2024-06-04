@@ -3,13 +3,38 @@
     <img src="/public/assets/menu.svg" onclick="openNav()" />
   </div>
 
+  <div class="inline-menu">
+    <a class="nav-link" href="/dashboard">
+      Top rated
+      <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />
+      </svg>
+    </a>
+    <a class="nav-link" href="/dashboard">
+      Recommended
+      <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />
+      </svg>
+    </a>
+  </div>
+
   <div class="dropdown">
     <button class="dropbtn" onclick="myFunction()">Filter
       <i class="fa fa-caret-down"></i>
     </button>
     <div class="dropdown-content" id="myDropdown">
-      <a href="#">Top rated</a>
-      <a href="#">Recommended</a>
+      <a class="nav-link" href="/dashboard">
+        Top rated
+        <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />
+        </svg>
+      </a>
+      <a class="nav-link" href="/dashboard">
+        Recommended
+        <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />
+        </svg>
+      </a>
     </div>
   </div>
 
@@ -20,29 +45,35 @@
 </nav>
 
 <style>
-  .navbar {
-    display: flex;
-    align-items: center;
-    overflow: hidden;
+  .nav-link {
+    font-size: 1em;
+    align-self: center;
   }
 
-  .navbar a {
-    float: left;
-    font-size: 16px;
-    color: white;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
+
+
+  @media screen and (max-width: 600px) {
+    .inline-menu {
+      display: none !important;
+    }
+
+    .dropdown {
+      display: block !important;
+    }
+  }
+
+  .inline-menu {
+    display: flex;
+    gap: 1em;
   }
 
   .dropdown {
-    float: left;
-    overflow: hidden;
+    display: none;
   }
 
   .dropdown .dropbtn {
     cursor: pointer;
-    font-size: 16px;
+    font-size: 1.2em;
     border: none;
     outline: none;
     color: white;
@@ -55,24 +86,22 @@
   .navbar a:hover,
   .dropdown:hover .dropbtn,
   .dropbtn:focus {
-    color: aqua;
+    color: #b0da99;
   }
 
   .dropdown-content {
     display: none;
     position: absolute;
-    background-color: #f9f9f9;
+    background-color: #b0da99;
     min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 200;
   }
 
   .dropdown-content a {
-    float: none;
     color: black;
-    padding: 12px 16px;
+    padding: 12px;
     text-decoration: none;
-    display: block;
     text-align: left;
   }
 
