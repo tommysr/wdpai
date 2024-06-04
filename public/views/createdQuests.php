@@ -18,7 +18,7 @@
         <div class="card-infos">
           <span class="info">
             <i class="fas fa-book-open"></i>
-            <?= $quest->getWorthKnowledge(); ?>
+            <?= $quest->getAvgRating(); ?>
           </span>
 
           <span class="info">

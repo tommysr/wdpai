@@ -42,11 +42,14 @@ document.addEventListener("DOMContentLoaded", function () {
         error.innerText = error;
       });
   });
+
+  handleWalletSelect(select);
 });
 
 function handleWalletSelect(select) {
   let newWalletForm = document.getElementById("add-wallet-form");
 
+  console.log(select.value)
   if (select.value === "new") {
     newWalletForm.style.display = "block";
   } else {

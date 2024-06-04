@@ -189,13 +189,15 @@ class QuestProgressService implements IQuestProgressService
     $this->questProgressRepository->updateQuestProgress($questProgress);
   }
 
+
   public function abandonQuest(): void
   {
     $questProgress = $this->getCurrentProgressFromSession();
     $questProgress->setState(QuestState::Abandoned);
-    $this->sessionService->set('questProgress', $questProgress);
+    $this->sessionService->delete('questProgress');
     $this->questProgressRepository->updateQuestProgress($questProgress);
   }
+
 
   public function getMaxScore(int $questId): int
   {

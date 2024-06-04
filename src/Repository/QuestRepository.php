@@ -182,7 +182,7 @@ class QuestRepository extends Repository implements IQuestRepository
 
   public function getQuestById($questId): ?IQuest
   {
-    $sql = $this->getQuestQuery('WHERE quest_id = :quest_id');
+    $sql = $this->getQuestQuery('HAVING Q.quest_id = :quest_id');
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute([':quest_id' => $questId]);
     $questFetched = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -214,7 +214,10 @@ class QuestRepository extends Repository implements IQuestRepository
     PAYOUT_DATE,
     COUNT(DISTINCT QP.WALLET_ID) AS PARTICIPANTS_COUNT,
     SUM(QT.POINTS) AS MAX_POINTS,
-    AVG(R.RATING) AS AVG_RATING
+    CASE 
+      WHEN COUNT(R.RATING) = 0 THEN 0.0
+      ELSE AVG(R.RATING)
+    END AS AVG_RATING
   FROM
     QUESTS Q
     INNER JOIN BLOCKCHAINS B ON B.BLOCKCHAIN_ID = Q.BLOCKCHAIN_ID
@@ -238,7 +241,7 @@ class QuestRepository extends Repository implements IQuestRepository
     Q.POOL_AMOUNT,
     Q.REQUIRED_MINUTES,
     Q.APPROVED,
-    Q.PAYOUT_DATE;";
+    Q.PAYOUT_DATE ";
 
     $q .= $whereClause;
 
@@ -262,7 +265,7 @@ class QuestRepository extends Repository implements IQuestRepository
   public function getCreatorQuests(int $creator): array
   {
     $quests = [];
-    $sql = $this->getQuestQuery('WHERE creator_id = :creator');
+    $sql = $this->getQuestQuery('HAVING creator_id = :creator');
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute([':creator' => $creator]);
     $fetched = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -287,7 +290,7 @@ class QuestRepository extends Repository implements IQuestRepository
   private function getQuestByApprovedFlag(bool $isApproved): array
   {
     $quests = [];
-    $sql = $this->getQuestQuery('WHERE approved = :approved');
+    $sql = $this->getQuestQuery('HAVING approved = :approved;');
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute([':approved' => $isApproved]);
     $fetched = $stmt->fetchAll(\PDO::FETCH_ASSOC);

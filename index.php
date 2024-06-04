@@ -93,8 +93,9 @@ Router::post('/enterQuest/{questId}', 'GameController@enterQuest', [$authMiddlew
 Router::get('/play', 'GameController@play', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
 Router::post('/answer/{questionId}', 'GameController@answer', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
 Router::post('/rating', 'GameController@rating', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
+Router::post('/abandonQuest', 'GameController@abandonQuest', [$authMiddleware]);
 //temp routes
-Router::get('/reset', 'GameController@reset', [$authMiddleware]);
+Router::get('/endQuest', 'GameController@reset', [$authMiddleware]);
 
 $request = new Request($_SERVER, $_GET, $_POST);
 $response = Router::dispatch($request);

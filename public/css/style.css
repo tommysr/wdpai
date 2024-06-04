@@ -16,14 +16,7 @@ body {
   background-color: #121d0b;
 }
 
-.backBar {
-  display: flex;
-  align-items: center;
-  gap: 2em;
-  position: absolute;
-  top: 35px;
-  left: 35px;
-}
+
 
 .back-text {
   font-family: "Lekton";
@@ -169,24 +162,41 @@ textarea {
     rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
 }
 
+
+.score-sub-text {
+  font-family: "Lekton";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 1.3em;
+  text-align: center;
+  letter-spacing: 0.05em;
+  color: #ebf6e5;
+}
+
+
 .score-text {
   font-family: "Lekton";
   font-style: normal;
   font-weight: 700;
-  font-size: 2em;
+  font-size: 1.7em;
   text-align: center;
   letter-spacing: 0.05em;
   color: #ebf6e5;
 }
 
 .progress-bar {
-  width: 100%;
+  min-width: 300px;
+  max-width: 350px;
   display: flex;
   background-color: #f3f3f3;
   border-radius: 5px;
   margin-bottom: 20px;
   box-sizing: border-box;
   border: 2px solid #387161;
+}
+
+.gap-1{
+  gap:1em;
 }
 
 .progress {
@@ -287,32 +297,15 @@ form select {
   color: #ebf6e5;
 }
 
-.question-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2em;
-}
-
-.options-container {
-  min-width: 500px;
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  gap: 2em;
-}
 
 .option-container {
   display: inline-flex;
-  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
+  gap: 1em;
+  position:relative;
 }
 
-.option-container input {
-  opacity: 0;
-  /* position: absolute;
-  top: 0;
-  left: 0; */
-}
 
 .checkmark {
   display: flex;
@@ -324,6 +317,33 @@ form select {
   box-sizing: border-box;
   border: 2px solid #ffffff;
 }
+
+.option-container:hover input~.checkmark {
+  background-color: #58c3b5;
+}
+
+.option-container input:checked~.checkmark {
+  background-color: #8eec13;
+}
+
+.option-container input:checked~.checkmark:after {
+  display: block;
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.option-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  width: 50px;
+  height: 50px;
+}
+
 
 .pink {
   background: #e9526d;
@@ -339,24 +359,6 @@ form select {
 
 .purple {
   background: #7052e9;
-}
-
-.option-container:hover input~.checkmark {
-  background-color: #58c3b5;
-}
-
-.option-container input:checked~.checkmark {
-  background-color: #8eec13;
-}
-
-.checkmark:after {
-  content: "";
-  position: absolute;
-  display: none;
-}
-
-.option-container input:checked~.checkmark:after {
-  display: block;
 }
 
 .removeOption {
@@ -469,9 +471,6 @@ a.main-button {
   margin-top: 5px;
 }
 
-#newWalletInput {
-  display: none;
-}
 
 .card-background {
   justify-content: center;
@@ -921,4 +920,104 @@ i {
 
 .rating-option input[type="radio"]:hover+.rating-number {
   background-color: #a5d6a7;
+}
+
+/* Dialog to confirm abandoning the quest */
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+dialog {
+  color: #ddd;
+  background: #121d0b;
+  border: none;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.backBar {
+  margin-left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 2em;
+  width: 40%;
+}
+
+@media screen and (max-width: 940px) {
+  .backBar {
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  .follow-bar {
+    display: none;
+  }
+}
+
+
+/* to work with showing questions and possible answers  */
+body {
+  height: 100vh;
+}
+
+.questNav {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100px;
+}
+
+/*  */
+
+
+@media screen and (max-width: 600px) {
+  dialog[open] {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  menu {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+dialog button {
+  background: #b0da99;
+  color: black;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 10px;
+  margin: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+menu {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.question-container {
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 2em;
+}
+
+.options-container {
+  padding-left: 2em;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2em;
 }

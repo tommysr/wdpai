@@ -22,6 +22,5 @@ interface IQuestProgressService
   public function abandonQuest(): void;
   public function adjustQuestProgress(int $questionId): void;
   public function getQuestSummary(int $userId): array;
-
   public function getUserQuests(int $userId): array;
 }
