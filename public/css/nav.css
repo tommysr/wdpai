@@ -3,20 +3,32 @@ nav {
   width: 100vw;
   height: 70px;
   top: 0;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-nav > img {
-  margin-left: 35px;
+.mobile_logo {
+  display: none;
+}
+
+.sode-logo>img {
+  width: 60%;
+}
+
+
+.menu-container {
+  width: 80px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 body {
-  margin-top: calc(70px + 2em);
+  margin-top: calc(70px);
   background-color: #121d0b;
-  min-height: 100vh;
+  height: calc(100vh - 70px);
 }
 
 .nav-link {
@@ -32,37 +44,45 @@ body {
   text-decoration: none;
 }
 
-.follow-bar-mobile {
-  display: none;
+@media screen and (max-height: 700px) {
+  .sidenav {
+    padding-top: 30px!important;
+    height: calc(100% - 30px)!important;
+  }
 }
 
-
 .sidenav {
+  padding-top: 70px;
   position: fixed;
   top: 0;
-  opacity: 0;
   left: 0;
-  height: 100%;
+  opacity: 1;
+  height: calc(100% - 70px);
   width: 0;
   z-index: 1;
   background-color: #28361d;
   overflow-x: hidden;
-  transition: width 0.5s ease, opacity 1s ease-in; 
+  transition: width 0.5s ease, opacity 1s ease-in;
   text-align: center;
-}
 
-.sidenav-inner {
-  height: calc(100vh - 100px - 20px);
-  margin-top: 100px;
-  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  gap: 1.5em;
   align-items: center;
+}
+
+
+.sidenav:nth-last-child(1) {
+  justify-self: end;
 }
 
 .nav-link {
   color: #ebf6e5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .nav-link:hover {
@@ -77,10 +97,10 @@ body {
   font-family: "Lekton";
   font-style: normal;
   font-weight: 700;
-  font-size: 14px;
-  line-height: 14px;
+  font-size: 0.9em;
+  line-height: 1.2em;
   display: flex;
-  align-items: center;
+
   text-align: center;
   letter-spacing: 0.05em;
   color: #ebf6e5;
@@ -92,11 +112,45 @@ body {
   right: 25px;
 }
 
-@media screen and (max-height: 450px) {
-  .sidenav {
-    padding-top: 15px;
+@media screen and (max-width: 450px) {
+  .mobile_logo {
+    padding: 10px;
+    width: 60px;
+    height: 60px;
+    display: block;
   }
-  .sidenav a {
-    font-size: 18px;
+}
+
+@media screen and (max-width: 960px) {
+  .follow-bar {
+    display: none !important;
   }
+
+  .follow-bar-mobile {
+    width: 100%;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+  }
+
+  .follow-bar-mobile>* {
+    width: 80%;
+    display: inline-flex;
+    gap: 1.5em;
+    justify-content: space-between;
+  }
+
+  .follow-bar-mobile>*:nth-child(1)>*:nth-child(1) {
+    min-width: 100px;
+    text-align: left;
+  }
+}
+
+.follow-bar-mobile {
+  display: none;
+}
+
+.menu-items {
+  gap: 1.4em;
 }

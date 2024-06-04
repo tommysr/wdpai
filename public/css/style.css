@@ -1,8 +1,61 @@
-h1 {
-  text-align: center;
+.wrap {
+  flex-wrap: wrap;
+}
+
+.flex-row-center-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-row-evenly-center {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.flex-column-center-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-column-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.gap-1 {
+  gap: 1em;
+}
+
+.gap-1-5 {
+  gap: 1.5em;
+}
+
+.gap-0-5 {
+  gap: 0.5em;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.width-50 {
+  width: 50%;
+}
+
+/* full container used in login/register page */
+.full-container {
+  height: 100vh;
+  width: 100vw;
 }
 
 body {
+  font-family: "Lekton";
+  font-style: normal;
   margin: 0;
   font-family: "Inter";
   font-style: normal;
@@ -10,17 +63,12 @@ body {
 }
 
 
-.full-container {
-  height: 100vh;
-  width: 100vw;
-  background-color: #121d0b;
+
+h1 {
+  text-align: center;
 }
 
-
-
 .back-text {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 2em;
   text-align: center;
@@ -28,31 +76,13 @@ body {
   color: #ebf6e5;
 }
 
-.absolute-follow {
-  position: absolute;
-  top: 35px;
-  right: 0;
-}
-
-.follow-bar-mobile {
-  display: none;
-}
-
-.follow-bar {
-  display: flex;
-  justify-content: end;
-  align-items: center;
-  gap: 2em;
-}
 
 .text-bold-sm {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 16px;
   line-height: 16px;
   letter-spacing: 0.05em;
-
+  text-align: center;
   color: #ebf6e5;
 }
 
@@ -88,25 +118,7 @@ body {
   color: #58c3b5;
 }
 
-.follow-bar>img {
-  display: inline-block;
-}
 
-.wrap {
-  flex-wrap: wrap;
-}
-
-.flex-row-center-center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.flex-row-evenly-center {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-}
 
 .main-text {
   font-family: "Lekton";
@@ -139,20 +151,7 @@ textarea {
   line-height: 2em;
 }
 
-.gap-1 {
-  gap: 1em;
-}
 
-.gap-1-5 {
-  gap: 1.5em;
-}
-
-.flex-column-center-center {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
 
 .container {
   background-color: white;
@@ -195,8 +194,8 @@ textarea {
   border: 2px solid #387161;
 }
 
-.gap-1{
-  gap:1em;
+.gap-1 {
+  gap: 1em;
 }
 
 .progress {
@@ -254,27 +253,8 @@ textarea {
   color: #000000;
 }
 
-.logo>img {
-  width: 240px;
-}
 
-form input[type="text"],
-form input[type="email"],
-form input[type="password"],
-form select {
-  width: 300px;
-  height: 50px;
-  border: 0;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: inset 0px 5px 6px 2px rgba(0, 0, 0, 0.12);
-  background: rgba(236, 248, 243, 0.2);
-  color: #ebf6e5;
 
-  font-weight: 700;
-  font-size: 1.2em;
-  letter-spacing: 0.18em;
-}
 
 .question-text {
   font-family: "Inter";
@@ -303,7 +283,7 @@ form select {
   justify-content: space-evenly;
   width: 100%;
   gap: 1em;
-  position:relative;
+  position: relative;
 }
 
 
@@ -463,13 +443,7 @@ a.main-button {
   color: royalblue;
 }
 
-.error-message {
-  height: 14px;
-  color: red;
-  font-weight: bold;
-  font-size: 14px;
-  margin-top: 5px;
-}
+
 
 
 .card-background {
@@ -572,59 +546,6 @@ i {
   body {
     height: 100vh !important;
     margin-top: 0 !important;
-  }
-
-  .full-container {
-    flex-direction: column;
-  }
-
-  .container {
-    box-sizing: border-box;
-  }
-
-  /* form,
-  .container {
-    width: 100%;
-  } */
-
-  .main {
-    width: 100%;
-  }
-
-  .sidebar {
-    display: none;
-    margin-left: -70%;
-
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 70%;
-    background-color: white;
-    height: 100vh;
-  }
-
-  .add {
-    display: none;
-  }
-
-  .show {
-    display: block;
-    margin-left: 0;
-    /* transition: margin-left 2s ease; */
-  }
-
-  .follow-bar {
-    display: none;
-  }
-
-  .follow-bar-mobile {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    /* justify-content: end;
-    align-items: center; */
-    gap: 1em;
   }
 
   .follow-row {
@@ -949,10 +870,6 @@ dialog {
     width: 100%;
     justify-content: space-around;
   }
-
-  .follow-bar {
-    display: none;
-  }
 }
 
 
@@ -1020,4 +937,76 @@ menu {
   flex-direction: column;
   align-items: flex-start;
   gap: 2em;
+}
+
+/* only correct ones */
+
+/* follow bar which dissappears */
+
+@media screen and (max-width: 960px) {
+  .follow-bar {
+    display: none !important;
+  }
+}
+
+.follow-bar {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  gap: 2em;
+}
+
+/* used in routes where there is no top bar */
+
+.absolute-follow {
+  position: absolute;
+  top: 35px;
+  right: 0;
+}
+
+/* login logo and register one */
+
+.logo>img {
+  width: 100%;
+}
+
+.logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.error-message {
+  height: 1em;
+  font-size: 0.8em;
+  align-items: center;
+  text-align: center;
+  color: rgb(215, 238, 109);
+}
+
+form input[type="text"],
+form input[type="email"],
+form input[type="password"],
+form select {
+  width: 100%;
+  height: 50px;
+  border: 0;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: inset 0px 5px 6px 2px rgba(0, 0, 0, 0.12);
+  background: rgba(236, 248, 243, 0.2);
+  color: #ebf6e5;
+  font-weight: 400;
+  font-size: 1.2em;
+  letter-spacing: 0.18em;
+}
+
+@media screen and (max-width: 960px) {
+  .full-container {
+    flex-direction: column;
+  }
+
+  .logo>img {
+    width: 80% !important;
+  }
 }

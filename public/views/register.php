@@ -34,40 +34,24 @@
       <img src="public/assets/logo_with_name.svg" />
     </div>
 
-    <form class="flex-column-center-center gap-1-5">
-      <div class="flex-column-center-center">
-        <input class="login-input" name="email" type="email" placeholder="email address" required />
-        <span id="email-error" class="error-message"></span>
-      </div>
-
-      <div class="flex-column-center-center">
-        <input class="login-input" name="username" type="text" placeholder="username" required />
-        <span id="username-error" class="error-message"></span>
-      </div>
-
-      <div class="flex-column-center-center">
-        <input class="login-input" name="password" type="password" placeholder="password" required minlength="8" />
-        <span id="password-error" class="error-message"></span>
-      </div>
-
-      <div class="flex-column-center-center">
-        <input class="login-input" name="confirmedPassword" type="password" placeholder="confirm password" required />
-        <span id="confirm-error" class="error-message"></span>
-      </div>
-
+    <form class="flex-column-center gap-0-5">
+      <input class="login-input" name="email" type="email" placeholder="email address" required />
+      <span id="email-error" class="error-message"></span>
+      <input class="login-input" name="username" type="text" placeholder="username" required />
+      <span id="username-error" class="error-message"></span>
+      <input class="login-input" name="password" type="password" placeholder="password" required minlength="8" />
+      <span id="password-error" class="error-message"></span>
+      <input class="login-input" name="confirmedPassword" type="password" placeholder="confirm password" required />
+      <span id="confirm-error" class="error-message"></span>
       <input type="hidden" name="registration_method" value="db" />
-
-      <div class="flex-column-center-center">
-        <div>
-          <input type="checkbox" id="tos-checkbox" required />
-          <span class="tos-text">I accepted <a href="#">TOS</a>.</span>
-        </div>
-        <span id="tos-error" class="error-message"></span>
+      <div>
+        <input type="checkbox" id="tos-checkbox" required />
+        <span class="tos-text">I accepted <a href="#">TOS</a>.</span>
       </div>
-      <span id="form-error" class="error-message"></span>
+      <span id="tos-error" class="error-message"></span>
       <button class="main-button" type="submit">Sign up</button>
-      <span class="error-message"><?= $message; ?></span>
     </form>
+
   </main>
 </body>
 

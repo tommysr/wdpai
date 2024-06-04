@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const emailErrorMessage = document.querySelector("#email-error");
   const usernameErrorMessage = document.querySelector("#username-error");
   const passwordErrorMessage = document.querySelector("#password-error");
-  const formErrorMessage = document.querySelector("#form-error");
   const confirmedPasswordErrorMessage =
     document.querySelector("#confirm-error");
   const tosErrorMessage = document.querySelector("#tos-error");
@@ -39,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
       passwordErrorMessage.textContent = "";
     } else if (password.validity.tooShort || password.validity.valueMissing) {
       passwordErrorMessage.textContent =
-        "Password must be at least 8 characters long";
+        "Password must be at least 8 characters";
     }
   };
 
@@ -93,13 +92,13 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .then((data) => {
         if (data.errors) {
-          formErrorMessage.textContent = data.errors[0];
+          tosErrorMessage.textContent = data.errors[0];
         } else {
           window.location = "/login";
         }
       })
       .catch((error) => {
-        formErrorMessage.textContent = "form error";
+        tosErrorMessage.textContent = "form error";
         console.error(error);
       });
   });

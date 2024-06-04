@@ -30,16 +30,11 @@
     </div>
 
     <div class="flex-column-center-center gap-1-5">
-      <form class="flex-column-center-center gap-1-5">
-        <div class="flex-column-center-center">
-          <input class="login-input" name="email" type="email" placeholder="email address" required />
-          <span id="email-error" class="error-message"></span>
-        </div>
-
-        <div class="flex-column-center-center">
-          <input class="login-input" name="password" type="password" placeholder="password" required minlength="8" />
-          <span id="password-error" class="error-message"></span>
-        </div>
+      <form class="flex-column-center-center gap-0-5">
+        <input class="login-input" name="email" type="email" placeholder="email address" required />
+        <span id="email-error" class="error-message"></span>
+        <input class="login-input" name="password" type="password" placeholder="password" required minlength="8" />
+        <span id="password-error" class="error-message"></span>
         <span id="form-error" class="error-message"></span>
         <input type="hidden" name="login_method" value="db" />
         <button class="main-button">Sign in</button>
@@ -49,9 +44,6 @@
         style="text-decoration: none; text-align: center; align-items: center; display: flex; justify-content: center;">
         Create Account
       </a>
-
-
-      <span class="error-message"><?= $message; ?></span>
     </div>
   </main>
 </body>

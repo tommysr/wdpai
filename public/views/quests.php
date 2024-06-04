@@ -1,4 +1,4 @@
-<main class="flex-column-center-center">
+<!-- <main class="flex-column-center-center">
 
   <?php if (sizeof($quests) == 0): ?>
     <h1 class="main-text">No records exist</h1>
@@ -52,4 +52,4 @@
       </div>
     </div>
   <?php endforeach; ?>
-</main>
+</main> -->
