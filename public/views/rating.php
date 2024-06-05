@@ -5,7 +5,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/public/css/style.css" type="text/css" />
-    <link rel="stylesheet" href="/public/css/nav.css" type="text/css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
@@ -19,12 +18,15 @@
     <title><?= $title; ?></title>
 </head>
 
-<body class="flex-column-center-center">
-    <div class="backBar">
-        <a href="#" class=""><i class="fas fa-arrow-left"></i></a>
-        <span class="back-text">Rate us</span>
-    </div>
+<body>
+    <nav class="questNav">
+        <div class="backBar">
+            <a href="" id="back-link"><img src="/public/assets/back_arrow.svg" /></a>
+            <span class="back-text">Choose answers</span>
+        </div>
+    </nav>
 
+<!-- 
     <div class="follow-bar absolute-follow">
         <span class="text-bold-sm">Follow us</span>
         <img src="/public/assets/follow-bar/line.svg" />
@@ -32,9 +34,9 @@
         <img src="/public/assets/follow-bar/ig.svg" />
         <img src="/public/assets/follow-bar/linkedin.svg" />
         <img src="/public/assets/follow-bar/arrow_left.svg" />
-    </div>
+    </div> -->
 
-    <form action="/rating" method="post" class="flex-column-center-center">
+    <form action="/rating" method="post" class="question-container">
         <span class="back-text">How would you rate your experience?</span>
 
         <div class="rating-options">

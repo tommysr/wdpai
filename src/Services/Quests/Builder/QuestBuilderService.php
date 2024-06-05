@@ -37,12 +37,10 @@ class QuestBuilderService implements IQuestBuilderService
 
     $this->questBuilder->setTitle($data['title']);
     $this->questBuilder->setDescription($data['description']);
-    $this->questBuilder->setWorthKnowledge(0);
     $this->questBuilder->setBlockchain($data['blockchain']);
     $this->questBuilder->setRequiredMinutes($data['minutesRequired']);
     $this->questBuilder->setExpiryDateString($data['expiryDate']);
     $this->questBuilder->setPayoutDate($data['payoutDate']);
-    $this->questBuilder->setParticipantsCount(0);
     $this->questBuilder->setParticipantsLimit($data['participantsLimit']);
     $this->questBuilder->setPoolAmount($data['poolAmount']);
     $this->questBuilder->setToken($data['token']);
@@ -51,7 +49,6 @@ class QuestBuilderService implements IQuestBuilderService
       $this->questBuilder->setCreatorId($data['creatorId']);
     }
 
-    $points = 0;
 
     $this->questBuilder->setIsApproved(false);
 
@@ -66,7 +63,6 @@ class QuestBuilderService implements IQuestBuilderService
           isset($questionData['flag']) ? $questionData['flag'] : null
         );
 
-        $points += $question->getPoints();
         $correctOptionsCount = 0;
 
         if (isset($questionData['options'])) {
@@ -98,7 +94,6 @@ class QuestBuilderService implements IQuestBuilderService
     }
 
 
-    $this->questBuilder->setMaxPoints($points);
 
     return $this->questBuilder->build();
   }

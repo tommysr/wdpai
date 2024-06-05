@@ -16,7 +16,7 @@ class QuestRepository extends Repository implements IQuestRepository
       $data['quest_id'],
       $data['title'],
       $data['description'],
-      $data['worth_knowledge'],
+      $data['avg_rating'],
       $data['blockchain'],
       $data['required_minutes'],
       $data['expiry_date'],
@@ -84,17 +84,14 @@ class QuestRepository extends Repository implements IQuestRepository
       $sql = "UPDATE quests SET
               title = :title, 
               description = :description, 
-              worth_knowledge = :worth_knowledge, 
               blockchain_id = :blockchain_id, 
               required_minutes = :required_minutes, 
               expiry_date = :expiry_date, 
-              participants_count = :participants_count, 
               participants_limit = :participants_limit, 
               pool_amount = :pool_amount, 
               token_id = :token_id, 
               approved = :approved, 
               picture_id = :picture_id, 
-              max_points = :max_points, 
               payout_date = :payout_date 
               WHERE quest_id = :quest_id";
 
@@ -103,17 +100,14 @@ class QuestRepository extends Repository implements IQuestRepository
       $stmt->execute([
         ':title' => $quest->getTitle(),
         ':description' => $quest->getDescription(),
-        ':worth_knowledge' => $quest->getWorthKnowledge(),
         ':blockchain_id' => $blockchain_id,
         ':required_minutes' => $quest->getRequiredMinutes(),
         ':expiry_date' => $quest->getExpiryDateString(),
-        ':participants_count' => $quest->getParticipantsCount(),
         ':participants_limit' => $quest->getParticipantsLimit(),
         ':pool_amount' => $quest->getPoolAmount(),
         ':token_id' => $token_id,
         ':approved' => $quest->getIsApproved() ? 1 : 0,
         ':picture_id' => $picture_id,
-        ':max_points' => $quest->getMaxPoints(),
         ':payout_date' => $quest->getPayoutDate(),
         ':quest_id' => $quest->getQuestID(),
       ]);
@@ -138,29 +132,26 @@ class QuestRepository extends Repository implements IQuestRepository
       $blockchain_id = $this->getBlockchainId($pdo, $quest->getBlockchain());
       $picture_id = $this->getPictureId($pdo, $quest->getPictureUrl());
 
-      $sql = "INSERT INTO quests (title, description, worth_knowledge, 
-              blockchain_id, required_minutes, expiry_date, participants_count, 
-              participants_limit, pool_amount, token_id, creator_id, approved, picture_id, max_points, payout_date) 
-              VALUES (:title, :description, :worth_knowledge, :blockchain_id, 
-              :required_minutes, :expiry_date, :participants_count, :participants_limit, :pool_amount, :token_id, :creator_id, :approved, :picture_id, :max_points, :payout_date)";
+      $sql = "INSERT INTO quests (title, description,
+              blockchain_id, required_minutes, expiry_date,
+              participants_limit, pool_amount, token_id, creator_id, approved, picture_id, payout_date) 
+              VALUES (:title, :description, :blockchain_id, 
+              :required_minutes, :expiry_date, :participants_limit, :pool_amount, :token_id, :creator_id, :approved, :picture_id, :payout_date)";
 
       $stmt = $pdo->prepare($sql);
 
       $stmt->execute([
         ':title' => $quest->getTitle(),
         ':description' => $quest->getDescription(),
-        ':worth_knowledge' => $quest->getWorthKnowledge(),
         ':blockchain_id' => $blockchain_id,
         ':required_minutes' => $quest->getRequiredMinutes(),
         ':expiry_date' => $quest->getExpiryDateString(),
-        ':participants_count' => $quest->getParticipantsCount(),
         ':participants_limit' => $quest->getParticipantsLimit(),
         ':pool_amount' => $quest->getPoolAmount(),
         ':token_id' => $token_id,
         ':creator_id' => $quest->getCreatorId(),
         ':approved' => $quest->getIsApproved() ? 1 : 0,
         ':picture_id' => $picture_id,
-        ':max_points' => $quest->getMaxPoints(),
         ':payout_date' => $quest->getPayoutDate(),
       ]);
 
@@ -191,7 +182,7 @@ class QuestRepository extends Repository implements IQuestRepository
 
   public function getQuestById($questId): ?IQuest
   {
-    $sql = $this->getQuestQuery('WHERE quest_id = :quest_id');
+    $sql = $this->getQuestQuery('HAVING Q.quest_id = :quest_id');
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute([':quest_id' => $questId]);
     $questFetched = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -206,12 +197,51 @@ class QuestRepository extends Repository implements IQuestRepository
   private function getQuestQuery(string $whereClause = ''): string
   {
 
-    $q = "SELECT quest_id, creator_id, p.picture_url as picture_url, u.username as creator_name,
-            b.name as blockchain, t.name as token, title, description, worth_knowledge, expiry_date, participants_count, participants_limit, pool_amount, max_points, required_minutes, approved, payout_date FROM quests q 
-            INNER JOIN blockchains b ON b.blockchain_id = q.blockchain_id 
-            INNER JOIN users u ON u.user_id = q.creator_id
-            INNER JOIN tokens t ON t.token_id = q.token_id 
-            INNER JOIN pictures p on p.picture_id = q.picture_id ";
+    $q = "SELECT
+    Q.QUEST_ID,
+    CREATOR_ID,
+    P.PICTURE_URL AS PICTURE_URL,
+    U.USERNAME AS CREATOR_NAME,
+    B.NAME AS BLOCKCHAIN,
+    T.NAME AS TOKEN,
+    TITLE,
+    DESCRIPTION,
+    EXPIRY_DATE,
+    PARTICIPANTS_LIMIT,
+    POOL_AMOUNT,
+    REQUIRED_MINUTES,
+    APPROVED,
+    PAYOUT_DATE,
+    COUNT(DISTINCT QP.WALLET_ID) AS PARTICIPANTS_COUNT,
+    SUM(QT.POINTS) AS MAX_POINTS,
+    CASE 
+      WHEN COUNT(R.RATING) = 0 THEN 0.0
+      ELSE AVG(R.RATING)
+    END AS AVG_RATING
+  FROM
+    QUESTS Q
+    INNER JOIN BLOCKCHAINS B ON B.BLOCKCHAIN_ID = Q.BLOCKCHAIN_ID
+    INNER JOIN USERS U ON U.USER_ID = Q.CREATOR_ID
+    INNER JOIN TOKENS T ON T.TOKEN_ID = Q.TOKEN_ID
+    LEFT JOIN QUEST_PROGRESS QP ON QP.QUEST_ID = Q.QUEST_ID
+    LEFT JOIN QUESTIONS QT ON QT.QUEST_ID = Q.QUEST_ID
+    LEFT JOIN RATINGS R ON R.QUEST_ID = Q.QUEST_ID
+    INNER JOIN PICTURES P ON P.PICTURE_ID = Q.PICTURE_ID
+  GROUP BY
+    Q.QUEST_ID,
+    Q.CREATOR_ID,
+    P.PICTURE_URL,
+    U.USERNAME,
+    B.NAME,
+    T.NAME,
+    Q.TITLE,
+    Q.DESCRIPTION,
+    Q.EXPIRY_DATE,
+    Q.PARTICIPANTS_LIMIT,
+    Q.POOL_AMOUNT,
+    Q.REQUIRED_MINUTES,
+    Q.APPROVED,
+    Q.PAYOUT_DATE ";
 
     $q .= $whereClause;
 
@@ -235,7 +265,7 @@ class QuestRepository extends Repository implements IQuestRepository
   public function getCreatorQuests(int $creator): array
   {
     $quests = [];
-    $sql = $this->getQuestQuery('WHERE creator_id = :creator');
+    $sql = $this->getQuestQuery('HAVING creator_id = :creator');
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute([':creator' => $creator]);
     $fetched = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -260,7 +290,7 @@ class QuestRepository extends Repository implements IQuestRepository
   private function getQuestByApprovedFlag(bool $isApproved): array
   {
     $quests = [];
-    $sql = $this->getQuestQuery('WHERE approved = :approved');
+    $sql = $this->getQuestQuery('HAVING approved = :approved;');
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute([':approved' => $isApproved]);
     $fetched = $stmt->fetchAll(\PDO::FETCH_ASSOC);

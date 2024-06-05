@@ -85,19 +85,17 @@ class QuestProgressService implements IQuestProgressService
     return $question;
   }
 
-  // public function getNextQuestion(int $questId, int $questionId): ?IQuestion
-  // {
-  //   $nextQuestion = $this->questionsRepository->getNextQuestion($questId, $questionId);
+  public function getUserQuests(int $userId): array
+  {
+    $progresses =  $this->questProgressRepository->getUserEntries($userId);
 
-  //   if (!$nextQuestion) {
-  //     return null;
-  //   }
+    return array_map(fn($progress) => [
+      'quest' => $this->questService->getQuest($progress->getQuestId()),
+      'progress' => $progress
+    ], $progresses);
+  }
 
-  //   $options = $this->optionsRepository->getOptionsByQuestionId($nextQuestion->getQuestionId());
-  //   $nextQuestion->setOptions($options);
 
-  //   return $nextQuestion;
-  // }
 
   public function resetSession(): void
   {
@@ -191,13 +189,15 @@ class QuestProgressService implements IQuestProgressService
     $this->questProgressRepository->updateQuestProgress($questProgress);
   }
 
+
   public function abandonQuest(): void
   {
     $questProgress = $this->getCurrentProgressFromSession();
     $questProgress->setState(QuestState::Abandoned);
-    $this->sessionService->set('questProgress', $questProgress);
+    $this->sessionService->delete('questProgress');
     $this->questProgressRepository->updateQuestProgress($questProgress);
   }
+
 
   public function getMaxScore(int $questId): int
   {

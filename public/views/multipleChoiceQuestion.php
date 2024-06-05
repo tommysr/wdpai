@@ -5,7 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="/public/css/style.css" type="text/css" />
-  <link rel="stylesheet" href="/public/css/nav.css" type="text/css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
@@ -15,24 +14,26 @@
   <link href="https://fonts.googleapis.com/css2?family=Lekton:ital,wght@0,400;0,700;1,400&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-
+  <script type="text/javascript" src="/public/js/confirmationModal.js" defer></script>
   <title><?= $title; ?></title>
 </head>
 
-<body class="flex-column-center-center">
-  <div class="backBar">
-    <a href="#" class=""><i class="fas fa-arrow-left"></i></a>
-    <span class="back-text">Choose answers</span>
-  </div>
+<body>
+  <nav class="questNav">
+    <div class="backBar">
+      <a href="" id="back-link"><img src="/public/assets/back_arrow.svg" /></a>
+      <span class="back-text">Choose answers</span>
+    </div>
+  </nav>
 
-  <div class="follow-bar absolute-follow">
+  <!-- <div class="follow-bar absolute-follow">
     <span class="text-bold-sm">Follow us</span>
     <img src="/public/assets/follow-bar/line.svg" />
     <img src="/public/assets/follow-bar/fb.svg" />
     <img src="/public/assets/follow-bar/ig.svg" />
     <img src="/public/assets/follow-bar/linkedin.svg" />
     <img src="/public/assets/follow-bar/arrow_left.svg" />
-  </div>
+  </div> -->
 
   <form action="/answer/<?= $question->getQuestionId(); ?>" method="post" class="question-container">
     <span class="question-text"><?= $question->getText(); ?></span>
@@ -45,11 +46,11 @@
       $options = $question->getOptions();
       foreach ($options as $option):
         ?>
-        <label class="option-container">
+        <div class="option-container">
           <input type="checkbox" name="options[<?= $counter; ?>]" value="<?= $option->getOptionId(); ?>" />
-          <span class="checkmark <?= $colorClasses[$counter % count($colorClasses)]; ?>"></span>
+          <div class="checkmark <?= $colorClasses[$counter % count($colorClasses)]; ?>"></div>
           <span class="option-text"><?= $option->getText(); ?></span>
-        </label>
+        </div>
         <?php
         $counter++;
       endforeach;
@@ -58,5 +59,18 @@
 
     <button class="main-button">Continue</button>
   </form>
+
+  <dialog id="confirmationDialog">
+    <form method="dialog">
+      <h4>Confirm</h4>
+      <p>Do you really want to abandon the quest?</p>
+      <menu>
+        <button id="confirm-yes" value="yes">Yes</button>
+        <button id="confirm-no" value="no">No</button>
+      </menu>
+    </form>
+    <span class="error-message"></span>
+  </dialog>
 </body>
+
 </html>

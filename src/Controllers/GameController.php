@@ -43,6 +43,12 @@ class GameController extends AppController implements IGameController
     $this->ratingService = $ratingService ?: new RatingService();
   }
 
+  public function postAbandonQuest(IRequest $request): IResponse
+  {
+    $this->questProgressService->abandonQuest();
+    return new JsonResponse(['message' => 'Quest abandoned']);
+  }
+
   public function getIndex(IRequest $request): IResponse
   {
     return new JsonResponse([]);

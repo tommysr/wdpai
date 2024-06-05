@@ -85,6 +85,7 @@ Router::post('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $
 Router::post('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddleware, $roleAuthorizationMiddleware, $questValidationMiddleware]);
 
 // NORMAL USER ROUTES
+Router::get('/dashboard', 'QuestsController@dashboard', [$authMiddleware, $questAuthorizeMiddleware]);
 Router::get('/showQuests', 'QuestsController@showQuests', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
 Router::get('/showQuestWallets/{questId}', 'QuestsController@showQuestWallets', [$authMiddleware, $questAuthorizeMiddleware, $questAuthorizeMiddleware]);
 Router::post('/addWallet/{blockchain}', 'QuestsController@addWallet', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
@@ -92,8 +93,9 @@ Router::post('/enterQuest/{questId}', 'GameController@enterQuest', [$authMiddlew
 Router::get('/play', 'GameController@play', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
 Router::post('/answer/{questionId}', 'GameController@answer', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
 Router::post('/rating', 'GameController@rating', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
+Router::post('/abandonQuest', 'GameController@abandonQuest', [$authMiddleware]);
 //temp routes
-Router::get('/reset', 'GameController@reset', [$authMiddleware]);
+Router::get('/endQuest', 'GameController@reset', [$authMiddleware]);
 
 $request = new Request($_SERVER, $_GET, $_POST);
 $response = Router::dispatch($request);

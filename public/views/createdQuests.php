@@ -3,60 +3,70 @@
     <h1 class="main-text">No records exist</h1>
   <?php endif; ?>
 
-  <div style="width: 80%; display: flex; justify-content: flex-end; margin-bottom: 2em;">
-    <a href="/createQuest" style="text-decoration: none; text-align:center; padding: 1em;" class="main-button">Create
-      new quest</a>
-  </div>
-  <?php foreach ($quests as $quest): ?>
+  <a href="/createQuest" class="add-quest"><i class="fas fa-plus fa-2x"></i></a>
+  <div class="container">
+    <div class="cards">
+      <?php foreach ($quests as $quest): ?>
+        <div class="card">
+          <div class="container-card bg-green-box">
+            <div class="card-top">
+              <img class="image-green-box card-image" src="https://picsum.photos/300/200" alt="image" />
+              <div class="infos">
+                <span class="info">
+                  <i class="fas fa-star"></i>
+                  <?= $quest->getAvgRating(); ?>
+                </span>
 
-    <div class="card-background">
-      <div class="card-image-background">
-        <img class="card-image" src="https://picsum.photos/300/200" alt="image" />
-      </div>
-      <div class="card-inner">
-        <span class="title"><?= $quest->getTitle(); ?></span>
-        <div class="card-infos">
-          <span class="info">
-            <i class="fas fa-book-open"></i>
-            <?= $quest->getWorthKnowledge(); ?>
-          </span>
+                <span class="info">
+                  <i class="fas fa-wallet"></i>
+                  <?= $quest->getBlockchain(); ?>
+                </span>
 
-          <span class="info">
-            <i class="fas fa-wallet"></i>
-            <?= $quest->getBlockchain(); ?>
-          </span>
+                <span class="info">
+                  <i class="fas fa-flag-checkered"></i>
+                  <?= $quest->getRequiredMinutes(); ?>
+                </span>
+              </div>
+            </div>
+            <span class="title">Tworzenie questów jest najlepsze na świecie</span>
+            <p class="description">Tworzenie questów jest najlepsze na świecie by binanceTworzenie questów jest najlepsze
+              na świecie by binanceTworzenie questów jest najlepsze na świecie by binanceTworzenie questów jest najlepsze
+              na świecie by binanceTworzenie questów jest najlepsze na świecie by binanceTworzenie questów jest najlepsze
+              na świecie by binanceTworzenie questów jest najlepsze na świecie by binanceTworzenie questów jest najlepsze
+              na świecie by binance</p>
+            <button class="show-more-btn">Show more</button>
 
-          <span class="info">
-            <i class="fas fa-flag-checkered"></i>
-            <?= $quest->getRequiredMinutes(); ?>
-          </span>
+
+            <div class="infos">
+              <span class="info">
+                <i class="fas fa-clock"></i>
+                <?= $quest->getExpiryDateString(); ?>
+              </span>
+
+              <span class="info">
+                <i class="fas fa-running"></i>
+                <?= $quest->getParticipantsCount(); ?> /
+                <?= $quest->getParticipantsLimit(); ?>
+              </span>
+              <span class="info">
+                <i class="fas fa-coins"></i>
+                <?= $quest->getPoolAmount(); ?>
+              </span>
+            </div>
+
+            <?php if ($quest->getIsApproved()): ?>
+              <span class="published">
+                <i class="fas fa-check"></i>
+                Published
+              </span>
+            <?php else: ?>
+              <a href="/editQuest/<?= $quest->getQuestId(); ?>" class="enter-button">EDIT</a>
+            <?php endif; ?>
+
+          </div>
         </div>
-
-        <p class="description"><?= $quest->getDescription(); ?></p>
-      </div>
-      <div class="card-right-background">
-        <span class="info">
-          <i class="fas fa-clock"></i>
-          <?= $quest->getExpiryDateString(); ?>
-        </span>
-
-        <span class="info">
-          <i class="fas fa-running"></i>
-          <?= $quest->getParticipantsCount(); ?>
-        </span>
-        <span class="info">
-          <i class="fas fa-coins"></i>
-          <?= $quest->getPoolAmount(); ?>
-        </span>
-        <?php if ($quest->getIsApproved()): ?>
-          <span class="info">
-            <i class="fas fa-check"></i>
-            Published
-          </span>
-        <?php else: ?>
-          <a href="/editQuest/<?= $quest->getQuestId(); ?>" class="enter-button" style="text-decoration: none;">EDIT</a>
-        <?php endif; ?>
-      </div>
+      <?php endforeach; ?>
     </div>
-  <?php endforeach; ?>
+  </div>
 </main>
+<script src="/public/js/quests.js" defer></script>

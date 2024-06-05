@@ -17,6 +17,7 @@ class User implements IUser
   private string $avatarUrl = '';
   private int $id;
   private IRole $role;
+  private int $points = 0;
 
   public function __construct(
     int $id,
@@ -39,6 +40,14 @@ class User implements IUser
     } else {
       $this->joinDate = date('Y-m-d');
     }
+  }
+
+  public function setPoints(int $points): void {
+    $this->points = $points;
+  }
+
+  public function getPoints(): int {
+    return $this->points;
   }
 
   public function getId(): int

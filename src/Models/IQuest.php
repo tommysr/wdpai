@@ -10,7 +10,7 @@ interface IQuest
     public function getQuestID(): int;
     public function getTitle(): string;
     public function getDescription(): string;
-    public function getWorthKnowledge(): int;
+    public function getAvgRating(): float;
     public function getBlockchain(): string;
     public function getRequiredMinutes(): int;
     public function getExpiryDateString(): string;
@@ -36,7 +36,7 @@ interface IQuest
     public function setQuestID(int $questID): void;
     public function setTitle(string $title): void;
     public function setDescription(string $description): void;
-    public function setWorthKnowledge(int $worthKnowledge): void;
+    public function setAvgRating(float $avgRating): void;
     public function setBlockchain(string $blockchain): void;
     public function setRequiredMinutes(int $timeRequiredMinutes): void;
     public function setExpiryDateString(string $expiryDateString): void;

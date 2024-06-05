@@ -10,7 +10,7 @@ interface IQuestsController extends IRootController
 {
   // BASE ACTIONS
   public function getShowQuests(IRequest $request): IResponse;
-
+  public function getDashboard(IRequest $request): IResponse;
 
   // CREATOR ACTIONS
   // create 
