@@ -30,6 +30,9 @@ use App\Services\Wallets\WalletService;
 
 class QuestsController extends AppController implements IQuestsController
 {
+  const MAX_FILE_SIZE = 1024 * 1024;
+  const SUPPORTED_TYPES = ['image/png', 'image/jpeg'];
+  const UPLOAD_DIRECTORY = '/../public/uploads/';
   private IQuestService $questService;
   private IAuthService $authService;
   private IQuestBuilderService $questBuilderService;
@@ -155,6 +158,42 @@ class QuestsController extends AppController implements IQuestsController
       return new JsonResponse(['redirectUrl' => '/showCreatedQuests']);
     }
   }
+
+  private function generateFileName($filePath): string
+  {
+    // $filePath = dirname(__DIR__) . self::UPLOAD_DIRECTORY . $filename;
+
+    $imageFileType = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+    $uniqueName = uniqid() . '.' . $imageFileType;
+    $targetFile = $filePath . $uniqueName;
+
+    $counter = 1;
+    while (file_exists($targetFile)) {
+      $baseName = pathinfo($filePath, PATHINFO_FILENAME);
+      $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+      $targetFile = $filePath . $baseName . "_$counter" . $extension;
+      $counter++;
+    }
+
+    return $targetFile;
+  }
+
+  public function postUploadQuestFile(IRequest $request): IResponse
+  {
+    $fileData = $this->request->getUploadedFiles()['file'];
+
+    if ($fileData && is_uploaded_file($fileData['tmp_name'])) {
+      $newFileName = $this->generateFileName($fileData['name']);
+      move_uploaded_file(
+        $fileData['tmp_name'],
+        dirname(__DIR__) . self::UPLOAD_DIRECTORY . $newFileName
+      );
+      return new JsonResponse(['name' => $newFileName]);
+    }
+
+    return new JsonResponse(['errors' => ['file not found']]);
+  }
+
 
   /*
       Admin actions

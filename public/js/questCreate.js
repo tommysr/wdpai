@@ -431,11 +431,33 @@ function serializeForm(form) {
   );
 }
 
+const validateFileInput = () => {
+  const questThumbnail = document.getElementById('questThumbnail');
+
+  if (!questThumbnail.value) {
+    error.textContent = 'You need to upload a file';
+  }
+
+  const fileInput = document.getElementById('fileInput');
+  const file = fileInput.files[0];
+
+  if (file) {
+    error.textContent = 'Click the upload button to upload the file';
+    return false;
+  }
+
+  error.textContent = '';
+
+  return true;
+}
+
+
 function submitForm(event) {
   event.preventDefault();
 
 
   let valid = true;
+
   valid &= checkTitleValidity();
   valid &= checkDescriptionValidity();
   valid &= checkBlockchainValidity();
@@ -446,6 +468,7 @@ function submitForm(event) {
   valid &= checkPoolAmountValidity();
   valid &= checkTokenValidity();
   valid &= form.checkValidity();
+  valid &= validateFileInput();
 
 
   if (!valid) {
@@ -481,5 +504,46 @@ function submitForm(event) {
     .catch((error) => {
       errorDiv.textContent = data.errors;
       console.error("Error:", error);
+    });
+}
+
+
+const fileInput = document.getElementById('fileInput');
+const preview = document.getElementById('preview');
+
+fileInput.addEventListener('change', () => {
+  const file = fileInput.files[0];
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+    preview.src = e.target.result;
+    preview.style.display = 'block';
+  };
+
+  if (file) {
+    reader.readAsDataURL(file);
+  }
+});
+
+
+function uploadFile() {
+  const formData = new FormData();
+  formData.append('file', fileInput.files[0]);
+
+  fetch('/uploadQuestFile', {
+    method: 'POST',
+    body: formData
+  })
+    .then(response => response.json())
+    .then(data => {
+      if (data.name) {
+        const questThumbnail = document.getElementById('questThumbnail');
+        questThumbnail.value = data.name;
+      } else {
+        console.log('file upload failed');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
     });
 }

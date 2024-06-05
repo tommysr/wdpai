@@ -10,7 +10,7 @@
         <div class="card">
           <div class="container-card bg-green-box">
             <div class="card-top">
-              <img class="image-green-box card-image" src="https://picsum.photos/300/200" alt="image" />
+              <img class="image-green-box card-image"  src="<?= $quest->getPictureUrl() == 'none' ? "https://picsum.photos/300/200" : "/public/uploads/". $quest->getPictureUrl(); ?>" alt="image" />
               <div class="infos">
                 <span class="info">
                   <i class="fas fa-star"></i>
