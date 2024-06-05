@@ -9,6 +9,7 @@ use App\Services\Quests\IQuestResult;
 interface IQuestService
 {
   public function getCreatorQuests(IIdentity $identity): array;
+  public function getTopRatedQuests(): array;
   public function getQuestsToPlay(): array;
   public function getQuestsToApproval(): array;
   public function getQuestBlockchain(int $questId): string;

@@ -5,13 +5,13 @@
 
   <div class="menus">
     <div class="inline-menu">
-      <a class="nav-link" href="/dashboard">
+      <a class="nav-link top-rated">
         Top rated
         <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />
         </svg>
       </a>
-      <a class="nav-link" href="/dashboard">
+      <a class="nav-link recommended">
         Recommended
         <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />
@@ -24,13 +24,13 @@
         <i class="fa fa-caret-down"></i>
       </button>
       <div class="dropdown-content" id="myDropdown">
-        <a class="nav-link" href="/dashboard">
+        <a class="nav-link top-rated">
           Top rated
           <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />
           </svg>
         </a>
-        <a class="nav-link" href="/dashboard">
+        <a class="nav-link recommended">
           Recommended
           <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />

@@ -63,6 +63,17 @@ class QuestService implements IQuestService
     });
   }
 
+  public function getTopRatedQuests(): array
+  {
+    $quests = $this->questRepository->getApprovedQuests();
+
+    usort($quests, function ($a, $b) {
+      return $b->getAvgRating() <=> $a->getAvgRating();
+    });
+   
+    return $quests;
+  }
+
   public function getCreatorQuests(IIdentity $identity): array
   {
     $creatorId = $identity->getId();

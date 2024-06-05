@@ -28,12 +28,8 @@
                 </span>
               </div>
             </div>
-            <span class="title">Tworzenie questów jest najlepsze na świecie</span>
-            <p class="description">Tworzenie questów jest najlepsze na świecie by binanceTworzenie questów jest najlepsze
-              na świecie by binanceTworzenie questów jest najlepsze na świecie by binanceTworzenie questów jest najlepsze
-              na świecie by binanceTworzenie questów jest najlepsze na świecie by binanceTworzenie questów jest najlepsze
-              na świecie by binanceTworzenie questów jest najlepsze na świecie by binanceTworzenie questów jest najlepsze
-              na świecie by binance</p>
+            <span class="title"><?= $quest->getTitle();?></span>
+            <p class="description"><?= $quest->getDescription();?></p>
             <button class="show-more-btn">Show more</button>
 
 

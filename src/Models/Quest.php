@@ -4,6 +4,10 @@ namespace App\Models;
 
 use App\Models\IQuest;
 
+namespace App\Models;
+
+
+
 class Quest implements IQuest
 {
 
@@ -66,6 +70,31 @@ class Quest implements IQuest
         $this->maxPoints = $maxPoints;
         $this->payoutDate = $payoutDate;
         $this->creatorName = $creatorName;
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return [
+            'questId' => $this->questId,
+            'title' => $this->title,
+            'description' => $this->description,
+            'avgRating' => $this->avgRating,
+            'blockchain' => $this->blockchain,
+            'requiredMinutes' => $this->requiredMinutes,
+            'expiryDate' => $this->expiryDate,
+            'participantsCount' => $this->participantsCount,
+            'participantsLimit' => $this->participantsLimit,
+            'maxPoints' => $this->maxPoints,
+            'poolAmount' => $this->poolAmount,
+            'token' => $this->token,
+            'payoutDate' => $this->payoutDate,
+            'creatorName' => $this->creatorName,
+            'creatorId' => $this->creatorId,
+            'approved' => $this->approved,
+            'pictureUrl' => $this->pictureUrl,
+            'flag' => $this->flag,
+            'questions' => $this->questions,
+        ];
     }
 
 

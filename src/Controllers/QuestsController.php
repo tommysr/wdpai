@@ -61,6 +61,13 @@ class QuestsController extends AppController implements IQuestsController
     return $this->render('layout', ['title' => 'quest list', 'quests' => $quests], 'quests');
   }
 
+  public function getShowTopRatedQuests(IRequest $request): IResponse
+  {
+    $quests = $this->questService->getTopRatedQuests();
+
+    return new JsonResponse(['quests' => $quests], 200);
+  }
+
   /*
     Creator actions
   */

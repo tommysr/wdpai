@@ -11,6 +11,10 @@ nav {
 
 }
 
+.active {
+  color: #58c3b5!important;
+}
+
 .mobile_logo {
   display: none;
 }
