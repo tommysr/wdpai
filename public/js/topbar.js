@@ -23,9 +23,23 @@ top_rated.addEventListener('click', () => {
 });
 
 recommended.addEventListener('click', () => {
-    console.log(recommended.classList)
     recommended.classList.add('active');
     top_rated.classList.remove('active');
+
+    fetch('/showRecommendedQuests', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.quests) {
+                quests.innerHTML = '';
+                data.quests.forEach(quest => createQuest(quest));
+                addListeners();
+            }
+        })
 });
 
 

@@ -15,4 +15,5 @@ interface IQuestRepository
   public function approve(int $questId);
   public function updateQuest(IQuest $quest);
   public function getAllQuestIds(): array;
+  public function getMaxQUestId(): int;
 }

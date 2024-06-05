@@ -33,21 +33,24 @@ class RatingService implements IRatingService
   public function getUserItemMatrix(): array
   {
     $ratings = $this->ratingRepository->getRatings();
-    $users = $this->userRepository->getAllUserIds();
-    $quests = $this->questRepository->getAllQuestIds();
+    $maxUserId = $this->userRepository->getMaxUserId();
+    $maxQuestId = $this->questRepository->getMaxQUestId();
 
-    $userItemMatrix = [];
-    foreach ($users as $userId) {
-      foreach ($quests as $questId) {
-        $userItemMatrix[$userId][$questId] = 0;
+
+    for ($i = 0; $i <= $maxUserId; $i++) {
+      for ($j = 0; $j <= $maxQuestId; $j++) {
+        $userItemMatrix[$i][$j] = 0;
       }
     }
+
+
 
     foreach ($ratings as $rating) {
       $userId = $rating->getUserId();
       $questId = $rating->getQuestId();
       $userItemMatrix[$userId][$questId] = $rating->getRating();
     }
+
 
     return $userItemMatrix;
   }

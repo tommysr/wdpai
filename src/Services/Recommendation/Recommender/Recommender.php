@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Recommendation;
+namespace App\Services\Recommendation\Recommender;
 
 use App\Services\Recommendation\Recommender\IRecommender;
 use App\Services\Recommendation\Similarity\ISimilarityStrategy;
@@ -47,9 +47,8 @@ class Recommender implements IRecommender
       throw new \Exception('empty data');
     }
 
-    if (empty($this->dataManager->getSimilarityMatrix())) {
-      $this->calculateSimilarityMatrix();
-    }
+    $this->calculateSimilarityMatrix();
+    
 
     return $this;
   }
@@ -64,7 +63,7 @@ class Recommender implements IRecommender
     $predictions = [];
 
     for ($item = 0; $item < $itemCount; $item++) {
-      $predictions[$item] = $this->predictionStrategy->predict($userIndex, $item);
+      $predictions[] = $this->predictionStrategy->predict($userIndex, $item);
     }
 
     return $predictions;

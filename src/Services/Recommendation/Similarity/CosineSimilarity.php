@@ -14,10 +14,12 @@ class CosineSimilarity implements ISimilarityStrategy
     $magnitude2 = $secondVector->norm();
     $denominator = $magnitude1 * $magnitude2;
 
+
+    $ret = 0.0;
     if ($denominator != 0) {
-      return $dotProduct / $denominator;
+      $ret = $dotProduct / $denominator;
     }
 
-    return 0.0;
+    return $ret;
   }
 }

@@ -6,4 +6,5 @@ interface ISimilarityRepository
 {
   public function getSimilarityMatrix(): array;
   public function saveSimilarityMatrix(array $matrix): void;
+  public function deleteSimilarityMatrix(): void;
 }

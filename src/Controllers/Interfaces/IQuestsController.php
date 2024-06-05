@@ -12,6 +12,7 @@ interface IQuestsController extends IRootController
   public function getShowQuests(IRequest $request): IResponse;
   public function getShowTopRatedQuests(IRequest $request): IResponse;
   public function getDashboard(IRequest $request): IResponse;
+  public function getShowRecommendedQuests(IRequest $request): IResponse;
 
   // CREATOR ACTIONS
   // create 
@@ -28,4 +29,5 @@ interface IQuestsController extends IRootController
   public function getShowQuestsToApproval(IRequest $request): IResponse;
   public function postPublish(IRequest $request, int $questId): IResponse;
   public function postAddWallet(IRequest $request, string $blockchain): IResponse;
+  public function getRefreshRecommendations(IRequest $request): IResponse;
 }

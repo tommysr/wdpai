@@ -23,6 +23,15 @@ class UserRepository extends Repository implements IUserRepository
     }, $userIds);
   }
 
+  public function getMaxUserId(): int
+  {
+    $sql = 'SELECT MAX(user_id) as max_id FROM users';
+
+    $query = $this->db->connect()->query($sql);
+
+    return (int) $query->fetchColumn();
+  }
+
   public function addUser(IUser $user): void
   {
     // default role_id and avatar_id are 0

@@ -13,6 +13,7 @@ use App\Services\Recommendation\Data\IDataManager;
 use App\Services\Recommendation\IRecommendationService;
 use App\Services\Recommendation\Prediction\KnnPredictor;
 use App\Services\Recommendation\Recommender\IRecommender;
+use App\Services\Recommendation\Recommender\Recommender;
 use App\Services\Recommendation\Similarity\CosineSimilarity;
 
 
@@ -35,18 +36,26 @@ class RecommendationService implements IRecommendationService
 
     // TODO: replace it with something else, e.g DI
     $this->recommender->setSimilarityStrategy(new CosineSimilarity());
-    $this->recommender->setPredictionStrategy(new KnnPredictor($data, $similarityMatrix, 5));
+    $this->recommender->setPredictionStrategy(new KnnPredictor($data, $similarityMatrix));
   }
 
 
   public function getRecommendations(int $userId): array
   {
-    return $this->recommender->estimate($userId);
+    $predicted=  $this->recommender->estimate($userId);
+    $sortedRecommendations = array_filter($predicted, function($value, $key) {
+      return $value !== 0.0 && $key !== 0;
+    }, ARRAY_FILTER_USE_BOTH);
+    arsort($sortedRecommendations);
+    $sortedRecommendations = array_keys($sortedRecommendations);
+
+    return $sortedRecommendations;
   }
 
   private function saveSimilarities(): void
   {
     $newSimilarities = $this->dataManager->getSimilarityMatrix();
+    $this->similarityRepository->deleteSimilarityMatrix();
     $this->similarityRepository->saveSimilarityMatrix($newSimilarities);
   }
 
@@ -57,10 +66,5 @@ class RecommendationService implements IRecommendationService
     $this->recommender->construct();
 
     $this->saveSimilarities();
-  }
-
-  public function getPopularItems(int $limit = 4): array
-  {
-    return $this->ratingService->getPopularItems($limit);
   }
 }

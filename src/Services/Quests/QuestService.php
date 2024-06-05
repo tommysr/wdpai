@@ -53,6 +53,16 @@ class QuestService implements IQuestService
     return $quests;
   }
 
+  public function getQuests(array $questIds): array
+  {
+    $quests = [];
+    foreach ($questIds as $questId) {
+      $quest = $this->questRepository->getQuestById($questId);
+      $quests[] = $quest;
+    }
+    return $quests;
+  }
+
   public function getQuestsToPlay(): array
   {
     $quests = $this->questRepository->getApprovedQuests();
@@ -70,7 +80,7 @@ class QuestService implements IQuestService
     usort($quests, function ($a, $b) {
       return $b->getAvgRating() <=> $a->getAvgRating();
     });
-   
+
     return $quests;
   }
 
