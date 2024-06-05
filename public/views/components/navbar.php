@@ -3,26 +3,8 @@
     <img src="/public/assets/menu.svg" onclick="openNav()" />
   </div>
 
-  <div class="inline-menu">
-    <a class="nav-link" href="/dashboard">
-      Top rated
-      <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />
-      </svg>
-    </a>
-    <a class="nav-link" href="/dashboard">
-      Recommended
-      <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />
-      </svg>
-    </a>
-  </div>
-
-  <div class="dropdown">
-    <button class="dropbtn" onclick="myFunction()">Filter
-      <i class="fa fa-caret-down"></i>
-    </button>
-    <div class="dropdown-content" id="myDropdown">
+  <div class="menus">
+    <div class="inline-menu">
       <a class="nav-link" href="/dashboard">
         Top rated
         <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -36,6 +18,26 @@
         </svg>
       </a>
     </div>
+
+    <div class="dropdown">
+      <button class="dropbtn" onclick="myFunction()">Filter
+        <i class="fa fa-caret-down"></i>
+      </button>
+      <div class="dropdown-content" id="myDropdown">
+        <a class="nav-link" href="/dashboard">
+          Top rated
+          <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />
+          </svg>
+        </a>
+        <a class="nav-link" href="/dashboard">
+          Recommended
+          <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />
+          </svg>
+        </a>
+      </div>
+    </div>
   </div>
 
   <div class="mobile_logo">
@@ -45,12 +47,14 @@
 </nav>
 
 <style>
+  .menus {
+    display: none;
+  }
+
   .nav-link {
     font-size: 1em;
     align-self: center;
   }
-
-
 
   @media screen and (max-width: 600px) {
     .inline-menu {
@@ -122,7 +126,6 @@
     document.getElementById("myDropdown").classList.toggle("show");
   }
 
-  // Close the dropdown if the user clicks outside of it
   window.onclick = function (e) {
     if (!e.target.matches('.dropbtn')) {
       var myDropdown = document.getElementById("myDropdown");
@@ -131,4 +134,20 @@
       }
     }
   }
+
+  function isRoute(route) {
+    return window.location.pathname === route;
+  }
+
+  function displayContentBasedOnRoute() {
+    if (isRoute('/showQuests')) {
+      const element = document.querySelector('.menus');
+      if (element) {
+        element.style.display = 'block';
+      }
+    }
+  }
+
+  displayContentBasedOnRoute();
+
 </script>
