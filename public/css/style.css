@@ -75,6 +75,11 @@
   width: 100%;
 }
 
+.m-20 {
+  margin: 20px;
+
+}
+
 .grid-3 {
   display: grid;
   grid-template-columns: minmax(100px, 5fr) 1fr 1fr;
@@ -296,7 +301,9 @@ h1 {
 
 .option-container {
   display: inline-flex;
-  justify-content: space-evenly;
+
+  justify-content: center;
+  align-items: center;
   width: 100%;
   gap: 1em;
   position: relative;
@@ -307,11 +314,13 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  
+  border: 1px solid #58c3b5;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   box-sizing: border-box;
-  border: 2px solid #ffffff;
 }
 
 .option-container:hover input~.checkmark {
@@ -319,7 +328,7 @@ h1 {
 }
 
 .option-container input:checked~.checkmark {
-  background-color: #8eec13;
+  background-color: #b0da99;
 }
 
 .option-container input:checked~.checkmark:after {
@@ -359,15 +368,7 @@ h1 {
 }
 
 .removeOption {
-  background: transparent;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  width: 50px;
-  height: 50px;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  box-sizing: border-box;
-  border: 2px solid #ffffff;
+  margin: 0 !important;
 }
 
 .option-container .checkmark:after {
@@ -1214,23 +1215,33 @@ textarea {
 
 .points {
   height: 50px;
-  width: 95%;
+  width: 100%;
   border-radius: 5px !important;
 }
 
 
-form textarea:nth-child(1) {
+#description {
   width: 90%;
 }
 
 @media screen and (max-width: 450px) {
   .grid-3 {
-    grid-template-columns: 1fr 1fr;
+    row-gap: 0.1em;
+    column-gap: 0.5em;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr;
   }
 
-  .grid-3 > div:nth-child(1) {
+  .grid-3>div:nth-child(1) {
     grid-row: 1;
-    grid-column: 1 / span 2;
+    grid-column: 1 / span 4;
+  }
+
+  .grid-3>div:nth-child(2) {
+    grid-column: 3;
+  }
+
+  .grid-3>div:nth-child(3) {
+    grid-column: 4;
   }
 }

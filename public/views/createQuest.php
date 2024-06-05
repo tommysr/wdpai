@@ -1,9 +1,6 @@
 <h1 class="main-text">Create Quiz</h1>
 
 <form id="questForm" class="" action="" class="flex-column-center-center gap-1">
-
-  <span id="error" class="error-message"></span>
-
   <div class="flex-column-center"> <label for="quizTitle" class="input-description main-text">Quiz Title:</label>
     <input class="login-input" type="text" id="quizTitle" name="title" placeholder="title"
       value="<?= $quest ? $quest->getTitle() : '' ?>" required>
@@ -90,7 +87,6 @@
           ?>
           <div class="card">
             <div class="container-card bg-green-box question flex-column-center-center gap-1">
-              <label for="questionText" class="input-description main-text">Question:</label>
               <input type="hidden" name="questions[<?= $counter; ?>][id]" value="<?= $questionId; ?>">
               <textarea name="questions[<?= $counter; ?>][text]" class="questionText main-text" cols="30" rows="10"
                 required><?= $question->getText(); ?></textarea>
@@ -101,38 +97,38 @@
                   value="<?= $question->getPoints() ?>" required>
               </div>
 
-
-              <?php
-              foreach ($question->getOptions() as $option):
-                $optionId = $option->getOptionId();
-
-                ?>
-
-                <div class="grid-3 w-100">
-                  <div>
-                    <input type="hidden" name="questions[<?= $counter; ?>][options][<?= $optionCounter; ?>][id]"
-                      value="<?= $optionId; ?>">
-                    <input class="points" type="text"
-                      name="questions[<?= $counter; ?>][options][<?= $optionCounter; ?>][text]"
-                      value="<?= $option->getText() ?>" required>
-                  </div>
-
-                  <div class="option-container">
-                    <input type="checkbox" name="questions[<?= $counter; ?>][options][<?= $optionCounter; ?>][isCorrect]"
-                      <?= $option->getIsCorrect() ? 'checked' : '' ?> value=true />
-                    <span class="checkmark"></span>
-                  </div>
-
-                  <div class="flex-row-center-center">
-                    <button type="button" class="removeOption"
-                      onclick="removeOption(this,<?= $counter; ?>,<?= $optionCounter; ?>)"><i
-                        class="fas fa-times fa-2x"></i></button>
-                  </div>
-                </div>
+              <div class="options flex-column-center-center gap-1">
                 <?php
-                $optionCounter = $optionCounter + 1;
-              endforeach;
-              ?>
+                foreach ($question->getOptions() as $option):
+                  $optionId = $option->getOptionId();
+
+                  ?>
+
+                  <div class="grid-3 w-100">
+                    <div>
+                      <input type="hidden" name="questions[<?= $counter; ?>][options][<?= $optionCounter; ?>][id]"
+                        value="<?= $optionId; ?>">
+                      <input class="points" type="text"
+                        name="questions[<?= $counter; ?>][options][<?= $optionCounter; ?>][text]"
+                        value="<?= $option->getText() ?>" required>
+                    </div>
+
+                    <div class="option-container">
+                      <input type="checkbox" name="questions[<?= $counter; ?>][options][<?= $optionCounter; ?>][isCorrect]"
+                        <?= $option->getIsCorrect() ? 'checked' : '' ?> value=true />
+                      <span class="checkmark"></span>
+                    </div>
+
+                    <div class="flex-row-center-center">
+                      <button type="button" class="removeOption show-more-btn bg-green-box"
+                        onclick="removeOption(this,<?= $counter; ?>,<?= $optionCounter; ?>)">remove</button>
+                    </div>
+                  </div>
+                  <?php
+                  $optionCounter = $optionCounter + 1;
+                endforeach;
+                ?>
+              </div>
 
               <button type="button" class="addOption main-button w-50"
                 onclick="addOptionRaw(this, <?= $counter; ?>,<?= $optionCounter; ?> )">Add
@@ -148,7 +144,10 @@
       endif; ?>
     </div>
   </div>
-  <div class="flex-column-center-center gap-1">
+  <div class="flex-column-center-center gap-1 m-20">
+
+    <span id="error" class="error-message"></span>
+
     <button type="button" id="addQuestion" class="main-button" onclick="addQuestionRaw(<?= $counter; ?>)">Add
       Question</button><br><br>
     <button type="submit" class="secondary-button">Create Quiz</button>

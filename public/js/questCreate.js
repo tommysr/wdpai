@@ -1,6 +1,6 @@
-const questionsDiv = document.getElementById("questions");
-const questions = document.querySelectorAll(".question");
-const optionsDiv = document.querySelectorAll(".options");
+const questionsDiv = document.querySelector(".cards");
+const questions = document.querySelectorAll(".container-card");
+const optionsDiv = document.querySelectorAll(".grid-3");
 const errorDiv = document.querySelector("#error");
 
 let questionsOption = {};
@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function removeQuestion(callDiv, questionId) {
-  const questionDiv = callDiv.parentNode;
+  const questionDiv = callDiv.parentNode.parentNode;
 
   const input = document.createElement("input");
   input.type = "hidden";
@@ -23,7 +23,7 @@ function removeQuestion(callDiv, questionId) {
 }
 
 function removeOption(callDiv, questionId, optionId) {
-  const optionDiv = callDiv.parentNode;
+  const optionDiv = callDiv.parentNode.parentNode;
 
   const input = document.createElement("input");
   input.type = "hidden";
@@ -38,17 +38,23 @@ function addQuestion(questionId) {
   console.log(questionId);
 
   const newQuestionDiv = document.createElement("div");
-  newQuestionDiv.classList = "question flex-column-center-center gap-1";
+  newQuestionDiv.classList = "card";
 
   newQuestionDiv.innerHTML = `
-      <label for="questionText" class="input-description main-text">Question Text:</label>
-      <textarea name="questions[${questionId}][text]" class="questionText main-text" cols="30" rows="10" required> </textarea>
-      <input type="text" name="questions[${questionId}][score]" class="questionPoints" placeholder="points" required>
-      <input type="hidden" name="questions[${questionId}][flag]" value="added">
+      <div class="container-card bg-green-box question flex-column-center-center gap-1">
+        <textarea name="questions[${questionId}][text]" class="questionText main-text" cols="30" rows="10" required> </textarea>
+        <div class="grid-2">
+          <label for="questionPoints" class="input-description main-text center">Points:</label>
+          <input class="points" type="text" name="questions[${questionId}][score]"
+            placeholder="points" required>
+        </div>
+        <input type="hidden" name="questions[${questionId}][flag]" value="added">
 
-      <div class="options"></div>
-      <button type="button" class="addOption main-button">Add Option</button><br>
-      <button type="button" class="removeQuestion secondary-button">Remove Question</button><br><br>
+        <div class="options flex-column-center-center gap-1"></div>
+
+        <button type="button" class="addOption main-button w-50">Add Option</button><br>
+        <button type="button" class="removeQuestion secondary-button w-50">Remove Question</button>
+      </div>
     `;
   questionsDiv.appendChild(newQuestionDiv);
 
@@ -103,16 +109,21 @@ function addOption(questionDiv, questionId, optionId) {
   newOptionDiv.classList = "option";
 
   newOptionDiv.innerHTML = `
-      <input type="text" class="optionText" name="questions[${questionId}][options][${optionId}][text]" placeholder="new option">
+      <div class="grid-3 w-100">
+        <div>
+          <input type="text" class="points" name="questions[${questionId}][options][${optionId}][text]" placeholder="option">
+          <input type="hidden" name="questions[${questionId}][options][${optionId}][flag]" value="added">
+        </div>
 
-      <input type="hidden" name="questions[${questionId}][options][${optionId}][flag]" value="added">
+        <div class="option-container">
+          <input type="checkbox" name="questions[${questionId}][options][${optionId}][isCorrect]"/>
+          <span class="checkmark"></span>
+        </div>
 
-      <label class="option-container">
-        <input type="checkbox" name="questions[${questionId}][options][${optionId}][isCorrect]"/>
-        <span class="checkmark"></span>
-      </label>
-      <button type="button" class="removeOption"><i class="fa fa-times-circle"
-        aria-hidden="true"></i></button><br>
+        <div class="flex-row-center-center">
+          <button type="button" class="removeOption show-more-btn bg-green-box">remove</button>
+        </div>
+      </div>
     `;
   optionsDiv.appendChild(newOptionDiv);
 
