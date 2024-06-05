@@ -7,7 +7,7 @@ use App\Services\Recommendation\Prediction\BasePredictionStrategy;
 
 class KnnPredictor extends BasePredictionStrategy implements IPredictionStrategy
 {
-  private $k;
+  private int $k;
 
   public function __construct(array $data, array $similarityMatrix, int $k = 3)
   {
@@ -29,7 +29,10 @@ class KnnPredictor extends BasePredictionStrategy implements IPredictionStrategy
   public function predict(int $userId, int $itemId): float
   {
     $neighbors = $this->getKNearestNeighbors($userId, $this->k);
+
+   
     $userRatings = $this->data[$userId];
+
 
     if ($userRatings[$itemId] != 0) {
       return 0.0;
@@ -38,12 +41,15 @@ class KnnPredictor extends BasePredictionStrategy implements IPredictionStrategy
     $weightedSum = 0.0;
     $similaritySum = 0.0;
 
+
     foreach ($neighbors as $neighbor) {
       if ($this->data[$neighbor][$itemId] != 0) {
+        
         $weightedSum += $this->similarityMatrix[$userId][$neighbor] * $this->data[$neighbor][$itemId];
         $similaritySum += abs($this->similarityMatrix[$userId][$neighbor]);
       }
     }
+
 
     if ($similaritySum != 0) {
       return $weightedSum / $similaritySum;

@@ -44,7 +44,7 @@ class Emitter implements IEmitter
     header($headerString, true);
 
     http_response_code($response->getStatusCode());
-    echo json_encode($response->getData());
+    echo json_encode($response->getData(), 1024);
   }
 
   private function emitRedirectResponse(IRedirectResponse $response)

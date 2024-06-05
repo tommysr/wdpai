@@ -14,12 +14,13 @@ class RatingRepository extends Repository implements IRatingRepository
     $ratings = [];
     $pdo = $this->db->connect();
     $query = "SELECT * FROM ratings";
-    $smtp = $pdo->prepare($query);
-    $smtp->execute();
+    $smtp = $pdo->query($query);
 
-    while ($row = $smtp->fetchAll(\PDO::FETCH_ASSOC)) {
+    foreach ($smtp->fetchAll(\PDO::FETCH_ASSOC) as $row) {
       $ratings[] = new Rating($row['user_id'], $row['quest_id'], $row['rating']);
     }
+
+
     return $ratings;
   }
 

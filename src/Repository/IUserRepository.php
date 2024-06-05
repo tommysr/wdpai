@@ -11,4 +11,5 @@ interface IUserRepository
   public function userExists(string $email): bool;
   public function userNameExists(string $username): bool;
   public function getAllUserIds(): array;
+  public function getMaxUserId(): int;
 }

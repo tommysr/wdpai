@@ -3,7 +3,7 @@
 namespace App\Models;
 
 
-interface IQuest
+interface IQuest extends \JsonSerializable
 {
     public function setFlag(string $flag): void;
     public function getFlag(): ?string;

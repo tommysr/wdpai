@@ -28,12 +28,8 @@
                 </span>
               </div>
             </div>
-            <span class="title">Tworzenie questów jest najlepsze na świecie</span>
-            <p class="description">Tworzenie questów jest najlepsze na świecie by binanceTworzenie questów jest najlepsze
-              na świecie by binanceTworzenie questów jest najlepsze na świecie by binanceTworzenie questów jest najlepsze
-              na świecie by binanceTworzenie questów jest najlepsze na świecie by binanceTworzenie questów jest najlepsze
-              na świecie by binanceTworzenie questów jest najlepsze na świecie by binanceTworzenie questów jest najlepsze
-              na świecie by binance</p>
+            <span class="title"><?= $quest->getTitle(); ?></span>
+            <p class="description"><?= $quest->getDescription(); ?></p>
             <button class="show-more-btn">Show more</button>
 
 
@@ -62,4 +58,47 @@
   </div>
 </main>
 
+
+<template id="quest-template">
+  <div class="card">
+    <div class="container-card bg-green-box">
+      <div class="card-top">
+        <img class="image-green-box card-image" src="https://picsum.photos/300/200" alt="image" />
+        <div class="infos">
+          <span class="info">
+            <i class="fas fa-star"></i>
+          </span>
+
+          <span class="info">
+            <i class="fas fa-wallet"></i>
+          </span>
+
+          <span class="info">
+            <i class="fas fa-flag-checkered"></i>
+          </span>
+        </div>
+      </div>
+      <span class="title"></span>
+      <p class="description"></p>
+      <button class="show-more-btn">Show more</button>
+
+      <div class="infos">
+        <span class="info">
+          <i class="fas fa-clock"></i>
+        </span>
+
+        <span class="info">
+          <i class="fas fa-running"></i>
+        </span>
+        <span class="info">
+          <i class="fas fa-coins"></i>
+        </span>
+      </div>
+
+      <a href="" class="enter-button">ENTER</a>
+    </div>
+  </div>
+</template>
+
 <script src="/public/js/quests.js" defer></script>
+<script src="/public/js/topbar.js" defer></script>

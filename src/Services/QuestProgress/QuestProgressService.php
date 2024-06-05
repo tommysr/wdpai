@@ -35,6 +35,11 @@ class QuestProgressService implements IQuestProgressService
     $this->questService = $questService ?: new QuestService();
   }
 
+  public function isQuestPlayed(int $userId, int $questId): bool
+  {
+    return $this->questProgressRepository->getQuestProgress($userId, $questId) !== null;
+  }
+
   public function getQuestSummary(int $userId): array
   {
     $questProgress = $this->getCurrentProgressFromSession();
@@ -94,7 +99,6 @@ class QuestProgressService implements IQuestProgressService
       'progress' => $progress
     ], $progresses);
   }
-
 
 
   public function resetSession(): void

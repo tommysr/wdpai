@@ -33,6 +33,15 @@ class QuestRepository extends Repository implements IQuestRepository
     );
   }
 
+  public function getMaxQuestId(): int
+  {
+    $sql = 'SELECT MAX(quest_id) as max_id FROM quests';
+
+    $query = $this->db->connect()->query($sql);
+
+    return (int) $query->fetchColumn();
+  }
+
   private function getTokenId(\PDO &$pdo, string $tokenName): int
   {
     $token_id = $pdo->query("SELECT token_id FROM tokens WHERE name = '" . $tokenName . "'")->fetchColumn();
@@ -213,7 +222,7 @@ class QuestRepository extends Repository implements IQuestRepository
     APPROVED,
     PAYOUT_DATE,
     COUNT(DISTINCT QP.WALLET_ID) AS PARTICIPANTS_COUNT,
-    SUM(QT.POINTS) AS MAX_POINTS,
+    COALESCE(SUM(QT.POINTS), 0) AS MAX_POINTS,
     CASE 
       WHEN COUNT(R.RATING) = 0 THEN 0.0
       ELSE AVG(R.RATING)

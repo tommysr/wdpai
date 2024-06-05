@@ -22,6 +22,9 @@ use App\Services\Quests\Builder\QuestBuilder;
 use App\Services\Quests\Builder\QuestBuilderService;
 use App\Services\Quests\IQuestService;
 use App\Services\Quests\QuestService;
+use App\Services\Rating\RatingService;
+use App\Services\Recommendation\IRecommendationService;
+use App\Services\Recommendation\RecommendationService;
 use App\Services\Wallets\IWalletService;
 use App\Services\Wallets\WalletService;
 
@@ -33,8 +36,9 @@ class QuestsController extends AppController implements IQuestsController
   private IWalletService $walletService;
   private IQuestProgressService $questProgressService;
   private IUserRepository $userRepository;
+  private IRecommendationService $recommendationService;
 
-  public function __construct(IFullRequest $request, IQuestService $questService = null, IAuthService $authService = null, IQuestBuilderService $questBuilderService = null, IWalletService $walletService = null, IQuestProgressService $questProgressService = null, IUserRepository $userRepository = null)
+  public function __construct(IFullRequest $request, IQuestService $questService = null, IAuthService $authService = null, IQuestBuilderService $questBuilderService = null, IWalletService $walletService = null, IQuestProgressService $questProgressService = null, IUserRepository $userRepository = null, IRecommendationService $recommendationService = null)
   {
     parent::__construct($request);
     $this->questService = $questService ?: new QuestService();
@@ -43,6 +47,7 @@ class QuestsController extends AppController implements IQuestsController
     $this->walletService = $walletService ?: new WalletService();
     $this->questProgressService = $questProgressService ?: new QuestProgressService($this->sessionService);
     $this->userRepository = $userRepository ?: new UserRepository();
+    $this->recommendationService = $recommendationService ?: new RecommendationService();
   }
 
   /*
@@ -56,9 +61,29 @@ class QuestsController extends AppController implements IQuestsController
   // shows all quests which are approved and can be played
   public function getShowQuests(IRequest $request): IResponse
   {
+    $id = $this->authService->getIdentity()->getId();
     $quests = $this->questService->getQuestsToPlay();
 
+    $quests = array_filter($quests, function ($quest) use ($id) {
+      return !$this->questProgressService->isQuestPlayed($id, $quest->getQuestID());
+    });
+
     return $this->render('layout', ['title' => 'quest list', 'quests' => $quests], 'quests');
+  }
+
+  public function getShowTopRatedQuests(IRequest $request): IResponse
+  {
+    $quests = $this->questService->getTopRatedQuests();
+
+    return new JsonResponse(['quests' => $quests], 200);
+  }
+
+  public function getShowRecommendedQuests(IRequest $request): IResponse
+  {
+    $userId = $this->authService->getIdentity()->getId();
+    $questsIds = $this->recommendationService->getRecommendations($userId);
+    $quests = $this->questService->getQuests($questsIds);
+    return new JsonResponse(['quests' => $quests], 200);
   }
 
   /*
@@ -151,6 +176,12 @@ class QuestsController extends AppController implements IQuestsController
     return new JsonResponse(['message' => 'quest published']);
   }
 
+  public function getRefreshRecommendations(IRequest $request): IResponse
+  {
+    $this->recommendationService->refreshRecommendations();
+    return new JsonResponse(['message' => 'recommendations refreshed']);
+  }
+
   public function getShowQuestWallets(IRequest $request, int $questId): IResponse
   {
     $identity = $this->authService->getIdentity();
@@ -159,7 +190,6 @@ class QuestsController extends AppController implements IQuestsController
 
     return $this->render('showWallets', ['title' => 'enter quest', 'questId' => $questId, 'wallets' => $wallets, 'blockchain' => $blockchain]);
   }
-
 
 
   public function postAddWallet(IRequest $request, string $blockchain): IResponse

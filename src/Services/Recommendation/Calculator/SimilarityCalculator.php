@@ -14,6 +14,7 @@ class SimilarityCalculator implements ISimilarityCalculator
   public function __construct(array $data, ISimilarityStrategy $similarityStrategy)
   {
     $this->data = $data;
+   
     $this->similarityStrategy = $similarityStrategy;
   }
 
@@ -27,14 +28,16 @@ class SimilarityCalculator implements ISimilarityCalculator
         if ($i == $j) {
           $similarityMatrix[$i][$j] = 1.0;
         } else {
+
           $vector1 = new Vector($this->data[$i]);
           $vector2 = new Vector($this->data[$j]);
+
 
           $similarityMatrix[$i][$j] = $this->similarityStrategy->calculate($vector1->intersect($vector2), $vector2->intersect($vector1));
         }
       }
     }
-
+    
     return $similarityMatrix;
   }
 }

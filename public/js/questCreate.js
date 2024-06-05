@@ -180,9 +180,9 @@ const checkParticipantsLimitValidity = () => {
   } else if (participantsLimit.value != parseInt(participantsLimit.value)) {
     error.textContent = "Participants limit must be a number";
   } else if (participantsLimit.validity.rangeUnderflow) {
-    error.textContent = "Participants limit must be at least 1";
+    error.textContent = "Participants limit must be at least 20";
   } else if (participantsLimit.validity.rangeOverflow) {
-    error.textContent = "Participants limit must be at most 100";
+    error.textContent = "Participants limit must be at most 1000";
   } else {
     error.textContent = "";
     return true;
@@ -434,14 +434,8 @@ function serializeForm(form) {
 function submitForm(event) {
   event.preventDefault();
 
-  questionsTexts = document.querySelectorAll("textarea[name^='questions['][name$='[text]']");
-  checkQuestionTestsValidity();
-
-  questionsPoints = document.querySelectorAll("input[name^='questions['][name$='[score]']");
-  checkQuestionPointsValidity();
 
   let valid = true;
-  valid &= checkQuestionTestsValidity();
   valid &= checkTitleValidity();
   valid &= checkDescriptionValidity();
   valid &= checkBlockchainValidity();
@@ -458,7 +452,6 @@ function submitForm(event) {
     return;
   }
 
-  return;
   const formData = serializeForm(event.target);
 
   const path = window.location.pathname;

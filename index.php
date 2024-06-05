@@ -60,9 +60,14 @@ foreach ($rolesFromDatabase as $role) {
 $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'showCreatedQuests');
 $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'createQuest');
 $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'editQuest');
+
 $acl->allow((string) UserRole::NORMAL->value, 'QuestsController', 'showQuestWallets');
 $acl->allow((string) UserRole::NORMAL->value, 'QuestsController', 'enterQuest');
 $acl->allow((string) UserRole::NORMAL->value, 'QuestsController', 'addWallet');
+
+$acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'refreshRecommendations');
+$acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'showQuestsToApproval');
+$acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'publishQuest');
 
 $roleAuthorizationMiddleware = new RoleAuthorizationMiddleware($acl, $authService);
 
@@ -87,6 +92,8 @@ Router::post('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddlew
 // NORMAL USER ROUTES
 Router::get('/dashboard', 'QuestsController@dashboard', [$authMiddleware, $questAuthorizeMiddleware]);
 Router::get('/showQuests', 'QuestsController@showQuests', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
+Router::get('/showTopRatedQuests', 'QuestsController@showTopRatedQuests', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
+Router::get('/showRecommendedQuests', 'QuestsController@showRecommendedQuests', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
 Router::get('/showQuestWallets/{questId}', 'QuestsController@showQuestWallets', [$authMiddleware, $questAuthorizeMiddleware, $questAuthorizeMiddleware]);
 Router::post('/addWallet/{blockchain}', 'QuestsController@addWallet', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
 Router::post('/enterQuest/{questId}', 'GameController@enterQuest', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
@@ -94,8 +101,10 @@ Router::get('/play', 'GameController@play', [$authMiddleware, $roleAuthorization
 Router::post('/answer/{questionId}', 'GameController@answer', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
 Router::post('/rating', 'GameController@rating', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
 Router::post('/abandonQuest', 'GameController@abandonQuest', [$authMiddleware]);
-//temp routes
 Router::get('/endQuest', 'GameController@reset', [$authMiddleware]);
+
+// Admin routes
+Router::get('/refreshRecommendations', 'QuestsController@refreshRecommendations', [$authMiddleware, $roleAuthorizationMiddleware]);
 
 $request = new Request($_SERVER, $_GET, $_POST);
 $response = Router::dispatch($request);
