@@ -23,4 +23,5 @@ interface IQuestProgressService
   public function adjustQuestProgress(int $questionId): void;
   public function getQuestSummary(int $userId): array;
   public function getUserQuests(int $userId): array;
+  public function isQuestPlayed(int $userId, int $questId): bool;
 }

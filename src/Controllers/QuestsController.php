@@ -61,7 +61,12 @@ class QuestsController extends AppController implements IQuestsController
   // shows all quests which are approved and can be played
   public function getShowQuests(IRequest $request): IResponse
   {
+    $id = $this->authService->getIdentity()->getId();
     $quests = $this->questService->getQuestsToPlay();
+
+    $quests = array_filter($quests, function ($quest) use ($id) {
+      return !$this->questProgressService->isQuestPlayed($id, $quest->getQuestID());
+    });
 
     return $this->render('layout', ['title' => 'quest list', 'quests' => $quests], 'quests');
   }
