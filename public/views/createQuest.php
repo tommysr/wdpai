@@ -1,8 +1,8 @@
 <h1 class="main-text">Create Quiz</h1>
 
-<form id="questForm" class="" action="" class="flex-column-center-center gap-1">
+<form id="questForm" class="flex-column-center-center gap-1">
   <div class="flex-column-center"> <label for="quizTitle" class="input-description main-text">Quiz Title:</label>
-    <input class="login-input" type="text" id="quizTitle" name="title" placeholder="title"
+    <input class="login-input" type="text" id="quizTitle" name="title" placeholder="title" minlength="5" maxlength="50"
       value="<?= $quest ? $quest->getTitle() : '' ?>" required>
   </div>
 
@@ -10,13 +10,13 @@
   <div class="flex-column-center"> <label for="quizDescription" class="input-description main-text">Quiz
       Description:</label>
     <textarea name="description" id="description" class="main-text" cols="50" rows="10" placeholder="description"
-      required><?= $quest ? $quest->getDescription() : '' ?></textarea>
+      minlength="20" maxlength="300" required><?= $quest ? $quest->getDescription() : '' ?></textarea>
   </div>
 
 
   <div class="flex-column-center">
     <label for="requiredWallet" class="input-description main-text">Required wallet:</label>
-    <input type="text" class="login-input" name="blockchain" placeholder="required wallet"
+    <input type="text" class="login-input" name="blockchain" placeholder="required wallet" minlength="3" maxlength="50"
       value="<?= $quest ? $quest->getBlockchain() : '' ?>" required>
   </div>
 
@@ -40,7 +40,7 @@
     <tr>
       <td>
         <div class="flex-column-center"> <label for="timeRequired" class="input-description main-text">Minutes</label>
-          <input type="text" class="login-input" name="minutesRequired"
+          <input type="number" class="login-input" name="minutesRequired" min="1" max="120" placeholder="minutes"
             value="<?= $quest ? $quest->getRequiredMinutes() : '' ?>" required>
 
         </div>
@@ -48,8 +48,8 @@
       <td>
         <div class="flex-column-center"> <label for="participantsLimit"
             class="input-description main-text">Participants:</label>
-          <input type="text" class="login-input" name="participantsLimit"
-            value="<?= $quest ? $quest->getParticipantsLimit() : '' ?>" required>
+          <input type="number" class="login-input" name="participantsLimit" min="20" max="1000"
+            placeholder="participants" value="<?= $quest ? $quest->getParticipantsLimit() : '' ?>" required>
 
         </div>
       </td>
@@ -59,19 +59,20 @@
         <div class="flex-column-center"> <label for="poolAmount" class="input-description main-text">Pool
             amount:</label>
           <input type="text" class="login-input" name="poolAmount" value="<?= $quest ? $quest->getPoolAmount() : '' ?>"
-            required>
+            placeholder="pool amount" required>
         </div>
       </td>
       <td>
         <div class="flex-column-center">
           <label for="poolAmount" class="input-description main-text">Payout token:</label>
-          <input type="text" class="login-input" name="token" value="<?= $quest ? $quest->getToken() : '' ?>" required>
+          <input type="text" class="login-input" name="token" value="<?= $quest ? $quest->getToken() : '' ?>" required
+            placeholder="token" minlength="3" maxlength="50">
         </div>
       </td>
     </tr>
   </table>
 
-  <h2 class="main-text">Questions</h2>
+  <h2 class="main-text">Questions:</h2>
   <?php
   $counter = 0;
   ?>
@@ -89,11 +90,11 @@
             <div class="container-card bg-green-box question flex-column-center-center gap-1">
               <input type="hidden" name="questions[<?= $counter; ?>][id]" value="<?= $questionId; ?>">
               <textarea name="questions[<?= $counter; ?>][text]" class="questionText main-text" cols="30" rows="10"
-                required><?= $question->getText(); ?></textarea>
+                minlength="5" maxlength="80" placeholder="question text" required><?= $question->getText(); ?></textarea>
 
               <div class="grid-2">
                 <label for="questionPoints" class="input-description main-text center">Points:</label>
-                <input class="points" type="text" name="questions[<?= $counter; ?>][score]"
+                <input class="points questionPoints" type="number" name="questions[<?= $counter; ?>][score]" min="1" max="100"
                   value="<?= $question->getPoints() ?>" required>
               </div>
 
@@ -108,8 +109,8 @@
                     <div>
                       <input type="hidden" name="questions[<?= $counter; ?>][options][<?= $optionCounter; ?>][id]"
                         value="<?= $optionId; ?>">
-                      <input class="points" type="text"
-                        name="questions[<?= $counter; ?>][options][<?= $optionCounter; ?>][text]"
+                      <input class="points optionText" type="text"
+                        name="questions[<?= $counter; ?>][options][<?= $optionCounter; ?>][text]" minlength="5" maxlength="50"
                         value="<?= $option->getText() ?>" required>
                     </div>
 
