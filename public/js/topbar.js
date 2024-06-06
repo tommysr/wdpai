@@ -1,11 +1,28 @@
-const top_rated = document.querySelector('.top-rated');
-const recommended = document.querySelector('.recommended');
 const quests = document.querySelector('.cards');
 
-top_rated.addEventListener('click', () => {
-    top_rated.classList.add('active');
-    recommended.classList.remove('active');
+function toggleDropdown() {
+    const dropdown = document.getElementById('myDropdown');
+    dropdown.classList.toggle('show');
 
+    if (dropdown.classList.contains('show')) {
+        addDropdownEventListeners();
+    } else {
+        removeDropdownEventListeners();
+    }
+}
+
+function addDropdownEventListeners() {
+    document.querySelector('.dropdown-content .top-rated').addEventListener('click', handleTopRatedClick);
+    document.querySelector('.dropdown-content .recommended').addEventListener('click', handleRecommendedClick);
+}
+
+function removeDropdownEventListeners() {
+    document.querySelector('.dropdown-content .top-rated').removeEventListener('click', handleTopRatedClick);
+    document.querySelector('.dropdown-content .recommended').removeEventListener('click', handleRecommendedClick);
+}
+
+function handleTopRatedClick() {
+    activateLink('top-rated');
     fetch('/showTopRatedQuests', {
         method: 'GET',
         headers: {
@@ -19,13 +36,16 @@ top_rated.addEventListener('click', () => {
                 data.quests.forEach(quest => createQuest(quest));
                 addListeners();
             }
-        })
-});
 
-recommended.addEventListener('click', () => {
-    recommended.classList.add('active');
-    top_rated.classList.remove('active');
+            if (data.quests.length == 0) {
+                quests.innerHTML = '<h1 class="main-text">No records found </h1>';
 
+            }
+        });
+}
+
+function handleRecommendedClick() {
+    activateLink('recommended');
     fetch('/showRecommendedQuests', {
         method: 'GET',
         headers: {
@@ -39,10 +59,16 @@ recommended.addEventListener('click', () => {
                 data.quests.forEach(quest => createQuest(quest));
                 addListeners();
             }
-        })
-});
+            if (data.quests.length == 0) {
+                quests.innerHTML = '<h1 class="main-text">No records found </h1>';
+            }
+        });
+}
 
-
+function activateLink(type) {
+    document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+    document.querySelectorAll(`.${type}`).forEach(link => link.classList.add('active'));
+}
 
 function createQuest(quest) {
     const template = document.querySelector("#quest-template");
@@ -91,5 +117,8 @@ function addListeners() {
             }
         });
     });
-
 }
+
+// Initial event listeners for inline menu
+document.querySelector('.inline-menu .top-rated').addEventListener('click', handleTopRatedClick);
+document.querySelector('.inline-menu .recommended').addEventListener('click', handleRecommendedClick);

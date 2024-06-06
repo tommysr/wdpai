@@ -30,14 +30,23 @@ class WalletRepository extends Repository implements IWalletRepository
     return $wallets;
   }
 
+  public function getWalletAddress(int $walletId): string
+  {
+    $sql = 'SELECT address from WALLETS where wallet_id = :wallet_id';
+
+    $stmt = $this->db->connect()->prepare($sql);
+    $stmt->execute([':wallet_id' => $walletId]);
+
+    return (string) $stmt->fetchColumn();
+  }
+
   private function getBlockchainId(\PDO &$pdo, string $blockchain): int
   {
     $sql = "SELECT blockchain_id FROM blockchains WHERE name = :blockchain";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':blockchain' => $blockchain]);
-    $blockchainId = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-    return $blockchainId['blockchain_id'];
+    return (int) $stmt->fetchColumn();
   }
 
   public function addWallet(IWallet $wallet): int

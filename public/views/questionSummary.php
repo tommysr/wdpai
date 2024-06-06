@@ -21,11 +21,11 @@
   <title><?= $title; ?></title>
 </head>
 
-<body>
+<body class="flex-column-center-center">
   <nav class="questNav">
     <div class="backBar">
       <a href="" id="back-link"><img src="/public/assets/back_arrow.svg" /></a>
-      <span class="back-text">Choose answers</span>
+      <span class="back-text">Points</span>
     </div>
   </nav>
 
@@ -38,9 +38,9 @@
 
       for ($i = 1; $i <= $maxStars; $i++) {
         if ($i <= $stars) {
-          echo '<i class="fas fa-star star"></i>';
+          echo '<i class="fas fa-star star fa-3x fa-yellow"></i>';
         } else {
-          echo '<i class="far fa-star star"></i>';
+          echo '<i class="far fa-star star fa-3x fa-white"></i>';
         }
       }
       ?>
@@ -50,8 +50,6 @@
 
     <div class="progress-bar">
       <div class="progress"></div>
-      <!-- <div class="indicator"></div> -->
-      <!-- <div class="max-progress"></div> -->
     </div>
     <a href="/play" class="main-button">Continue</a>
   </div>

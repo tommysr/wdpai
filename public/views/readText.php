@@ -22,25 +22,16 @@
   <nav class="questNav">
     <div class="backBar">
       <a href="" id="back-link"><img src="/public/assets/back_arrow.svg" /></a>
-      <span class="back-text">Choose answers</span>
+      <span class="back-text">Read text</span>
     </div>
   </nav>
 
-  <!-- <div class="follow-bar absolute-follow">
-    <span class="text-bold-sm">Follow us</span>
-    <img src="/public/assets/follow-bar/line.svg" />
-    <img src="/public/assets/follow-bar/fb.svg" />
-    <img src="/public/assets/follow-bar/ig.svg" />
-    <img src="/public/assets/follow-bar/linkedin.svg" />
-    <img src="/public/assets/follow-bar/arrow_left.svg" />
-  </div> -->
-
   <div class="flex-column-center-center">
-    <form action="/answer/<?= $question->getQuestionId(); ?>" method="post" class="question-container">
+    <form action="/answer/<?= $question->getQuestionId(); ?>" method="post" class="question-container gap-2">
       <div class="text-background">
-        <span class="read-text">
+        <p class="read-text">
           <?= $question->getText(); ?>
-        </span>
+        </p>
       </div>
 
       <button class="main-button">Continue</button>

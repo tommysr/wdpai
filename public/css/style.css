@@ -1,10 +1,18 @@
-* {
+body {
   font-family: "Lekton";
   font-style: normal;
+  background-color: #0e130e;
+  margin: 0;
+  padding: 0;
 }
 
 .wrap {
   flex-wrap: wrap;
+}
+
+
+.justify-center {
+  justify-content: center !important;
 }
 
 .flex-row-center-center {
@@ -24,7 +32,6 @@
   justify-content: space-around;
   align-items: center;
 }
-
 
 .flex-row-evenly-center {
   display: flex;
@@ -51,6 +58,10 @@
   align-items: flex-start;
 }
 
+.gap-0-5 {
+  gap: 0.5em;
+}
+
 .gap-1 {
   gap: 1em;
 }
@@ -59,8 +70,12 @@
   gap: 1.5em;
 }
 
-.gap-0-5 {
-  gap: 0.5em;
+.gap-2 {
+  gap: 2em;
+}
+
+.gap-4 {
+  gap: 4em;
 }
 
 .full-width {
@@ -98,18 +113,6 @@
   width: 100vw;
 }
 
-body {
-  font-family: "Lekton";
-  font-style: normal;
-  font-family: "Inter";
-  font-style: normal;
-  background-color: #0e130e;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-
-
 h1 {
   text-align: center;
 }
@@ -132,6 +135,7 @@ h1 {
   color: #ebf6e5;
 }
 
+/* 
 .modal {
   max-width: 1200px;
   padding: 2em;
@@ -143,40 +147,27 @@ h1 {
 }
 
 .modal>p {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 2em;
   line-height: 2em;
   text-align: center;
   letter-spacing: 0.05em;
   color: #ebf6e5;
-}
+} */
 
 .wallet-name {
-  font-family: "Lekton";
-  font-style: normal;
-  font-weight: 700;
   font-size: 3em;
-  line-height: 4em;
   text-align: center;
   letter-spacing: 0.1em;
   color: #58c3b5;
 }
 
-
-
 .main-text {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   text-align: center;
   letter-spacing: 0.05em;
   color: #ebf6e5;
 }
-
-
-
 
 .input-description {
   font-size: 1em;
@@ -184,8 +175,6 @@ h1 {
 }
 
 .score-sub-text {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 1.3em;
   text-align: center;
@@ -193,10 +182,7 @@ h1 {
   color: #ebf6e5;
 }
 
-
 .score-text {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 1.7em;
   text-align: center;
@@ -215,9 +201,6 @@ h1 {
   border: 2px solid #387161;
 }
 
-.gap-1 {
-  gap: 1em;
-}
 
 .progress {
   width: 0%;
@@ -229,34 +212,57 @@ h1 {
   color: white;
 }
 
-.max-progress {
-  width: 0%;
-  height: 30px;
-  background: linear-gradient(78.2deg, #741fd4 0%, #b0da99 100%);
-  border-radius: 0px 5px 5px 0px;
-  text-align: center;
-  line-height: 30px;
-  color: white;
-}
-
-.indicator {
-  width: 2px;
-  height: 30px;
-  background-color: #00ff40;
-}
-
 .text-background {
+  margin-top: 1em;
   overflow-y: scroll;
+  text-wrap: wrap;
   padding: 10px;
   width: 80%;
-  height: 60vh;
+  height: 65vh;
   background: linear-gradient(90deg, #b0da99 0%, #58c3b5 100%);
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
+.text-background::-webkit-scrollbar {
+  width: 10px;
+}
+
+.text-background::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.text-background::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Custom scrollbar for Firefox */
+.text-background {
+  scrollbar-width: auto;
+  scrollbar-color: #7eb292 #3a8563;
+}
+
+/* Custom scrollbar for other browsers (fallback) */
+.text-background::-moz-scrollbar {
+  width: 10px;
+}
+
+.text-background::-moz-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+.text-background::-moz-scrollbar-thumb:hover {
+  background: #555;
+}
+
+@media screen and (max-width: 600px) {
+  .text-background {
+    width: 95%;
+  }
+}
+
 .score {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 4em;
   text-align: center;
@@ -265,8 +271,7 @@ h1 {
 }
 
 .read-text {
-  font-family: "Lekton";
-  font-style: normal;
+  margin: 0;
   font-weight: 700;
   font-size: 1em;
   letter-spacing: 0.05em;
@@ -274,12 +279,8 @@ h1 {
   color: #000000;
 }
 
-
-
-
 .question-text {
   font-family: "Inter";
-  font-style: normal;
   font-weight: 700;
   font-size: 2em;
   line-height: 2.5em;
@@ -290,7 +291,6 @@ h1 {
 
 .option-text {
   font-family: "Inter";
-  font-style: normal;
   font-weight: 400;
   font-size: 1.5em;
   line-height: 2em;
@@ -301,7 +301,6 @@ h1 {
 
 .option-container {
   display: inline-flex;
-
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -466,60 +465,16 @@ i {
 }
 
 
-
-
-
-@media screen and (max-width: 600px) {
-  .follow-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .projects {
-    justify-content: center;
-  }
-}
-
-@media screen and (max-width: 1200px) {
-
-  /* new */
-  .profile-container {
-    margin-top: 100px;
-    display: flex !important;
-    flex-direction: column;
-  }
-
-  .profile-column {
-    min-width: 400px;
-    display: flex;
-    flex-direction: column;
-    /* justify-content: center; */
-    align-items: center;
-  }
-
-  .quest-info i {
-    margin: 0 !important;
-  }
-}
-
-/* new */
-.profile-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-
 .profile-column {
-  min-width: 400px;
+  max-width: 900px;
+  min-width: 500px;
+  /* width: 100%; */
   display: flex;
   flex-direction: column;
-  /* justify-content: center; */
   align-items: center;
 }
 
 .user-welcome {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 3em;
   color: #ebf6e5;
@@ -527,7 +482,6 @@ i {
 }
 
 .profile-picture {
-  /* background: url(cuddlyferris.png); */
   border-radius: 100%;
   border: 4px solid #b0da99;
   box-shadow: inset 0px 5px 4px rgba(229, 229, 229, 0.25);
@@ -546,8 +500,6 @@ i {
 }
 
 .join-date {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 1.5em;
   color: #ebf6e5;
@@ -556,8 +508,7 @@ i {
 }
 
 .information-header {
-  margin-top: 2em;
-  width: 70%;
+  width: 90%;
 
   display: flex;
   justify-content: space-between;
@@ -565,16 +516,12 @@ i {
 }
 
 .information-text {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 1.5em;
   color: #ebf6e5;
 }
 
 .view-all {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 1.5em;
   text-decoration: none;
@@ -582,55 +529,40 @@ i {
 }
 
 .one-line-list {
-  width: 70%;
-  margin-top: 1em;
-
+  width: 90%;
   display: flex;
   justify-content: start;
   gap: 1em;
 }
 
 .information-container {
-  border: 2px solid #b0da99;
-
-  border-radius: 30px;
   padding: 0.5em 1em;
-
   display: flex;
   justify-content: space-around;
   align-items: center;
   gap: 1em;
+  background: #393c37;
+  border-radius: 30px;
 }
 
 .information-text {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 1.5em;
-
   color: #ebf6e5;
 }
 
 .achievement {
-  padding: 2em;
-  border-radius: 100%;
-  background: #b0da99;
+  /* padding: 2em; */
+  /* border-radius: 100%; */
+  border: none;
+  padding: 0.5em 1em;
+  background: rgb(59, 173, 104);
+  border-radius: 30px;
+  color: white;
 }
 
-.previous-card {
-  max-height: 200px;
-  margin-top: 1em;
-  min-width: 400px;
-  max-width: 700px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr;
-
-  width: 70%;
-  background: rgba(41, 112, 80, 0.2);
-  border: 1px solid #297050;
-  box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 20px;
+.achievement:hover {
+  background: rgb(86, 118, 101);
 }
 
 .image-background {
@@ -659,8 +591,6 @@ i {
   grid-row: 1;
   grid-column: 2 / span 2;
 
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 1.5em;
   letter-spacing: 0.05em;
@@ -669,60 +599,14 @@ i {
   align-self: center;
 }
 
-.button-container {
-  grid-row: 3;
-  grid-column: 2 / span 3;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.view-button {
-  width: 20%;
-  padding: 0.2em 0.5em;
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 1.2em;
-  text-align: center;
-  letter-spacing: 0.4em;
-  color: #000000;
-  text-decoration: none;
-  background: #b0da99;
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-}
-
-.info-bar {
-  width: 95%;
-  grid-column: 2 / span 2;
-  grid-row: 2;
-
-  background: rgba(41, 112, 80, 0.2);
-  border: 1px solid #297050;
-  border-radius: 10px;
-
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-}
-
-.quest-info i {
-  margin-right: 0.5em;
-}
-
-.quest-info .info-text {
-  font-family: "Lekton";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 1em;
-  color: #ffffff;
-}
-
 .star {
   width: 60px;
   height: 60px;
+}
+
+.star>i {
+  text-align: center;
+  align-content: center;
 }
 
 .rating-options {
@@ -739,6 +623,36 @@ i {
   align-items: center;
 }
 
+
+.rating-option input[type="radio"]:checked+.rating-number {
+  background-color: #4caf50;
+  color: white;
+}
+
+.rating-option input[type="radio"]:hover+.rating-number {
+  background-color: #a5d6a7;
+}
+
+.rating-option:nth-of-type(1)>.rating-number {
+  background-color: #33452c;
+}
+
+.rating-option:nth-of-type(2)>.rating-number {
+  background-color: #556f46;
+}
+
+.rating-option:nth-of-type(3)>.rating-number {
+  background-color: #5b7f4c;
+}
+
+.rating-option:nth-of-type(4)>.rating-number {
+  background-color: #81ae6d;
+}
+
+.rating-option:nth-of-type(5)>.rating-number {
+  background-color: #b0da99;
+}
+
 .rating-option input[type="radio"] {
   display: none;
 }
@@ -750,20 +664,11 @@ i {
   line-height: 40px;
   text-align: center;
   border-radius: 50%;
-  background-color: #ddd;
   font-size: 1.2em;
   transition: background-color 0.3s, color 0.3s;
   cursor: pointer;
 }
 
-.rating-option input[type="radio"]:checked+.rating-number {
-  background-color: #4caf50;
-  color: white;
-}
-
-.rating-option input[type="radio"]:hover+.rating-number {
-  background-color: #a5d6a7;
-}
 
 /* Dialog to confirm abandoning the quest */
 
@@ -772,15 +677,17 @@ dialog::backdrop {
 }
 
 dialog {
+  max-width: 1000px;
+  width: 80%;
   color: #ddd;
   background: #121d0b;
   border: none;
-  padding: 20px;
+  padding: 30px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .backBar {
-  margin-left: 20px;
+  margin-left: 30px;
   display: flex;
   align-items: center;
   gap: 2em;
@@ -790,6 +697,7 @@ dialog {
 @media screen and (max-width: 940px) {
   .backBar {
     width: 100%;
+    margin-left: 0;
     justify-content: space-around;
   }
 }
@@ -822,11 +730,12 @@ input[type="number"] {
 
 @media screen and (max-width: 600px) {
   dialog[open] {
-    width: 100%;
+    width: auto;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
   }
 
   menu {
@@ -855,12 +764,13 @@ menu {
 }
 
 .question-container {
+  max-width: 800px;
+  width: 100%;
   height: 80%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  gap: 2em;
 }
 
 .options-container {
@@ -871,15 +781,7 @@ menu {
   gap: 2em;
 }
 
-/* only correct ones */
 
-/* follow bar which dissappears */
-
-@media screen and (max-width: 960px) {
-  .follow-bar {
-    display: none !important;
-  }
-}
 
 .follow-bar {
   display: flex;
@@ -940,40 +842,6 @@ form select {
   letter-spacing: 0.10em;
 }
 
-@media screen and (max-width: 960px) {
-  .full-container {
-    flex-direction: column;
-  }
-
-  .logo>img {
-    width: 80% !important;
-  }
-}
-
-
-.container {
-  width: 1300px !important;
-  padding-top: 0 !important;
-  display: flex;
-  justify-content: center;
-}
-
-@media screen and (min-width: 992px) and (max-width: 1439px) {
-  .container {
-    max-width: 1279px !important;
-    margin: 0 80px !important;
-    width: auto !important;
-  }
-}
-
-@media screen and (max-width: 991px) {
-  .container {
-    max-width: 940px !important;
-    margin: 0 16px !important;
-    width: auto !important;
-  }
-}
-
 .cards {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -985,16 +853,78 @@ form select {
   width: 80%;
 }
 
+.summary {
+  gap: 2em !important;
+}
+
+.container {
+  width: 1300px !important;
+  padding-top: 0 !important;
+  display: flex;
+  justify-content: center;
+}
+
+
+@media screen and (max-width: 960px) {
+  .full-container {
+    flex-direction: column;
+  }
+
+  .logo>img {
+    width: 80% !important;
+  }
+
+  .summary {
+    gap: 1em !important;
+  }
+}
+
+@media screen and (min-width: 992px) and (max-width: 1439px) {
+  .container {
+    max-width: 1279px !important;
+    margin: 0 80px !important;
+    width: auto !important;
+  }
+
+
+  .profile-column {
+    min-width: 500px;
+  }
+}
+
 @media screen and (max-width: 1200px) {
   .cards {
     grid-template-columns: 1fr;
     padding: 1em !important;
   }
 
+  .profile-column {
+    min-width: 500px;
+  }
+
   .login {
     width: 100%;
   }
 }
+
+@media screen and (max-width: 991px) {
+  .follow-bar {
+    display: none !important;
+  }
+
+  .container {
+    max-width: 940px !important;
+    margin: 0 16px !important;
+    width: auto !important;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .profile-column {
+    min-width: 340px;
+  }
+}
+
 
 
 .container-card {
@@ -1120,18 +1050,28 @@ form select {
   display: flex;
   justify-content: space-evenly;
   align-items: flex-start;
-
 }
 
 @media screen and (max-width: 600px) {
-  .container-card {
-    padding: 20px !important;
-  }
 
   .infos {
     flex-direction: column;
     margin-left: 2em;
     gap: 10px;
+  }
+
+  .infos:nth-of-type(2) {
+    margin-left: 0;
+  }
+
+  .profile-quests {
+    padding: 1em !important;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .container-card {
+    padding: 20px !important;
   }
 }
 
@@ -1314,4 +1254,11 @@ textarea {
 
 .upload-button:hover {
   background-color: #b0da9992;
+}
+
+.profile-quests {
+  display: grid;
+  grid-template-columns: 1fr;
+  padding: 2em;
+  gap: 2em;
 }

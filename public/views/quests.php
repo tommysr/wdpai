@@ -103,4 +103,3 @@
 </template>
 
 <script src="/public/js/quests.js" defer></script>
-<script src="/public/js/topbar.js" defer></script>

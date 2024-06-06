@@ -15,11 +15,11 @@
     rel="stylesheet" />
 
 
-  <script type="text/javascript" src="/public/js/confirmationModal.js" defer></script>
+  <!-- <script type="text/javascript" src="/public/js/confirmationModal.js" defer></script> -->
   <title><?= $title; ?></title>
 </head>
 
-<body>
+<body class="flex-column-center-center">
   <nav class="questNav">
     <div class="backBar">
       <a href="" id="back-link"><img src="/public/assets/back_arrow.svg" /></a>

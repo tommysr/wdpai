@@ -59,6 +59,8 @@ foreach ($rolesFromDatabase as $role) {
 
 $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'showCreatedQuests');
 $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'createQuest');
+$acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'showCreateQuest');
+$acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'showEditQuest');
 $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'editQuest');
 $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'uploadQuestPicture');
 $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'reportQuest');

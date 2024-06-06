@@ -45,6 +45,8 @@ interface IQuestProgress
   public function getLastQuestionId(): int;
 
 
+  public function getWalletAddress(): string;
+
   public function getState(): IQuestState;
 
   public function isCompleted(): bool;
