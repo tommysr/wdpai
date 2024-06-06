@@ -26,6 +26,14 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
     }
   }
 
+  public function getResponsesCount(int $optionId): int
+  {
+    $sql = "SELECT COUNT(*) as count FROM user_responses WHERE option_id = :option_id";
+    $stmt = $this->db->connect()->prepare($sql);
+    $stmt->execute([':option_id' => $optionId]);
+    return (int) $stmt->fetchColumn();
+  }
+
   public function getInProgress(int $userId): ?QuestProgress
   {
     $stateInProgress = QuestState::InProgress;

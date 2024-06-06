@@ -15,6 +15,7 @@ interface IQuestProgressService
   public function getCurrentProgress(int $userId, int $questId): IQuestProgress;
   public function getCurrentProgressFromSession(): IQuestProgress;
   public function recordResponses(int $userId, array $selectedOptions): void;
+  public function getResponsesCount(int $optionId): int;
   public function updateQuestProgress(int $pointsGained): void;
   public function completeQuest(): void;
   public function getMaxScore(int $questId): int;
@@ -22,6 +23,7 @@ interface IQuestProgressService
   public function abandonQuest(): void;
   public function adjustQuestProgress(int $questionId): void;
   public function getQuestSummary(int $userId): array;
+  
   public function getUserQuests(int $userId): array;
   public function isQuestPlayed(int $userId, int $questId): bool;
 }

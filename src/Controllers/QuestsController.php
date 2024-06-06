@@ -209,6 +209,59 @@ class QuestsController extends AppController implements IQuestsController
     return new JsonResponse(['errors' => ['file not uploaded']]);
   }
 
+  public function getReportQuest(IRequest $request, int $questId): IResponse
+  {
+    $quest = $this->questService->getQuestWithQuestions($questId);
+
+    if ($quest->getCreatorId() !== $this->authService->getIdentity()->getId()) {
+      return new JsonResponse(['errors' => ['its not your quest']]);
+    }
+
+    $questionsArray = [];
+
+    foreach ($quest->getQuestions() as $question) {
+      $optionsArray = [];
+
+      foreach ($question->getOptions() as $option) {
+        $responseCount = $this->questProgressService->getResponsesCount($option->getOptionId());
+
+        $optionsArray[] = [
+          'option_id' => $option->getOptionId(),
+          'text' => $option->getText(),
+          'is_correct' => $option->getIsCorrect(),
+          'response_count' => $responseCount
+        ];
+      }
+
+      $questionsArray[] = [
+        'question_id' => $question->getQuestionId(),
+        'text' => $question->getText(),
+        'type' => $question->getType(),
+        'points' => $question->getPoints(),
+        'options' => $optionsArray
+      ];
+    }
+
+    $questReport = [
+      'quest_id' => $quest->getQuestID(),
+      'title' => $quest->getTitle(),
+      'description' => $quest->getDescription(),
+      'expiry_date' => $quest->getExpiryDateString(),
+      'participants_count' => $quest->getParticipantsCount(),
+      'participants_limit' => $quest->getParticipantsLimit(),
+      'avg_rating' => $quest->getAvgRating(),
+      'blockchain' => $quest->getBlockchain(),
+      'payout_date' => $quest->getPayoutDate(),
+      'required_minutes' => $quest->getRequiredMinutes(),
+      'pool_amount' => $quest->getPoolAmount(),
+      'token' => $quest->getToken(),
+      'creator_id' => $quest->getCreatorId(),
+      'questions' => $questionsArray
+    ];
+
+    return new JsonResponse($questReport);
+  }
+
 
   /*
       Admin actions

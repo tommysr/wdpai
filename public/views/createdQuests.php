@@ -10,7 +10,9 @@
         <div class="card">
           <div class="container-card bg-green-box">
             <div class="card-top">
-              <img class="image-green-box card-image"  src="<?= $quest->getPictureUrl() == 'none' ? "https://picsum.photos/300/200" : "/public/uploads/". $quest->getPictureUrl(); ?>" alt="image" />
+              <img class="image-green-box card-image"
+                src="<?= $quest->getPictureUrl() == 'none' ? "https://picsum.photos/300/200" : "/public/uploads/" . $quest->getPictureUrl(); ?>"
+                alt="image" />
               <div class="infos">
                 <span class="info">
                   <i class="fas fa-star"></i>
@@ -28,8 +30,8 @@
                 </span>
               </div>
             </div>
-            <span class="title"><?= $quest->getTitle();?></span>
-            <p class="description"><?= $quest->getDescription();?></p>
+            <span class="title"><?= $quest->getTitle(); ?></span>
+            <p class="description"><?= $quest->getDescription(); ?></p>
             <button class="show-more-btn">Show more</button>
 
 
@@ -50,7 +52,9 @@
               </span>
             </div>
 
-            <?php if ($quest->getIsApproved()): ?>
+            <?php if ($quest->isExpired()): ?>
+              <button class="enter-button" onclick="downloadReport(<?= $quest->getQuestID(); ?>)">get report</button>
+            <?php elseif ($quest->getIsApproved()): ?>
               <span class="published">
                 <i class="fas fa-check"></i>
                 Published
@@ -58,11 +62,12 @@
             <?php else: ?>
               <a href="/showEditQuest/<?= $quest->getQuestId(); ?>" class="enter-button">EDIT</a>
             <?php endif; ?>
-
           </div>
         </div>
       <?php endforeach; ?>
     </div>
   </div>
 </main>
+
 <script src="/public/js/quests.js" defer></script>
+<script src="/public/js/questReport.js" defer></script>

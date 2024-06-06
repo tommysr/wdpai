@@ -26,6 +26,7 @@ interface IQuest extends \JsonSerializable
     public function getPictureUrl(): string;
     public function getMaxPoints(): int;
     public function getCreatorName(): string;
+    public function isExpired(): bool;
 
     // Setters
 
