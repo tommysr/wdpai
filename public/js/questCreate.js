@@ -436,6 +436,9 @@ const validateFileInput = () => {
 
   if (!questThumbnail.value) {
     error.textContent = 'You need to upload a file';
+  } else {
+    error.textContent = '';
+    return true;
   }
 
   const fileInput = document.getElementById('fileInput');
@@ -445,10 +448,6 @@ const validateFileInput = () => {
     error.textContent = 'Click the upload button to upload the file';
     return false;
   }
-
-  error.textContent = '';
-
-  return true;
 }
 
 
@@ -530,7 +529,7 @@ function uploadFile() {
   const formData = new FormData();
   formData.append('file', fileInput.files[0]);
 
-  fetch('/uploadQuestFile', {
+  fetch('/uploadQuestPicture', {
     method: 'POST',
     body: formData
   })
@@ -538,10 +537,11 @@ function uploadFile() {
     .then(data => {
       if (data.name) {
         const questThumbnail = document.getElementById('questThumbnail');
+        error.textContent = '';
         questThumbnail.value = data.name;
-      } else {
-        console.log('file upload failed');
-      }
+      } else if (data.errors) {
+        error.textContent = data.errors[0];
+      } 
     })
     .catch(error => {
       console.error('Error:', error);

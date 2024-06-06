@@ -159,10 +159,24 @@ class QuestsController extends AppController implements IQuestsController
     }
   }
 
+  private function validateQuestFile($fileData): array
+  {
+    $errors = [];
+
+
+    if ($fileData['size'] > self::MAX_FILE_SIZE) {
+      $errors[] = 'file is too big';
+    }
+
+    if (!in_array($fileData['type'], self::SUPPORTED_TYPES)) {
+      $errors[] = 'file type is not supported';
+    }
+
+    return $errors;
+  }
+
   private function generateFileName($filePath): string
   {
-    // $filePath = dirname(__DIR__) . self::UPLOAD_DIRECTORY . $filename;
-
     $imageFileType = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
     $uniqueName = uniqid() . '.' . $imageFileType;
     $targetFile = $filePath . $uniqueName;
@@ -178,9 +192,14 @@ class QuestsController extends AppController implements IQuestsController
     return $targetFile;
   }
 
-  public function postUploadQuestFile(IRequest $request): IResponse
+  public function postUploadQuestPicture(IRequest $request): IResponse
   {
     $fileData = $this->request->getUploadedFiles()['file'];
+    $errors = $this->validateQuestFile($fileData);
+
+    if ($errors) {
+      return new JsonResponse(['errors' => $errors]);
+    }
 
     if ($fileData && is_uploaded_file($fileData['tmp_name'])) {
       $newFileName = $this->generateFileName($fileData['name']);
@@ -191,7 +210,7 @@ class QuestsController extends AppController implements IQuestsController
       return new JsonResponse(['name' => $newFileName]);
     }
 
-    return new JsonResponse(['errors' => ['file not found']]);
+    return new JsonResponse(['errors' => ['file not uploaded']]);
   }
 
 

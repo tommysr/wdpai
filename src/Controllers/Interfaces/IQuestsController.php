@@ -23,7 +23,7 @@ interface IQuestsController extends IRootController
   public function getEditQuest(IRequest $request, int $questId): IResponse;
   public function postEditQuest(IRequest $request, int $questId): IResponse;
   public function getShowCreatedQuests(IRequest $request): IResponse;
-  public function postUploadQuestFile(IRequest $request): IResponse;
+  public function postUploadQuestPicture(IRequest $request): IResponse;
 
   // ADMIN ACTIONS
   public function getShowQuestsToApproval(IRequest $request): IResponse;
