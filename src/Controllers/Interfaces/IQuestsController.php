@@ -16,11 +16,11 @@ interface IQuestsController extends IRootController
 
   // CREATOR ACTIONS
   // create 
-  public function getCreateQuest(IRequest $request): IResponse;
+  public function getShowCreateQuest(IRequest $request): IResponse;
   public function postCreateQuest(IRequest $request): IResponse;
 
   // edit
-  public function getEditQuest(IRequest $request, int $questId): IResponse;
+  public function getShowEditQuest(IRequest $request, int $questId): IResponse;
   public function postEditQuest(IRequest $request, int $questId): IResponse;
   public function getShowCreatedQuests(IRequest $request): IResponse;
   public function postUploadQuestPicture(IRequest $request): IResponse;

@@ -3,7 +3,6 @@
         <h1 class="main-text">No records exist</h1>
     <?php endif; ?>
 
-    <a href="/createQuest" class="add-quest"><i class="fas fa-plus fa-2x"></i></a>
     <div class="container">
         <div class="cards">
             <?php foreach ($quests as $quest): ?>
@@ -53,7 +52,7 @@
                         </div>
 
                         <div class="flex-column-center-center gap-0-5">
-                            <a href="/editQuest/<?= $quest->getQuestId(); ?>" class="enter-button">Show</a>
+                            <a href="/showEditQuest/<?= $quest->getQuestId(); ?>" class="enter-button">Show</a>
                             <button id="publishButton" class="enter-button"
                                 onclick="togglePublish(this, <?= $quest->getQuestId(); ?>)">
                                 <?php if (!$quest->getIsApproved()): ?>

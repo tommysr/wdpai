@@ -1,14 +1,18 @@
 <div class="flex-column-center-center gap-1">
 
-  <h1 class="main-text">Create Quiz</h1>
-  <h2 class="input-description main-text">Upload thumbnail</h2>
-  <div class="file-input-container">
-    <input type="file" id="fileInput" class="file-input" name="file" accept="image/*">
-    <label for="fileInput" class="file-label">Choose File</label>
-  </div>
+  <?php if (isset($userRole) && $userRole == 'creator'): ?>
+    <h1 class="main-text">Create Quiz</h1>
+    <h2 class="input-description main-text">Upload thumbnail</h2>
+    <div class="file-input-container">
+      <input type="file" id="fileInput" class="file-input" name="file" accept="image/*">
+      <label for="fileInput" class="file-label">Choose File</label>
+    </div>
+  <?php endif; ?>
   <img id="preview" src="<?= $quest ? "/public/uploads/" . $quest->getPictureUrl() : '#' ?>" alt="Image preview">
-  <button class="upload-button" onclick="uploadFile()">Upload</button>
 
+  <?php if (isset($userRole) && $userRole == 'creator'): ?>
+    <button class="upload-button" onclick="uploadFile()">Upload</button>
+  <?php endif; ?>
 
   <form id="questForm" class="flex-column-center-center gap-1">
     <input type="hidden" id="questThumbnail" name="questThumbnail" value="<?= $quest ? $quest->getPictureUrl() : '' ?>">
@@ -132,10 +136,13 @@
                         <span class="checkmark"></span>
                       </div>
 
-                      <div class="flex-row-center-center">
-                        <button type="button" class="removeOption show-more-btn bg-green-box"
-                          onclick="removeOption(this,<?= $counter; ?>,<?= $optionCounter; ?>)">remove</button>
-                      </div>
+                      <?php if (isset($userRole) && $userRole == 'creator'): ?>
+                        <div class="flex-row-center-center">
+                          <button type="button" class="removeOption show-more-btn bg-green-box"
+                            onclick="removeOption(this,<?= $counter; ?>,<?= $optionCounter; ?>)">remove</button>
+                        </div>
+                      <?php endif; ?>
+
                     </div>
                     <?php
                     $optionCounter = $optionCounter + 1;
@@ -143,12 +150,14 @@
                   ?>
                 </div>
 
-                <button type="button" class="addOption main-button w-50"
-                  onclick="addOptionRaw(this, <?= $counter; ?>,<?= $optionCounter; ?> )">Add
-                  Option</button>
-                <button type="button" class="removeQuestion secondary-button w-50"
-                  onclick="removeQuestion(this,<?= $counter; ?>)">Remove Question</button>
+                <?php if (isset($userRole) && $userRole == 'creator'): ?>
+                  <button type="button" class="addOption main-button w-50"
+                    onclick="addOptionRaw(this, <?= $counter; ?>,<?= $optionCounter; ?> )">Add
+                    Option</button>
+                  <button type="button" class="removeQuestion secondary-button w-50"
+                    onclick="removeQuestion(this,<?= $counter; ?>)">Remove Question</button>
 
+                <?php endif; ?>
               </div>
             </div>
             <?php
@@ -157,14 +166,14 @@
         endif; ?>
       </div>
     </div>
-    <div class="flex-column-center-center gap-1 m-20">
-
-      <span id="error" class="error-message"></span>
-
-      <button type="button" id="addQuestion" class="main-button" onclick="addQuestionRaw(<?= $counter; ?>)">Add
-        Question</button><br><br>
-      <button type="submit" class="secondary-button">Create Quiz</button>
-    </div>
+    <?php if (isset($userRole) && $userRole == 'creator'): ?>
+      <div class="flex-column-center-center gap-1 m-20">
+        <span id="error" class="error-message"></span>
+        <button type="button" id="addQuestion" class="main-button" onclick="addQuestionRaw(<?= $counter; ?>)">Add
+          Question</button><br><br>
+        <button type="submit" class="secondary-button">Create Quiz</button>
+      </div>
+    <?php endif; ?>
   </form>
 </div>
 
