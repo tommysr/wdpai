@@ -38,7 +38,7 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
   {
     $stateInProgress = QuestState::InProgress;
     $stateInt = $stateInProgress->getStateId();
-    $sql = "SELECT * FROM quest_progress qp 
+    $sql = "SELECT qp.completion_date, qp.score, qp.quest_id, qp.wallet_id, qp.last_question_id, qp.state, w.address FROM quest_progress qp 
               INNER JOIN wallets w ON qp.wallet_id = w.wallet_id 
               INNER JOIN users u ON w.user_id = u.user_id 
               WHERE state = :state AND u.user_id = :user_id";
@@ -51,12 +51,12 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
       return null;
     }
 
-    return new QuestProgress($qp['completion_date'], $qp['score'], $qp['quest_id'], $qp['wallet_id'], $qp['last_question_id'], QuestState::fromId($qp['state']));
+    return new QuestProgress($qp['completion_date'], $qp['score'], $qp['quest_id'], $qp['wallet_id'], $qp['last_question_id'], QuestState::fromId($qp['state']), $qp['address']);
   }
 
   public function getQuestProgress(int $userId, int $questId): ?IQuestProgress
   {
-    $sql = "SELECT * FROM quest_progress qp
+    $sql = "SELECT qp.completion_date, qp.score, qp.quest_id, qp.wallet_id, qp.last_question_id, qp.state, w.address FROM quest_progress qp
               INNER JOIN wallets w ON qp.wallet_id = w.wallet_id
               INNER JOIN users u ON w.user_id = u.user_id
               WHERE u.user_id = :user_id AND qp.quest_id = :quest_id";
@@ -68,8 +68,7 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
       return null;
     }
 
-    return new QuestProgress($qp['completion_date'], $qp['score'], $qp['quest_id'], $qp['wallet_id'], $qp['last_question_id'], QuestState::fromId($qp['state']));
-  }
+    return new QuestProgress($qp['completion_date'], $qp['score'], $qp['quest_id'], $qp['wallet_id'], $qp['last_question_id'], QuestState::fromId($qp['state']), $qp['address']);  }
 
   public function saveQuestProgress(IQuestProgress $questProgress): void
   {
@@ -148,7 +147,7 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
 
   public function getUserEntries(int $userId): array
   {
-    $sql = "SELECT * FROM quest_progress qp
+    $sql = "SELECT qp.completion_date, qp.score, qp.quest_id, qp.wallet_id, qp.last_question_id, qp.state, w.address FROM quest_progress qp
               INNER JOIN wallets w ON qp.wallet_id = w.wallet_id
               INNER JOIN users u ON w.user_id = u.user_id
               WHERE u.user_id = :user_id";
@@ -158,7 +157,7 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
 
     $progresses = [];
     foreach ($entries as $qp) {
-      $progresses[] = new QuestProgress($qp['completion_date'], $qp['score'], $qp['quest_id'], $qp['wallet_id'], $qp['last_question_id'], QuestState::fromId($qp['state']));
+      $progresses[] = new QuestProgress($qp['completion_date'], $qp['score'], $qp['quest_id'], $qp['wallet_id'], $qp['last_question_id'], QuestState::fromId($qp['state']), $qp['address']);
     }
 
     return $progresses;

@@ -14,27 +14,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Lekton:ital,wght@0,400;0,700;1,400&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-  <script type="text/javascript" src="/public/js/confirmationModal.js" defer></script>
+  <!-- <script type="text/javascript" src="/public/js/confirmationModal.js" defer></script> -->
   <title><?= $title; ?></title>
 </head>
 
-<body>
+<body class="flex-column-center-center">
   <nav class="questNav">
     <div class="backBar">
       <a href="" id="back-link"><img src="/public/assets/back_arrow.svg" /></a>
       <span class="back-text">Choose answers</span>
     </div>
   </nav>
-
-  <!-- <div class="follow-bar absolute-follow">
-    <span class="text-bold-sm">Follow us</span>
-    <img src="/public/assets/follow-bar/line.svg" />
-    <img src="/public/assets/follow-bar/fb.svg" />
-    <img src="/public/assets/follow-bar/ig.svg" />
-    <img src="/public/assets/follow-bar/linkedin.svg" />
-    <img src="/public/assets/follow-bar/arrow_left.svg" />
-  </div> -->
-
   <form action="/answer/<?= $question->getQuestionId(); ?>" method="post" class="question-container">
     <span class="question-text"><?= $question->getText(); ?></span>
 

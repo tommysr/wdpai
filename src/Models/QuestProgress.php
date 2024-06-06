@@ -14,6 +14,7 @@ class QuestProgress implements IQuestProgress
   private int $wallet_id;
   private int $last_question_id;
   private IQuestState $state;
+  private string $wallet_address;
 
 
   static function fromArray(array $data): IQuestProgress
@@ -28,7 +29,7 @@ class QuestProgress implements IQuestProgress
     );
   }
 
-  public function __construct(string|null $completion_date, int $score, int $quest_id, int $wallet_id, int $last_question_id, IQuestState $state)
+  public function __construct(string|null $completion_date, int $score, int $quest_id, int $wallet_id, int $last_question_id, IQuestState $state, string $wallet_address)
   {
     $this->completion_date = $completion_date;
     $this->score = $score;
@@ -36,6 +37,7 @@ class QuestProgress implements IQuestProgress
     $this->wallet_id = $wallet_id;
     $this->last_question_id = $last_question_id;
     $this->state = $state;
+    $this->wallet_address = $wallet_address;
   }
 
   public function getCompletionDate(): ?string
@@ -57,6 +59,13 @@ class QuestProgress implements IQuestProgress
   {
     return $this->wallet_id;
   }
+
+  public function getWalletAddress(): string
+  {
+    return $this->wallet_address;
+  }
+
+
 
   public function getState(): IQuestState
   {

@@ -1,4 +1,3 @@
-
 body {
   font-family: "Lekton";
   font-style: normal;
@@ -13,7 +12,7 @@ body {
 
 
 .justify-center {
-  justify-content: center!important;
+  justify-content: center !important;
 }
 
 .flex-row-center-center {
@@ -537,15 +536,13 @@ i {
 }
 
 .information-container {
-  border: 2px solid #b0da99;
-
-  border-radius: 30px;
   padding: 0.5em 1em;
-
   display: flex;
   justify-content: space-around;
   align-items: center;
   gap: 1em;
+  background: #393c37;
+  border-radius: 30px;
 }
 
 .information-text {
@@ -555,9 +552,17 @@ i {
 }
 
 .achievement {
-  padding: 2em;
-  border-radius: 100%;
-  background: #b0da99;
+  /* padding: 2em; */
+  /* border-radius: 100%; */
+  border: none;
+  padding: 0.5em 1em;
+  background: rgb(59, 173, 104);
+  border-radius: 30px;
+  color: white;
+}
+
+.achievement:hover {
+  background: rgb(86, 118, 101);
 }
 
 .image-background {
@@ -849,7 +854,7 @@ form select {
 }
 
 .summary {
-  gap: 2em!important;
+  gap: 2em !important;
 }
 
 .container {
@@ -870,7 +875,7 @@ form select {
   }
 
   .summary {
-    gap: 1em!important;
+    gap: 1em !important;
   }
 }
 
@@ -1045,18 +1050,28 @@ form select {
   display: flex;
   justify-content: space-evenly;
   align-items: flex-start;
-
 }
 
 @media screen and (max-width: 600px) {
-  .container-card {
-    padding: 20px !important;
-  }
 
   .infos {
     flex-direction: column;
     margin-left: 2em;
     gap: 10px;
+  }
+
+  .infos:nth-of-type(2) {
+    margin-left: 0;
+  }
+
+  .profile-quests {
+    padding: 1em !important;
+  }
+}
+
+@media screen and (max-width: 450px) {
+  .container-card {
+    padding: 20px !important;
   }
 }
 
@@ -1239,4 +1254,11 @@ textarea {
 
 .upload-button:hover {
   background-color: #b0da9992;
+}
+
+.profile-quests {
+  display: grid;
+  grid-template-columns: 1fr;
+  padding: 2em;
+  gap: 2em;
 }

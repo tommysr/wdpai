@@ -9,10 +9,12 @@ use App\Models\QuestProgress;
 use App\Models\QuestState;
 use App\Repository\IOptionsRepository;
 use App\Repository\IQuestionsRepository;
+use App\Repository\IWalletRepository;
 use App\Repository\OptionsRepository;
 use App\Repository\QuestionsRepository;
 use App\Repository\QuestProgress\IQuestProgressRepository;
 use App\Repository\QuestProgress\QuestProgressRepository;
+use App\Repository\WalletRepository;
 use App\Services\QuestProgress\IQuestProgressService;
 use App\Services\Quests\IQuestService;
 use App\Services\Quests\QuestService;
@@ -25,14 +27,16 @@ class QuestProgressService implements IQuestProgressService
   private IQuestionsRepository $questionsRepository;
   private IOptionsRepository $optionsRepository;
   private IQuestService $questService;
+  private IWalletRepository $walletRepository;
 
-  public function __construct(ISessionService $sessionService, IQuestProgressRepository $questProgressRepository = null, IQuestionsRepository $questionsRepository = null, IQuestService $questService = null, IOptionsRepository $optionsRepository = null)
+  public function __construct(ISessionService $sessionService, IQuestProgressRepository $questProgressRepository = null, IQuestionsRepository $questionsRepository = null, IQuestService $questService = null, IOptionsRepository $optionsRepository = null, IWalletRepository $walletRepository = null)
   {
     $this->sessionService = $sessionService;
     $this->questProgressRepository = $questProgressRepository ?: new QuestProgressRepository();
     $this->questionsRepository = $questionsRepository ?: new QuestionsRepository();
     $this->optionsRepository = $optionsRepository ?: new OptionsRepository();
     $this->questService = $questService ?: new QuestService();
+    $this->walletRepository = $walletRepository ?: new WalletRepository();
   }
 
   public function isQuestPlayed(int $userId, int $questId): bool
@@ -124,7 +128,8 @@ class QuestProgressService implements IQuestProgressService
     }
 
     $nextQuestionId = $this->questionsRepository->getNextQuestion($questId, 0)->getQuestionId();
-    $questProgress = new QuestProgress(null, 0, $questId, $walletId, $nextQuestionId, QuestState::InProgress);
+    $walletAddress = $this->walletRepository->getWalletAddress($walletId);
+    $questProgress = new QuestProgress(null, 0, $questId, $walletId, $nextQuestionId, QuestState::InProgress, $walletAddress);
 
     $this->questProgressRepository->saveQuestProgress($questProgress);
     $this->sessionService->set('questProgress', $questProgress);
