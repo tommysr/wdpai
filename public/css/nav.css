@@ -38,11 +38,9 @@ body {
 }
 
 .nav-link {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
-  font-size: 1.5em;
-  line-height: 1.5em;
+  font-size: 1.3em;
+  line-height: 1.8em;
   text-align: center;
   letter-spacing: 0.05em;
   color: #58c3b5;
@@ -173,7 +171,6 @@ body {
 }
 
 .nav-link {
-  font-size: 1em;
   align-self: center;
 }
 

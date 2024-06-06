@@ -20,7 +20,7 @@
     </div>
 
     <div class="dropdown">
-      <button class="dropbtn" onclick="showNavbar()">Filter
+      <button class="dropbtn maintext" onclick="toggleDropdown()">Filter
         <i class="fa fa-caret-down"></i>
       </button>
       <div class="dropdown-content" id="myDropdown">
@@ -48,3 +48,4 @@
 
 <script type="text/javascript" src="/public/js/sidenav.js" defer></script>
 <script type="text/javascript" src="/public/js/navbar.js" defer></script>
+<script type="text/javascript" src="/public/js/topbar.js" defer></script>
