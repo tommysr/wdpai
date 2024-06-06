@@ -68,7 +68,10 @@ $acl->allow((string) UserRole::NORMAL->value, 'QuestsController', 'addWallet');
 
 $acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'refreshRecommendations');
 $acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'showQuestsToApproval');
+$acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'showApprovedQuests');
 $acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'publishQuest');
+$acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'unpublishQuest');
+$acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'showEditQuest');
 
 $roleAuthorizationMiddleware = new RoleAuthorizationMiddleware($acl, $authService);
 
@@ -83,12 +86,12 @@ Router::get('/register', 'RegisterController@register', [$authMiddleware]);
 Router::post('/login', 'LoginController@login', [$loginValidationMiddleware, $authMiddleware]);
 Router::post('/register', 'RegisterController@register', [$authMiddleware, $registerValidationMiddleware]);
 
-// CREATOR ROUTES
+// CREATOR ROUTES`
 Router::get('/showCreatedQuests', 'QuestsController@showCreatedQuests', [$authMiddleware, $roleAuthorizationMiddleware]);
-Router::get('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $roleAuthorizationMiddleware]);
-Router::get('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddleware, $roleAuthorizationMiddleware]);
-Router::post('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $roleAuthorizationMiddleware, $questValidationMiddleware]);
-Router::post('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddleware, $roleAuthorizationMiddleware, $questValidationMiddleware]);
+Router::get('/showCreateQuest', 'QuestsController@showCreateQuest', [$authMiddleware, $roleAuthorizationMiddleware]);
+Router::get('/showEditQuest/{questId}', 'QuestsController@showEditQuest', [$authMiddleware, $roleAuthorizationMiddleware]);
+Router::post('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $roleAuthorizationMiddleware, $questValidationMiddleware, $questAuthorizeMiddleware]);
+Router::post('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddleware, $roleAuthorizationMiddleware, $questValidationMiddleware, $questAuthorizeMiddleware]);
 Router::post('/uploadQuestPicture', 'QuestsController@uploadQuestPicture', [$authMiddleware, $roleAuthorizationMiddleware]);
 
 // NORMAL USER ROUTES
@@ -107,6 +110,10 @@ Router::get('/endQuest', 'GameController@reset', [$authMiddleware]);
 
 // Admin routes
 Router::get('/refreshRecommendations', 'QuestsController@refreshRecommendations', [$authMiddleware, $roleAuthorizationMiddleware]);
+Router::get('/showQuestsToApproval', 'QuestsController@showQuestsToApproval', [$authMiddleware, $roleAuthorizationMiddleware]);
+Router::get('/showApprovedQuests', 'QuestsController@showApprovedQuests', [$authMiddleware, $roleAuthorizationMiddleware]);
+Router::post('/publishQuest/{questId}', 'QuestsController@publishQuest', [$authMiddleware, $roleAuthorizationMiddleware]);
+Router::post('/unpublishQuest/{questId}', 'QuestsController@unpublishQuest', [$authMiddleware, $roleAuthorizationMiddleware]);
 
 $request = new Request($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
 $response = Router::dispatch($request);

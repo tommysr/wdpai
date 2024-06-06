@@ -99,22 +99,18 @@ class QuestsController extends AppController implements IQuestsController
 
 
   // returns create quest view
-  public function getCreateQuest(IRequest $request): IResponse
+  public function getShowCreateQuest(IRequest $request): IResponse
   {
     return $this->renderEditAndCreateView();
   }
 
   // returns edit quest view
-  public function getEditQuest(IRequest $request, int $questId): IResponse
+  public function getShowEditQuest(IRequest $request, int $questId): IResponse
   {
     $quest = $this->questService->getQuestWithQuestions($questId);
 
     if (!$quest) {
       return new RedirectResponse('/error/404', 0);
-    }
-
-    if ($quest->getIsApproved()) {
-      return new RedirectResponse('/error/401');
     }
 
     return $this->renderEditAndCreateView($quest);
@@ -223,15 +219,30 @@ class QuestsController extends AppController implements IQuestsController
   {
     $quests = $this->questService->getQuestsToApproval();
 
-    return $this->render('layout', ['title' => 'quests to approval', 'quests' => $quests], 'questsToApproval');
+    return $this->render('layout', ['title' => 'quests to approval', 'quests' => $quests], 'adminQuests');
+  }
+
+  public function getShowApprovedQuests(IRequest $request): IResponse
+  {
+    $quests = $this->questService->getApprovedQuests();
+
+    return $this->render('layout', ['title' => 'approved quests', 'quests' => $quests], 'adminQuests');
   }
 
   // publishes/approves quest
-  public function postPublish(IRequest $request, int $questId): IResponse
+  public function postPublishQuest(IRequest $request, int $questId): IResponse
   {
     $this->questService->publishQuest($questId);
 
     return new JsonResponse(['message' => 'quest published']);
+  }
+
+  // unpublishes quest
+  public function postUnpublishQuest(IRequest $request, int $questId): IResponse
+  {
+    $this->questService->unpublishQuest($questId);
+
+    return new JsonResponse(['message' => 'quest unpublished']);
   }
 
   public function getRefreshRecommendations(IRequest $request): IResponse

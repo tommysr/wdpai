@@ -175,7 +175,7 @@ class QuestRepository extends Repository implements IQuestRepository
   }
 
 
-  public function approve(int $questId)
+  public function changeApproved(int $questId, bool $isApproved): void
   {
     $sql = "UPDATE quests 
             SET approved = :approved 
@@ -184,7 +184,7 @@ class QuestRepository extends Repository implements IQuestRepository
     $stmt = $this->db->connect()->prepare($sql);
 
     $stmt->execute([
-      ':approved' => (int) true,
+      ':approved' => (int) $isApproved,
       ':quest_id' => $questId,
     ]);
   }

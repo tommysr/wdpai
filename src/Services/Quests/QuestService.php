@@ -46,12 +46,18 @@ class QuestService implements IQuestService
   {
     $quests = $this->questRepository->getQuests();
 
-    array_filter($quests, function ($quest) {
-      return $quest->getIsApproved();
-    });
 
-    return $quests;
+    return array_filter($quests, function ($quest) {
+      return !$quest->getIsApproved();
+    });
   }
+
+
+  public function getApprovedQuests(): array
+  {
+    return $this->questRepository->getApprovedQuests();
+  }
+
 
   public function getQuests(array $questIds): array
   {
@@ -209,7 +215,12 @@ class QuestService implements IQuestService
 
   public function publishQuest(int $questId): void
   {
-    $this->questRepository->approve($questId);
+    $this->questRepository->changeApproved($questId, true);
+  }
+
+  public function unpublishQuest(int $questId): void
+  {
+    $this->questRepository->changeApproved($questId, false);
   }
 
   public function getQuest(int $id): ?IQuest

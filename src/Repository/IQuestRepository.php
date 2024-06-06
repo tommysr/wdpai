@@ -12,7 +12,7 @@ interface IQuestRepository
   public function getCreatorQuests(int $creator): array;
   public function getApprovedQuests(): array;
   public function getQuestToApprove(): array;
-  public function approve(int $questId);
+  public function changeApproved(int $questId, bool $isApproved);
   public function updateQuest(IQuest $quest);
   public function getAllQuestIds(): array;
   public function getMaxQUestId(): int;

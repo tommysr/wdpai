@@ -13,11 +13,12 @@ interface IQuestService
   public function getQuests(array $questIds): array;
   public function getQuestsToPlay(): array;
   public function getQuestsToApproval(): array;
+  public function getApprovedQuests(): array;
   public function getQuestBlockchain(int $questId): string;
-  // public function getQuestWallets(IIdentity $identity, int $questId): array;
   public function getQuestWithQuestions(int $questId): ?IQuest;
   public function getQuest(int $questId): ?IQuest;
   public function publishQuest(int $questId): void;
+  public function unpublishQuest(int $questId): void;
   public function createQuest(IQuest $quest): IQuestResult;
   public function editQuest(IQuest $quest): IQuestResult;
   public function addParticipant(int $questId): bool;
