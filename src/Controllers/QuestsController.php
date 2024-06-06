@@ -223,15 +223,30 @@ class QuestsController extends AppController implements IQuestsController
   {
     $quests = $this->questService->getQuestsToApproval();
 
-    return $this->render('layout', ['title' => 'quests to approval', 'quests' => $quests], 'questsToApproval');
+    return $this->render('layout', ['title' => 'quests to approval', 'quests' => $quests], 'adminQuests');
+  }
+
+  public function getShowApprovedQuests(IRequest $request): IResponse
+  {
+    $quests = $this->questService->getApprovedQuests();
+
+    return $this->render('layout', ['title' => 'approved quests', 'quests' => $quests], 'adminQuests');
   }
 
   // publishes/approves quest
-  public function postPublish(IRequest $request, int $questId): IResponse
+  public function postPublishQuest(IRequest $request, int $questId): IResponse
   {
     $this->questService->publishQuest($questId);
 
     return new JsonResponse(['message' => 'quest published']);
+  }
+
+  // unpublishes quest
+  public function postUnpublishQuest(IRequest $request, int $questId): IResponse
+  {
+    $this->questService->unpublishQuest($questId);
+
+    return new JsonResponse(['message' => 'quest unpublished']);
   }
 
   public function getRefreshRecommendations(IRequest $request): IResponse

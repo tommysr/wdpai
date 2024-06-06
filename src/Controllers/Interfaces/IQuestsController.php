@@ -27,7 +27,9 @@ interface IQuestsController extends IRootController
 
   // ADMIN ACTIONS
   public function getShowQuestsToApproval(IRequest $request): IResponse;
-  public function postPublish(IRequest $request, int $questId): IResponse;
+  public function getShowApprovedQuests(IRequest $request): IResponse;
+  public function postPublishQuest(IRequest $request, int $questId): IResponse;
+  public function postUnpublishQuest(IRequest $request, int $questId): IResponse;
   public function postAddWallet(IRequest $request, string $blockchain): IResponse;
   public function getRefreshRecommendations(IRequest $request): IResponse;
 }

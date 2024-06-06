@@ -68,7 +68,9 @@ $acl->allow((string) UserRole::NORMAL->value, 'QuestsController', 'addWallet');
 
 $acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'refreshRecommendations');
 $acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'showQuestsToApproval');
+$acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'showApprovedQuests');
 $acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'publishQuest');
+$acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'unpublishQuest');
 
 $roleAuthorizationMiddleware = new RoleAuthorizationMiddleware($acl, $authService);
 
@@ -107,6 +109,10 @@ Router::get('/endQuest', 'GameController@reset', [$authMiddleware]);
 
 // Admin routes
 Router::get('/refreshRecommendations', 'QuestsController@refreshRecommendations', [$authMiddleware, $roleAuthorizationMiddleware]);
+Router::get('/showQuestsToApproval', 'QuestsController@showQuestsToApproval', [$authMiddleware, $roleAuthorizationMiddleware]);
+Router::get('/showApprovedQuests', 'QuestsController@showApprovedQuests', [$authMiddleware, $roleAuthorizationMiddleware]);
+Router::post('/publishQuest/{questId}', 'QuestsController@publishQuest', [$authMiddleware, $roleAuthorizationMiddleware]);
+Router::post('/unpublishQuest/{questId}', 'QuestsController@unpublishQuest', [$authMiddleware, $roleAuthorizationMiddleware]);
 
 $request = new Request($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
 $response = Router::dispatch($request);

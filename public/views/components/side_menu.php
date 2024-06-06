@@ -20,8 +20,15 @@
 
 
     <?php if (isset($userRole) && $userRole == 'admin'): ?>
-      <a class="nav-link" href="/dashboard">
-        Dashboard
+      <a class="nav-link" href="/showQuestsToApproval">
+        Quests queue
+        <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />
+        </svg>
+      </a>
+
+      <a class="nav-link" href="/showApprovedQuests">
+        Approved quests
         <svg width="132" height="2" viewBox="0 0 132 2" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />
         </svg>
