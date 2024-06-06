@@ -20,6 +20,7 @@ interface IQuestBuilder
   public function setCreatorId(int $creatorId): self;
   public function setIsApproved(bool $isApproved): self;
   public function addQuestion(IQuestion $question): self;
+  public function setPictureUrl(string $pictureUrl): self;
   public function setFlag(?string $flag): self;
   public function build(): IQuest;
   public function reset(): void;

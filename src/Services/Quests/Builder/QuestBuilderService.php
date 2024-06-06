@@ -44,6 +44,7 @@ class QuestBuilderService implements IQuestBuilderService
     $this->questBuilder->setParticipantsLimit($data['participantsLimit']);
     $this->questBuilder->setPoolAmount($data['poolAmount']);
     $this->questBuilder->setToken($data['token']);
+    $this->questBuilder->setPictureUrl($data['questThumbnail']);
 
     if (isset($data['creatorId'])) {
       $this->questBuilder->setCreatorId($data['creatorId']);

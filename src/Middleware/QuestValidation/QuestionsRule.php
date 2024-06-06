@@ -20,6 +20,10 @@ class QuestionsRule implements IValid
         return "Each question must have 'text'";
       }
 
+      if ($question['text'] === '') {
+        return "Each question must have 'text'";
+      }
+
       $isCorrectCount = 0;
       $hasOptions = false;
 

@@ -30,6 +30,9 @@ use App\Services\Wallets\WalletService;
 
 class QuestsController extends AppController implements IQuestsController
 {
+  const MAX_FILE_SIZE = 1024 * 1024;
+  const SUPPORTED_TYPES = ['image/png', 'image/jpeg'];
+  const UPLOAD_DIRECTORY = '/../public/uploads/';
   private IQuestService $questService;
   private IAuthService $authService;
   private IQuestBuilderService $questBuilderService;
@@ -155,6 +158,61 @@ class QuestsController extends AppController implements IQuestsController
       return new JsonResponse(['redirectUrl' => '/showCreatedQuests']);
     }
   }
+
+  private function validateQuestFile($fileData): array
+  {
+    $errors = [];
+
+
+    if ($fileData['size'] > self::MAX_FILE_SIZE) {
+      $errors[] = 'file is too big';
+    }
+
+    if (!in_array($fileData['type'], self::SUPPORTED_TYPES)) {
+      $errors[] = 'file type is not supported';
+    }
+
+    return $errors;
+  }
+
+  private function generateFileName($filePath): string
+  {
+    $imageFileType = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+    $uniqueName = uniqid() . '.' . $imageFileType;
+    $targetFile = $filePath . $uniqueName;
+
+    $counter = 1;
+    while (file_exists($targetFile)) {
+      $baseName = pathinfo($filePath, PATHINFO_FILENAME);
+      $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+      $targetFile = $filePath . $baseName . "_$counter" . $extension;
+      $counter++;
+    }
+
+    return $targetFile;
+  }
+
+  public function postUploadQuestPicture(IRequest $request): IResponse
+  {
+    $fileData = $this->request->getUploadedFiles()['file'];
+    $errors = $this->validateQuestFile($fileData);
+
+    if ($errors) {
+      return new JsonResponse(['errors' => $errors]);
+    }
+
+    if ($fileData && is_uploaded_file($fileData['tmp_name'])) {
+      $newFileName = $this->generateFileName($fileData['name']);
+      move_uploaded_file(
+        $fileData['tmp_name'],
+        dirname(__DIR__) . self::UPLOAD_DIRECTORY . $newFileName
+      );
+      return new JsonResponse(['name' => $newFileName]);
+    }
+
+    return new JsonResponse(['errors' => ['file not uploaded']]);
+  }
+
 
   /*
       Admin actions

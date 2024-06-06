@@ -111,6 +111,12 @@ class QuestBuilder implements IQuestBuilder
     return $this;
   }
 
+  public function setPictureUrl(string $pictureUrl): self
+  {
+    $this->quest->setPictureUrl($pictureUrl);
+    return $this;
+  }
+
   public function build(): IQuest
   {
     $this->quest->setQuestions($this->questions);
