@@ -27,7 +27,7 @@
   </nav>
 
   <div class="flex-column-center-center">
-    <form action="/answer/<?= $question->getQuestionId(); ?>" method="post" class="question-container">
+    <form action="/answer/<?= $question->getQuestionId(); ?>" method="post" class="question-container gap-2">
       <div class="text-background">
         <p class="read-text">
           <?= $question->getText(); ?>

@@ -1,6 +1,3 @@
-* {
-  box-sizing: border-box;
-}
 
 body {
   font-family: "Lekton";
@@ -14,6 +11,10 @@ body {
   flex-wrap: wrap;
 }
 
+
+.justify-center {
+  justify-content: center!important;
+}
 
 .flex-row-center-center {
   display: flex;
@@ -68,6 +69,14 @@ body {
 
 .gap-1-5 {
   gap: 1.5em;
+}
+
+.gap-2 {
+  gap: 2em;
+}
+
+.gap-4 {
+  gap: 4em;
 }
 
 .full-width {
@@ -126,6 +135,7 @@ h1 {
   text-align: center;
   color: #ebf6e5;
 }
+
 /* 
 .modal {
   max-width: 1200px;
@@ -589,6 +599,11 @@ i {
   height: 60px;
 }
 
+.star>i {
+  text-align: center;
+  align-content: center;
+}
+
 .rating-options {
   display: flex;
   justify-content: center;
@@ -603,6 +618,36 @@ i {
   align-items: center;
 }
 
+
+.rating-option input[type="radio"]:checked+.rating-number {
+  background-color: #4caf50;
+  color: white;
+}
+
+.rating-option input[type="radio"]:hover+.rating-number {
+  background-color: #a5d6a7;
+}
+
+.rating-option:nth-of-type(1)>.rating-number {
+  background-color: #33452c;
+}
+
+.rating-option:nth-of-type(2)>.rating-number {
+  background-color: #556f46;
+}
+
+.rating-option:nth-of-type(3)>.rating-number {
+  background-color: #5b7f4c;
+}
+
+.rating-option:nth-of-type(4)>.rating-number {
+  background-color: #81ae6d;
+}
+
+.rating-option:nth-of-type(5)>.rating-number {
+  background-color: #b0da99;
+}
+
 .rating-option input[type="radio"] {
   display: none;
 }
@@ -614,20 +659,11 @@ i {
   line-height: 40px;
   text-align: center;
   border-radius: 50%;
-  background-color: #ddd;
   font-size: 1.2em;
   transition: background-color 0.3s, color 0.3s;
   cursor: pointer;
 }
 
-.rating-option input[type="radio"]:checked+.rating-number {
-  background-color: #4caf50;
-  color: white;
-}
-
-.rating-option input[type="radio"]:hover+.rating-number {
-  background-color: #a5d6a7;
-}
 
 /* Dialog to confirm abandoning the quest */
 
@@ -646,7 +682,7 @@ dialog {
 }
 
 .backBar {
-  margin-left: 20px;
+  margin-left: 30px;
   display: flex;
   align-items: center;
   gap: 2em;
@@ -689,11 +725,12 @@ input[type="number"] {
 
 @media screen and (max-width: 600px) {
   dialog[open] {
-    width: 100%;
+    width: auto;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
   }
 
   menu {
@@ -729,7 +766,6 @@ menu {
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  gap: 2em;
 }
 
 .options-container {
@@ -812,6 +848,9 @@ form select {
   width: 80%;
 }
 
+.summary {
+  gap: 2em!important;
+}
 
 .container {
   width: 1300px !important;
@@ -829,6 +868,10 @@ form select {
   .logo>img {
     width: 80% !important;
   }
+
+  .summary {
+    gap: 1em!important;
+  }
 }
 
 @media screen and (min-width: 992px) and (max-width: 1439px) {
@@ -837,6 +880,7 @@ form select {
     margin: 0 80px !important;
     width: auto !important;
   }
+
 
   .profile-column {
     min-width: 500px;

@@ -15,29 +15,22 @@
         rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
+    <script type="text/javascript" src="/public/js/confirmationModal.js" defer></script>
+
+
     <title><?= $title; ?></title>
 </head>
 
-<body>
+<body class="flex-column-center-center">
     <nav class="questNav">
         <div class="backBar">
             <a href="" id="back-link"><img src="/public/assets/back_arrow.svg" /></a>
-            <span class="back-text">Choose answers</span>
+            <span class="back-text">Rating</span>
         </div>
     </nav>
 
-<!-- 
-    <div class="follow-bar absolute-follow">
-        <span class="text-bold-sm">Follow us</span>
-        <img src="/public/assets/follow-bar/line.svg" />
-        <img src="/public/assets/follow-bar/fb.svg" />
-        <img src="/public/assets/follow-bar/ig.svg" />
-        <img src="/public/assets/follow-bar/linkedin.svg" />
-        <img src="/public/assets/follow-bar/arrow_left.svg" />
-    </div> -->
-
-    <form action="/rating" method="post" class="question-container">
-        <span class="back-text">How would you rate your experience?</span>
+    <form action="/rating" method="post" class="question-container gap-4 justify-center">
+        <span class="back-text">Rate the quest</span>
 
         <div class="rating-options">
             <?php
@@ -56,6 +49,18 @@
 
         <button class="main-button">Submit</button>
     </form>
+
+    <dialog id="confirmationDialog">
+    <form method="dialog">
+      <h4>Confirm</h4>
+      <p>Do you really want to abandon the quest?</p>
+      <menu>
+        <button id="confirm-yes" value="yes">Yes</button>
+        <button id="confirm-no" value="no">No</button>
+      </menu>
+    </form>
+    <span class="error-message"></span>
+  </dialog>
 </body>
 
 </html>

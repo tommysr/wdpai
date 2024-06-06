@@ -20,15 +20,15 @@
     <title><?= $title; ?></title>
 </head>
 
-<body>
+<body class="flex-column-center-center">
     <nav class="questNav">
         <div class="backBar">
             <a href="" id="back-link"><img src="/public/assets/back_arrow.svg" /></a>
-            <span class="back-text">Choose answers</span>
+            <span class="back-text">Finish</span>
         </div>
     </nav>
 
-    <div class="question-container">
+    <div class="question-container justify-center gap-1-5 summary">
         <div class="flex-column-center-center gap-1">
             <span class="score-text">You've passed the quest</span>
             <span class="score-sub-text">Overall score</span>

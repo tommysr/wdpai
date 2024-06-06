@@ -152,8 +152,11 @@ class QuestProgressService implements IQuestProgressService
       throw new \Exception("Multiple choice question must have at least one option selected");
     }
 
-    $points = round(($chosenCount / $correctCount) * $question->getPoints());
+    $points = $question->getPoints();
 
+    if ($correctCount != 0) {
+      $points = round(($chosenCount / $correctCount) * $question->getPoints());
+    }
     return [
       'points' => $points,
       'maxPoints' => $question->getPoints(),

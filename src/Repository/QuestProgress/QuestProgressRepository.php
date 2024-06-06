@@ -137,13 +137,13 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
 
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute([':user_id' => $userId, ':quest_id' => $questId]);
-    $qp = $stmt->fetch(\PDO::FETCH_ASSOC);
+    $qp = $stmt->fetchColumn();
 
     if (!$qp) {
-      return 0;
+      return 100;
     }
 
-    return (int) $qp['percentile_rank'];
+    return (int) $qp;
   }
 
   public function getUserEntries(int $userId): array
