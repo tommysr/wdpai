@@ -239,10 +239,6 @@ const errorDiv = document.querySelector("#error");
 let questionsOption = {};
 let lastQuestionId = null;
 
-document.addEventListener("DOMContentLoaded", function () {
-  document.getElementById("questForm").addEventListener("submit", submitForm);
-});
-
 function removeQuestion(callDiv, questionId) {
   const questionDiv = callDiv.parentNode.parentNode;
 
@@ -457,30 +453,45 @@ function submitForm(event) {
 
   let valid = true;
 
-  valid &= checkTitleValidity();
-  valid &= checkDescriptionValidity();
-  valid &= checkBlockchainValidity();
-  valid &= checkExpiryDateValidity();
-  valid &= checkPayoutDateValidity();
-  valid &= checkMinutesRequiredValidity();
-  valid &= checkParticipantsLimitValidity();
-  valid &= checkPoolAmountValidity();
-  valid &= checkTokenValidity();
-  valid &= form.checkValidity();
-  valid &= validateFileInput();
-
-
-  if (!valid) {
+  if (
+    !checkTitleValidity() ||
+    !checkDescriptionValidity() ||
+    !checkBlockchainValidity() ||
+    !checkExpiryDateValidity() ||
+    !checkPayoutDateValidity() ||
+    !checkMinutesRequiredValidity() ||
+    !checkParticipantsLimitValidity() ||
+    !checkPoolAmountValidity() ||
+    !checkTokenValidity() ||
+    !form.checkValidity() ||
+    !validateFileInput()) {
     return;
   }
+
+  // valid &= checkTitleValidity();
+  // valid &= checkDescriptionValidity();
+  // valid &= checkBlockchainValidity();
+  // valid &= checkExpiryDateValidity();
+  // valid &= checkPayoutDateValidity();
+  // valid &= checkMinutesRequiredValidity();
+  // valid &= checkParticipantsLimitValidity();
+  // valid &= checkPoolAmountValidity();
+  // valid &= checkTokenValidity();
+  // valid &= form.checkValidity();
+  // valid &= validateFileInput();
+
+
+  // if (!valid) {
+  //   return;
+  // }
 
   const formData = serializeForm(event.target);
 
   const path = window.location.pathname;
   let apiUrl = "";
-  if (path.startsWith("/createQuest")) {
+  if (path.startsWith("/showCreateQuest")) {
     apiUrl = "/createQuest";
-  } else if (path.startsWith("/editQuest")) {
+  } else if (path.startsWith("/showEditQuest")) {
     const parts = path.split("/");
     const questId = parts[2];
     apiUrl = `/editQuest/${questId}`;
@@ -541,7 +552,7 @@ function uploadFile() {
         questThumbnail.value = data.name;
       } else if (data.errors) {
         error.textContent = data.errors[0];
-      } 
+      }
     })
     .catch(error => {
       console.error('Error:', error);

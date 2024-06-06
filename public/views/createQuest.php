@@ -8,14 +8,14 @@
       <label for="fileInput" class="file-label">Choose File</label>
     </div>
   <?php endif; ?>
-  <img id="preview" src="<?= $quest ? "/public/uploads/" . $quest->getPictureUrl() : '#' ?>" alt="Image preview">
+  <img id="preview" src="<?= $quest->getPictureUrl() !== 'none' ? "/public/uploads/" . $quest->getPictureUrl() : '#' ?>" alt="Image preview">
 
   <?php if (isset($userRole) && $userRole == 'creator'): ?>
     <button class="upload-button" onclick="uploadFile()">Upload</button>
   <?php endif; ?>
 
-  <form id="questForm" class="flex-column-center-center gap-1">
-    <input type="hidden" id="questThumbnail" name="questThumbnail" value="<?= $quest ? $quest->getPictureUrl() : '' ?>">
+  <form id="questForm" class="flex-column-center-center gap-1" onsubmit="submitForm(event)">
+    <input type="hidden" id="questThumbnail" name="questThumbnail" value="<?= $quest->getPictureUrl() !== 'none' ? $quest->getPictureUrl() : '' ?>">
 
     <div class="flex-column-center"> <label for="quizTitle" class="input-description main-text">Quiz Title:</label>
       <input class="login-input" type="text" id="quizTitle" name="title" placeholder="title" minlength="5"

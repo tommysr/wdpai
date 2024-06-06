@@ -1,4 +1,4 @@
-<script type="text/javascript" src="public/js/sidenav.js" defer></script>
+<script type="text/javascript" src="/public/js/sidenav.js" defer></script>
 
 <div id="mySidenav" class="sidenav">
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()"><img src="/public/assets/back_arrow.svg" /></a>
