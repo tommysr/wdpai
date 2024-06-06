@@ -1,11 +1,19 @@
 * {
+  box-sizing: border-box;
+}
+
+body {
   font-family: "Lekton";
   font-style: normal;
+  background-color: #0e130e;
+  margin: 0;
+  padding: 0;
 }
 
 .wrap {
   flex-wrap: wrap;
 }
+
 
 .flex-row-center-center {
   display: flex;
@@ -24,7 +32,6 @@
   justify-content: space-around;
   align-items: center;
 }
-
 
 .flex-row-evenly-center {
   display: flex;
@@ -51,16 +58,16 @@
   align-items: flex-start;
 }
 
+.gap-0-5 {
+  gap: 0.5em;
+}
+
 .gap-1 {
   gap: 1em;
 }
 
 .gap-1-5 {
   gap: 1.5em;
-}
-
-.gap-0-5 {
-  gap: 0.5em;
 }
 
 .full-width {
@@ -98,18 +105,6 @@
   width: 100vw;
 }
 
-body {
-  font-family: "Lekton";
-  font-style: normal;
-  font-family: "Inter";
-  font-style: normal;
-  background-color: #0e130e;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-
-
 h1 {
   text-align: center;
 }
@@ -131,7 +126,7 @@ h1 {
   text-align: center;
   color: #ebf6e5;
 }
-
+/* 
 .modal {
   max-width: 1200px;
   padding: 2em;
@@ -143,40 +138,27 @@ h1 {
 }
 
 .modal>p {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 2em;
   line-height: 2em;
   text-align: center;
   letter-spacing: 0.05em;
   color: #ebf6e5;
-}
+} */
 
 .wallet-name {
-  font-family: "Lekton";
-  font-style: normal;
-  font-weight: 700;
   font-size: 3em;
-  line-height: 4em;
   text-align: center;
   letter-spacing: 0.1em;
   color: #58c3b5;
 }
 
-
-
 .main-text {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   text-align: center;
   letter-spacing: 0.05em;
   color: #ebf6e5;
 }
-
-
-
 
 .input-description {
   font-size: 1em;
@@ -184,8 +166,6 @@ h1 {
 }
 
 .score-sub-text {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 1.3em;
   text-align: center;
@@ -193,10 +173,7 @@ h1 {
   color: #ebf6e5;
 }
 
-
 .score-text {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 1.7em;
   text-align: center;
@@ -215,9 +192,6 @@ h1 {
   border: 2px solid #387161;
 }
 
-.gap-1 {
-  gap: 1em;
-}
 
 .progress {
   width: 0%;
@@ -227,22 +201,6 @@ h1 {
   text-align: center;
   line-height: 30px;
   color: white;
-}
-
-.max-progress {
-  width: 0%;
-  height: 30px;
-  background: linear-gradient(78.2deg, #741fd4 0%, #b0da99 100%);
-  border-radius: 0px 5px 5px 0px;
-  text-align: center;
-  line-height: 30px;
-  color: white;
-}
-
-.indicator {
-  width: 2px;
-  height: 30px;
-  background-color: #00ff40;
 }
 
 .text-background {
@@ -255,8 +213,6 @@ h1 {
 }
 
 .score {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 4em;
   text-align: center;
@@ -265,8 +221,6 @@ h1 {
 }
 
 .read-text {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 1em;
   letter-spacing: 0.05em;
@@ -274,12 +228,8 @@ h1 {
   color: #000000;
 }
 
-
-
-
 .question-text {
   font-family: "Inter";
-  font-style: normal;
   font-weight: 700;
   font-size: 2em;
   line-height: 2.5em;
@@ -290,7 +240,6 @@ h1 {
 
 .option-text {
   font-family: "Inter";
-  font-style: normal;
   font-weight: 400;
   font-size: 1.5em;
   line-height: 2em;
@@ -301,7 +250,6 @@ h1 {
 
 .option-container {
   display: inline-flex;
-
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -466,60 +414,16 @@ i {
 }
 
 
-
-
-
-@media screen and (max-width: 600px) {
-  .follow-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .projects {
-    justify-content: center;
-  }
-}
-
-@media screen and (max-width: 1200px) {
-
-  /* new */
-  .profile-container {
-    margin-top: 100px;
-    display: flex !important;
-    flex-direction: column;
-  }
-
-  .profile-column {
-    min-width: 400px;
-    display: flex;
-    flex-direction: column;
-    /* justify-content: center; */
-    align-items: center;
-  }
-
-  .quest-info i {
-    margin: 0 !important;
-  }
-}
-
-/* new */
-.profile-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-
 .profile-column {
-  min-width: 400px;
+  max-width: 900px;
+  min-width: 500px;
+  /* width: 100%; */
   display: flex;
   flex-direction: column;
-  /* justify-content: center; */
   align-items: center;
 }
 
 .user-welcome {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 3em;
   color: #ebf6e5;
@@ -527,7 +431,6 @@ i {
 }
 
 .profile-picture {
-  /* background: url(cuddlyferris.png); */
   border-radius: 100%;
   border: 4px solid #b0da99;
   box-shadow: inset 0px 5px 4px rgba(229, 229, 229, 0.25);
@@ -546,8 +449,6 @@ i {
 }
 
 .join-date {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 1.5em;
   color: #ebf6e5;
@@ -556,8 +457,7 @@ i {
 }
 
 .information-header {
-  margin-top: 2em;
-  width: 70%;
+  width: 90%;
 
   display: flex;
   justify-content: space-between;
@@ -565,16 +465,12 @@ i {
 }
 
 .information-text {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 1.5em;
   color: #ebf6e5;
 }
 
 .view-all {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 1.5em;
   text-decoration: none;
@@ -582,9 +478,7 @@ i {
 }
 
 .one-line-list {
-  width: 70%;
-  margin-top: 1em;
-
+  width: 90%;
   display: flex;
   justify-content: start;
   gap: 1em;
@@ -603,11 +497,8 @@ i {
 }
 
 .information-text {
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 1.5em;
-
   color: #ebf6e5;
 }
 
@@ -615,22 +506,6 @@ i {
   padding: 2em;
   border-radius: 100%;
   background: #b0da99;
-}
-
-.previous-card {
-  max-height: 200px;
-  margin-top: 1em;
-  min-width: 400px;
-  max-width: 700px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 1fr 1fr 1fr;
-
-  width: 70%;
-  background: rgba(41, 112, 80, 0.2);
-  border: 1px solid #297050;
-  box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 20px;
 }
 
 .image-background {
@@ -659,65 +534,12 @@ i {
   grid-row: 1;
   grid-column: 2 / span 2;
 
-  font-family: "Lekton";
-  font-style: normal;
   font-weight: 700;
   font-size: 1.5em;
   letter-spacing: 0.05em;
   color: #ebf6e5;
 
   align-self: center;
-}
-
-.button-container {
-  grid-row: 3;
-  grid-column: 2 / span 3;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.view-button {
-  width: 20%;
-  padding: 0.2em 0.5em;
-  font-family: "Inter";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 1.2em;
-  text-align: center;
-  letter-spacing: 0.4em;
-  color: #000000;
-  text-decoration: none;
-  background: #b0da99;
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-}
-
-.info-bar {
-  width: 95%;
-  grid-column: 2 / span 2;
-  grid-row: 2;
-
-  background: rgba(41, 112, 80, 0.2);
-  border: 1px solid #297050;
-  border-radius: 10px;
-
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-}
-
-.quest-info i {
-  margin-right: 0.5em;
-}
-
-.quest-info .info-text {
-  font-family: "Lekton";
-  font-style: normal;
-  font-weight: 400;
-  font-size: 1em;
-  color: #ffffff;
 }
 
 .star {
@@ -772,10 +594,12 @@ dialog::backdrop {
 }
 
 dialog {
+  max-width: 1000px;
+  width: 80%;
   color: #ddd;
   background: #121d0b;
   border: none;
-  padding: 20px;
+  padding: 30px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -871,15 +695,7 @@ menu {
   gap: 2em;
 }
 
-/* only correct ones */
 
-/* follow bar which dissappears */
-
-@media screen and (max-width: 960px) {
-  .follow-bar {
-    display: none !important;
-  }
-}
 
 .follow-bar {
   display: flex;
@@ -940,40 +756,6 @@ form select {
   letter-spacing: 0.10em;
 }
 
-@media screen and (max-width: 960px) {
-  .full-container {
-    flex-direction: column;
-  }
-
-  .logo>img {
-    width: 80% !important;
-  }
-}
-
-
-.container {
-  width: 1300px !important;
-  padding-top: 0 !important;
-  display: flex;
-  justify-content: center;
-}
-
-@media screen and (min-width: 992px) and (max-width: 1439px) {
-  .container {
-    max-width: 1279px !important;
-    margin: 0 80px !important;
-    width: auto !important;
-  }
-}
-
-@media screen and (max-width: 991px) {
-  .container {
-    max-width: 940px !important;
-    margin: 0 16px !important;
-    width: auto !important;
-  }
-}
-
 .cards {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -985,16 +767,70 @@ form select {
   width: 80%;
 }
 
+
+.container {
+  width: 1300px !important;
+  padding-top: 0 !important;
+  display: flex;
+  justify-content: center;
+}
+
+
+@media screen and (max-width: 960px) {
+  .full-container {
+    flex-direction: column;
+  }
+
+  .logo>img {
+    width: 80% !important;
+  }
+}
+
+@media screen and (min-width: 992px) and (max-width: 1439px) {
+  .container {
+    max-width: 1279px !important;
+    margin: 0 80px !important;
+    width: auto !important;
+  }
+
+  .profile-column {
+    min-width: 500px;
+  }
+}
+
 @media screen and (max-width: 1200px) {
   .cards {
     grid-template-columns: 1fr;
     padding: 1em !important;
   }
 
+  .profile-column {
+    min-width: 500px;
+  }
+
   .login {
     width: 100%;
   }
 }
+
+@media screen and (max-width: 991px) {
+  .follow-bar {
+    display: none !important;
+  }
+
+  .container {
+    max-width: 940px !important;
+    margin: 0 16px !important;
+    width: auto !important;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .profile-column {
+    min-width: 340px;
+  }
+}
+
 
 
 .container-card {

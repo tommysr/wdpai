@@ -310,7 +310,7 @@ class QuestsController extends AppController implements IQuestsController
     $blockchain = $this->questService->getQuestBlockchain($questId);
     $wallets = $this->walletService->getBlockchainWallets($identity, $blockchain);
 
-    return $this->render('showWallets', ['title' => 'enter quest', 'questId' => $questId, 'wallets' => $wallets, 'blockchain' => $blockchain]);
+    return $this->render('showWallets', ['title' => 'enter quest', 'questId' => $questId, 'wallets' => $wallets, 'chain' => $blockchain]);
   }
 
 
@@ -335,6 +335,6 @@ class QuestsController extends AppController implements IQuestsController
 
     // somehow get user points
     // there is also list of quests user has participated in
-    return $this->render('layout', ['title' => 'dashboard', 'username' => $user->getName(), 'joinDate' => $joinDate, 'points' => sizeof($stats)], 'dashboard');
+    return $this->render('layout', ['title' => 'dashboard', 'username' => $user->getName(), 'joinDate' => $joinDate, 'points' => sizeof($stats), 'stats' => $stats], 'dashboard');
   }
 }

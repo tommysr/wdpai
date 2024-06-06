@@ -60,15 +60,15 @@ class GameController extends AppController implements IGameController
     $walletId = $this->request->getParsedBodyParam('walletId');
 
     if (!$walletId) {
-      return new RedirectResponse('/error/404', );
+      return new JsonResponse(['errors' => ['Wallet id is required']]);
     }
 
     try {
       $this->questProgressService->startProgress($questId, (int) $walletId);
 
-      return new RedirectResponse('/play');
+      return new JsonResponse(['redirect' => '/play']);
     } catch (\Exception $e) {
-      return new RedirectResponse('/error/404');
+      return new JsonResponse(['errors' => ['Could not start quest']]);
     }
   }
 

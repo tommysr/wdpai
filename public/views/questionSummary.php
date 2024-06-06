@@ -50,8 +50,6 @@
 
     <div class="progress-bar">
       <div class="progress"></div>
-      <!-- <div class="indicator"></div> -->
-      <!-- <div class="max-progress"></div> -->
     </div>
     <a href="/play" class="main-button">Continue</a>
   </div>
