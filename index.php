@@ -61,6 +61,7 @@ $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'showCreatedQ
 $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'createQuest');
 $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'editQuest');
 $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'uploadQuestPicture');
+$acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'reportQuest');
 
 $acl->allow((string) UserRole::NORMAL->value, 'QuestsController', 'showQuestWallets');
 $acl->allow((string) UserRole::NORMAL->value, 'QuestsController', 'enterQuest');
@@ -93,6 +94,7 @@ Router::get('/showEditQuest/{questId}', 'QuestsController@showEditQuest', [$auth
 Router::post('/createQuest', 'QuestsController@createQuest', [$authMiddleware, $roleAuthorizationMiddleware, $questValidationMiddleware, $questAuthorizeMiddleware]);
 Router::post('/editQuest/{questId}', 'QuestsController@editQuest', [$authMiddleware, $roleAuthorizationMiddleware, $questValidationMiddleware, $questAuthorizeMiddleware]);
 Router::post('/uploadQuestPicture', 'QuestsController@uploadQuestPicture', [$authMiddleware, $roleAuthorizationMiddleware]);
+Router::get('/reportQuest/{questId}', 'QuestsController@reportQuest', [$authMiddleware, $roleAuthorizationMiddleware]);
 
 // NORMAL USER ROUTES
 Router::get('/dashboard', 'QuestsController@dashboard', [$authMiddleware, $questAuthorizeMiddleware]);

@@ -40,6 +40,11 @@ class QuestProgressService implements IQuestProgressService
     return $this->questProgressRepository->getQuestProgress($userId, $questId) !== null;
   }
 
+  public function getResponsesCount(int $optionId): int
+  {
+    return $this->questProgressRepository->getResponsesCount($optionId);
+  }
+
   public function getQuestSummary(int $userId): array
   {
     $questProgress = $this->getCurrentProgressFromSession();
@@ -92,7 +97,7 @@ class QuestProgressService implements IQuestProgressService
 
   public function getUserQuests(int $userId): array
   {
-    $progresses =  $this->questProgressRepository->getUserEntries($userId);
+    $progresses = $this->questProgressRepository->getUserEntries($userId);
 
     return array_map(fn($progress) => [
       'quest' => $this->questService->getQuest($progress->getQuestId()),

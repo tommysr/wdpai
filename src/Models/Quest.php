@@ -188,6 +188,11 @@ class Quest implements IQuest
         return $this->questions;
     }
 
+    public function isExpired(): bool
+    {
+        return strtotime($this->expiryDate) < time();
+    }
+
     public function setQuestions(array $questions)
     {
         $this->questions = $questions;
