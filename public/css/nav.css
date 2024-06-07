@@ -64,7 +64,7 @@ body {
   top: 0;
   left: 0;
   opacity: 1;
-  height: 100%;
+  height: calc(100% - 70px);
   width: 300px;
   z-index: 1000;
   background-color: #0e130e;
