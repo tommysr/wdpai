@@ -51,7 +51,7 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
       return null;
     }
 
-    return new QuestProgress($qp['completion_date'], $qp['score'], $qp['quest_id'], $qp['wallet_id'], $qp['last_question_id'], QuestState::fromId($qp['state']), $qp['address']);
+    return new QuestProgress($qp['completion_date'], $qp['score'], $qp['quest_id'], $qp['wallet_id'], $qp['next_question_id'], QuestState::fromId($qp['state']), $qp['address']);
   }
 
   public function getQuestProgress(int $userId, int $questId): ?IQuestProgress
@@ -68,7 +68,7 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
       return null;
     }
 
-    return new QuestProgress($qp['completion_date'], $qp['score'], $qp['quest_id'], $qp['wallet_id'], $qp['last_question_id'], QuestState::fromId($qp['state']), $qp['address']);  }
+    return new QuestProgress($qp['completion_date'], $qp['score'], $qp['quest_id'], $qp['wallet_id'], $qp['next_question_id'], QuestState::fromId($qp['state']), $qp['address']);  }
 
   public function saveQuestProgress(IQuestProgress $questProgress): void
   {
@@ -157,7 +157,7 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
 
     $progresses = [];
     foreach ($entries as $qp) {
-      $progresses[] = new QuestProgress($qp['completion_date'], $qp['score'], $qp['quest_id'], $qp['wallet_id'], $qp['last_question_id'], QuestState::fromId($qp['state']), $qp['address']);
+      $progresses[] = new QuestProgress($qp['completion_date'], $qp['score'], $qp['quest_id'], $qp['wallet_id'], $qp['next_question_id'], QuestState::fromId($qp['state']), $qp['address']);
     }
 
     return $progresses;

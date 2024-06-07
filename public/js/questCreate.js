@@ -37,7 +37,7 @@ const checkQuestionTestsValidity = (questionT) => {
   if (questionText.validity.valueMissing) {
     error.textContent = "You need to enter a question";
   } else if (questionText.validity.tooShort) {
-    error.textContent = "Question must be at least 5 characters";
+    error.textContent = "Question must be at least 1 characters";
   } else if (questionText.validity.tooLong) {
     error.textContent = "Question must be at most 80 characters";
   } else {
@@ -83,7 +83,7 @@ const checkTitleValidity = () => {
   } else if (title.validity.tooShort) {
     error.textContent = "Title must be at least 5 characters";
   } else if (title.validity.tooLong) {
-    error.textContent = "Title must be at most 50 characters";
+    error.textContent = "Title must be at most 90 characters";
   } else {
     error.textContent = "";
     return true;
@@ -219,7 +219,7 @@ const checkTokenValidity = () => {
   } else if (token.validity.tooShort) {
     error.textContent = "Token must be at least 3 characters";
   } else if (token.validity.tooLong) {
-    error.textContent = "Token must be at most 50 characters";
+    error.textContent = "Token must be at most 20 characters";
   } else {
     error.textContent = "";
     return true;
