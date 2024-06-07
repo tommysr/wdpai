@@ -16,29 +16,35 @@ class UserRepository extends Repository implements IUserRepository
     $sql = 'SELECT user_id FROM users';
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute();
-    $userIds = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    return array_map(function ($userId) {
-      return $userId['user_id'];
-    }, $userIds);
+    $userIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    return $userIds;
   }
 
   public function getMaxUserId(): int
   {
     $sql = 'SELECT MAX(user_id) as max_id FROM users';
-
     $query = $this->db->connect()->query($sql);
-
     return (int) $query->fetchColumn();
+  }
+
+  public function updateUser(IUser $user): void
+  {
+    $sql = 'UPDATE users SET email = ?, username = ?, password = ?, role_id = ? WHERE user_id = ?';
+    $stmt = $this->db->connect()->prepare($sql);
+
+    $stmt->execute([
+      $user->getEmail(),
+      $user->getName(),
+      $user->getPassword(),
+      $user->getRole()->getId(),
+      $user->getId()
+    ]);
   }
 
   public function addUser(IUser $user): void
   {
-    // default role_id and avatar_id are 0
-    $stmt = $this->db->connect()->prepare('
-      INSERT INTO Users (email, username, password, join_date, role_id, avatar_id)
-      VALUES (?, ?, ?, ?, ?, 1)
-    ');
+    $sql = 'INSERT INTO users (email, username, password, join_date, role_id, avatar_id) VALUES (?, ?, ?, ?, ?, 1)';
+    $stmt = $this->db->connect()->prepare($sql);
 
     $stmt->execute([
       $user->getEmail(),
@@ -80,14 +86,10 @@ class UserRepository extends Repository implements IUserRepository
     $stmt->execute();
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$user) {
-      return null;
-    }
-
-    return $this->constructUser($user);
+    return $user ? $this->constructUser($user) : null;
   }
 
-  public function getUser(string $email): ?IUser
+  public function getUserByEmail(string $email): ?IUser
   {
     $sql = $this->getUserQuery("WHERE email = :email");
     $stmt = $this->db->connect()->prepare($sql);
@@ -96,39 +98,17 @@ class UserRepository extends Repository implements IUserRepository
 
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$user) {
-      return null;
-    }
-
-    return $this->constructUser($user);
+    return $user ? $this->constructUser($user) : null;
   }
 
-
-  public function userExists(string $email): bool
+  public function getUserByName(string $name): ?IUser
   {
-    $sql = "SELECT * FROM users WHERE email = :email";
+    $sql = $this->getUserQuery("WHERE username = :name");
     $stmt = $this->db->connect()->prepare($sql);
-    $stmt->bindParam(":email", $email, PDO::PARAM_STR);
+    $stmt->bindParam(':name', $name, PDO::PARAM_STR);
     $stmt->execute();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($stmt->fetch(PDO::FETCH_ASSOC)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  public function userNameExists(string $username): bool
-  {
-    $sql = "SELECT * FROM users WHERE username = :username";
-    $stmt = $this->db->connect()->prepare($sql);
-    $stmt->bindParam(':username', $username, PDO::PARAM_STR);
-    $stmt->execute();
-
-    if ($stmt->fetch(PDO::FETCH_ASSOC)) {
-      return true;
-    } else {
-      return false;
-    }
+    return $user ? $this->constructUser($user) : null;
   }
 }

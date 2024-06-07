@@ -81,6 +81,7 @@ $roleAuthorizationMiddleware = new RoleAuthorizationMiddleware($acl, $authServic
 // GENERAL ROUTES
 Router::get('/error/{code}', 'ErrorController@error');
 Router::get('/', 'QuestsController@showQuests', [$authMiddleware, $questAuthorizeMiddleware, $questAuthorizeMiddleware]);
+Router::post('/changePassword', 'ProfileController@changePassword', [$authMiddleware]);
 
 // AUTHENTICATION ROUTES
 Router::get('/login', 'LoginController@login', [$authMiddleware]);

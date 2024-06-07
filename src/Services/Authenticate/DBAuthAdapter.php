@@ -17,7 +17,7 @@ class DBAuthAdapter implements IAuthAdapter
     private string $password;
     private IUserRepository $userRepository;
 
-    public function __construct(string $email, string $password, ?IUserRepository $userRepository = null)
+    public function __construct(string $email, string $password, IUserRepository $userRepository = null)
     {
         $this->email = $email;
         $this->password = $password;
@@ -26,7 +26,7 @@ class DBAuthAdapter implements IAuthAdapter
 
     public function authenticate(): IAuthResult
     {
-        $user = $this->userRepository->getUser($this->email);
+        $user = $this->userRepository->getUserByEmail($this->email);
 
         if (!$user || !password_verify($this->password, $user->getPassword())) {
             return new DBAuthResult(null, ['invalid credentials']);
