@@ -19,7 +19,7 @@
 
     <div class="flex-column-center"> <label for="quizTitle" class="input-description main-text">Quiz Title:</label>
       <input class="login-input" type="text" id="quizTitle" name="title" placeholder="title" minlength="5"
-        maxlength="50" value="<?= $quest ? $quest->getTitle() : '' ?>" required>
+        maxlength="90" value="<?= $quest ? $quest->getTitle() : '' ?>" required>
     </div>
 
 
@@ -82,7 +82,7 @@
           <div class="flex-column-center">
             <label for="poolAmount" class="input-description main-text">Payout token:</label>
             <input type="text" class="login-input" name="token" value="<?= $quest ? $quest->getToken() : '' ?>" required
-              placeholder="token" minlength="3" maxlength="50">
+              placeholder="token" minlength="3" maxlength="20">
           </div>
         </td>
       </tr>
@@ -106,7 +106,7 @@
               <div class="container-card bg-green-box question flex-column-center-center gap-1">
                 <input type="hidden" name="questions[<?= $counter; ?>][id]" value="<?= $questionId; ?>">
                 <textarea name="questions[<?= $counter; ?>][text]" class="questionText main-text" cols="30" rows="10"
-                  minlength="5" maxlength="80" placeholder="question text" required><?= $question->getText(); ?></textarea>
+                  minlength="3" maxlength="500" placeholder="question text" required><?= $question->getText(); ?></textarea>
 
                 <div class="grid-2">
                   <label for="questionPoints" class="input-description main-text center">Points:</label>
@@ -126,7 +126,7 @@
                         <input type="hidden" name="questions[<?= $counter; ?>][options][<?= $optionCounter; ?>][id]"
                           value="<?= $optionId; ?>">
                         <input class="points optionText" type="text"
-                          name="questions[<?= $counter; ?>][options][<?= $optionCounter; ?>][text]" minlength="5"
+                          name="questions[<?= $counter; ?>][options][<?= $optionCounter; ?>][text]" minlength="1"
                           maxlength="50" value="<?= $option->getText() ?>" required>
                       </div>
 

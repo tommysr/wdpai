@@ -46,10 +46,15 @@ $questAuthorizeStrategyFactory = new AuthorizationFactory($sessionService, $auth
 $questAuthorizeService = new QuestAuthorizeService($questAuthorizeStrategyFactory);
 $questAuthorizeMiddleware = new QuestAuthorizationMiddleware($questAuthorizeService);
 
-// ACL
+// need to move it, somehow hide it
 
+// ACL
 $roleRepository = new RoleRepository();
-$rolesFromDatabase = $roleRepository->getRoles();
+try {
+  $rolesFromDatabase = $roleRepository->getRoles();
+} catch (Exception $e) {
+  die();
+}
 $acl = new Acl();
 foreach ($rolesFromDatabase as $role) {
   $name = $role->getName();
@@ -125,13 +130,12 @@ Router::post('/unpublishQuest/{questId}', 'QuestsController@unpublishQuest', [$a
 
 $request = new Request($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
 $emitter = new Emitter();
-$response = Router::dispatch($request);
+try {
+  $response = Router::dispatch($request);
 
-$emitter->emit($response);
-// try {
-
-// } catch (Exception $e) {
-//   error_log($e->getMessage());
-//   $emitter->emit(new RedirectResponse('/error/500'));
-// }
+  $emitter->emit($response);
+} catch (Exception $e) {
+  error_log($e->getMessage());
+  $emitter->emit(new RedirectResponse('/error/500'));
+}
 

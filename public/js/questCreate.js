@@ -1,4 +1,3 @@
-
 const form = document.getElementById("questForm");
 const title = document.getElementById("quizTitle");
 const description = document.getElementById("description");
@@ -6,7 +5,9 @@ const blockchain = document.querySelector("input[name='blockchain']");
 const expiryDate = document.querySelector("input[name='expiryDate']");
 const payoutDate = document.querySelector("input[name='payoutDate']");
 const minutesRequired = document.querySelector("input[name='minutesRequired']");
-const participantsLimit = document.querySelector("input[name='participantsLimit']");
+const participantsLimit = document.querySelector(
+  "input[name='participantsLimit']"
+);
 const poolAmount = document.querySelector("input[name='poolAmount']");
 const token = document.querySelector("input[name='token']");
 const error = document.getElementById("error");
@@ -22,14 +23,13 @@ const checkOptionTextValidity = (optionT) => {
   if (optionText.validity.valueMissing) {
     error.textContent = "You need to enter an option";
   } else if (optionText.validity.tooShort) {
-    error.textContent = "Option must be at least 5 characters";
+    error.textContent = "Option must be at least 1 characters";
   } else if (optionText.validity.tooLong) {
     error.textContent = "Option must be at most 50 characters";
   } else {
     error.textContent = "";
   }
-}
-
+};
 
 const checkQuestionTestsValidity = (questionT) => {
   const questionText = questionT.target;
@@ -37,13 +37,13 @@ const checkQuestionTestsValidity = (questionT) => {
   if (questionText.validity.valueMissing) {
     error.textContent = "You need to enter a question";
   } else if (questionText.validity.tooShort) {
-    error.textContent = "Question must be at least 1 characters";
+    error.textContent = "Question must be at least 3 characters";
   } else if (questionText.validity.tooLong) {
-    error.textContent = "Question must be at most 80 characters";
+    error.textContent = "Question must be at most 500 characters";
   } else {
     error.textContent = "";
   }
-}
+};
 
 const checkQuestionPointsValidity = (questionP) => {
   const questionPoints = questionP.target;
@@ -59,25 +59,34 @@ const checkQuestionPointsValidity = (questionP) => {
   } else {
     error.textContent = "";
   }
-}
+};
 
 for (let i = 0; i < questionsTexts.length; i++) {
-  console.log(questionsTexts[i])
-  questionsTexts[i].addEventListener("blur", checkQuestionTestsValidity.bind((questionsTexts[i])));
+  console.log(questionsTexts[i]);
+  questionsTexts[i].addEventListener(
+    "blur",
+    checkQuestionTestsValidity.bind(questionsTexts[i])
+  );
 }
 
 for (let i = 0; i < questionsPoints.length; i++) {
-  console.log(questionsPoints[i])
-  questionsPoints[i].addEventListener("blur", checkQuestionPointsValidity.bind((questionsPoints[i])));
+  console.log(questionsPoints[i]);
+  questionsPoints[i].addEventListener(
+    "blur",
+    checkQuestionPointsValidity.bind(questionsPoints[i])
+  );
 }
 
 for (let i = 0; i < optionsText.length; i++) {
-  console.log(optionsText[i])
-  optionsText[i].addEventListener("blur", checkOptionTextValidity.bind((optionsText[i])));
+  console.log(optionsText[i]);
+  optionsText[i].addEventListener(
+    "blur",
+    checkOptionTextValidity.bind(optionsText[i])
+  );
 }
 
 const checkTitleValidity = () => {
-  console.log(title.value.length)
+  console.log(title.value.length);
   if (title.validity.valueMissing) {
     error.textContent = "You need to enter a title";
   } else if (title.validity.tooShort) {
@@ -103,7 +112,7 @@ const checkDescriptionValidity = () => {
     error.textContent = "";
     return true;
   }
-}
+};
 
 description.addEventListener("blur", checkDescriptionValidity);
 
@@ -120,14 +129,14 @@ const checkBlockchainValidity = () => {
   }
 
   return false;
-}
+};
 
 blockchain.addEventListener("blur", checkBlockchainValidity);
 
 const checkExpiryDateValidity = () => {
   if (expiryDate.validity.valueMissing) {
     error.textContent = "You need to enter an expiry date";
-  } else if (expiryDate.value <= new Date().toISOString().split('T')[0]) {
+  } else if (expiryDate.value <= new Date().toISOString().split("T")[0]) {
     error.textContent = "Expiry date must be in the future";
   } else {
     error.textContent = "";
@@ -135,14 +144,14 @@ const checkExpiryDateValidity = () => {
   }
 
   return false;
-}
+};
 
 expiryDate.addEventListener("blur", checkExpiryDateValidity);
 
 const checkPayoutDateValidity = () => {
   if (payoutDate.validity.valueMissing) {
     error.textContent = "You need to enter a payout date";
-  } else if (payoutDate.value <= new Date().toISOString().split('T')[0]) {
+  } else if (payoutDate.value <= new Date().toISOString().split("T")[0]) {
     error.textContent = "Payout date must be in the future";
   } else {
     error.textContent = "";
@@ -150,12 +159,12 @@ const checkPayoutDateValidity = () => {
   }
 
   return false;
-}
+};
 
 payoutDate.addEventListener("blur", checkPayoutDateValidity);
 
 const checkMinutesRequiredValidity = () => {
-  console.log(minutesRequired.value)
+  console.log(minutesRequired.value);
   if (minutesRequired.validity.valueMissing) {
     error.textContent = "You need to enter the minutes required";
   } else if (minutesRequired.value != parseInt(minutesRequired.value)) {
@@ -170,7 +179,7 @@ const checkMinutesRequiredValidity = () => {
   }
 
   return false;
-}
+};
 
 minutesRequired.addEventListener("blur", checkMinutesRequiredValidity);
 
@@ -188,16 +197,15 @@ const checkParticipantsLimitValidity = () => {
     return true;
   }
 
-
   return false;
-}
+};
 
 participantsLimit.addEventListener("blur", checkParticipantsLimitValidity);
 
 const checkPoolAmountValidity = () => {
   const poolAmountValue = poolAmount.value.trim();
 
-  if (poolAmountValue === '') {
+  if (poolAmountValue === "") {
     error.textContent = "You need to enter the pool amount";
   } else if (!/^\d*\.?\d+$/.test(poolAmountValue)) {
     error.textContent = "Pool amount must be a valid number";
@@ -209,7 +217,7 @@ const checkPoolAmountValidity = () => {
   }
 
   return false;
-}
+};
 
 poolAmount.addEventListener("blur", checkPoolAmountValidity);
 
@@ -226,10 +234,9 @@ const checkTokenValidity = () => {
   }
 
   return false;
-}
+};
 
 token.addEventListener("blur", checkTokenValidity);
-
 
 const questionsDiv = document.querySelector(".cards");
 const questions = document.querySelectorAll(".container-card");
@@ -271,7 +278,7 @@ function addQuestion(questionId) {
 
   newQuestionDiv.innerHTML = `
       <div class="container-card bg-green-box question flex-column-center-center gap-1">
-        <textarea name="questions[${questionId}][text]" class="questionText main-text" cols="30" rows="10" placeholder="question text" minlength="5" maxlength="80" required> </textarea>
+        <textarea name="questions[${questionId}][text]" class="questionText main-text" cols="30" rows="10" placeholder="question text" minlength="3" maxlength="500" required> </textarea>
         <div class="grid-2">
           <label for="questionPoints" class="input-description main-text center">Points:</label>
           <input class="points questionPoints" type="number" name="questions[${questionId}][score]" min="1" max="100"
@@ -288,11 +295,17 @@ function addQuestion(questionId) {
   questionsDiv.appendChild(newQuestionDiv);
 
   const newQuestionText = newQuestionDiv.querySelector("div > textarea");
-  console.log(newQuestionText)
-  newQuestionText.addEventListener("blur", checkQuestionTestsValidity.bind(newQuestionText));
+  console.log(newQuestionText);
+  newQuestionText.addEventListener(
+    "blur",
+    checkQuestionTestsValidity.bind(newQuestionText)
+  );
   const newQuestionPoints = newQuestionDiv.querySelector("div > input");
   console.log(newQuestionPoints);
-  newQuestionPoints.addEventListener("blur", checkQuestionPointsValidity.bind(newQuestionPoints));
+  newQuestionPoints.addEventListener(
+    "blur",
+    checkQuestionPointsValidity.bind(newQuestionPoints)
+  );
 
   newQuestionDiv
     .querySelector(".addOption")
@@ -303,7 +316,7 @@ function addQuestion(questionId) {
         questionsOption[questionId] = 0;
       }
 
-      console.log(questionsOption[questionId])
+      console.log(questionsOption[questionId]);
       addOption(newQuestionDiv, questionId, questionsOption[questionId]);
     });
 
@@ -333,7 +346,7 @@ function addOptionRaw(callDiv, questionId, optionId) {
     questionsOption[questionId] = optionId;
   }
 
-  questionsOption[questionId]
+  questionsOption[questionId];
 
   addOption(optionsDiv, questionId, questionsOption[questionId]);
 }
@@ -347,7 +360,7 @@ function addOption(questionDiv, questionId, optionId) {
   newOptionDiv.innerHTML = `
       <div class="grid-3 w-100">
         <div>
-          <input type="text" class="points optionText" name="questions[${questionId}][options][${optionId}][text]" placeholder="option" minlength="5" maxlength="50">
+          <input type="text" class="points optionText" name="questions[${questionId}][options][${optionId}][text]" placeholder="option" minlength="1" maxlength="50">
           <input type="hidden" name="questions[${questionId}][options][${optionId}][flag]" value="added">
         </div>
 
@@ -364,9 +377,11 @@ function addOption(questionDiv, questionId, optionId) {
   optionsDiv.appendChild(newOptionDiv);
 
   const newOptionText = newOptionDiv.querySelector("div > input[type='text']");
-  console.log(newOptionText)
-  newOptionText.addEventListener("blur", checkOptionTextValidity.bind(newOptionText));
-
+  console.log(newOptionText);
+  newOptionText.addEventListener(
+    "blur",
+    checkOptionTextValidity.bind(newOptionText)
+  );
 
   newOptionDiv
     .querySelector(".removeOption")
@@ -428,29 +443,26 @@ function serializeForm(form) {
 }
 
 const validateFileInput = () => {
-  const questThumbnail = document.getElementById('questThumbnail');
+  const questThumbnail = document.getElementById("questThumbnail");
 
   if (!questThumbnail.value) {
-    error.textContent = 'You need to upload a file';
+    error.textContent = "You need to upload a file";
   } else {
-    error.textContent = '';
+    error.textContent = "";
     return true;
   }
 
-  const fileInput = document.getElementById('fileInput');
+  const fileInput = document.getElementById("fileInput");
   const file = fileInput.files[0];
 
   if (file) {
-    error.textContent = 'Click the upload button to upload the file';
+    error.textContent = "Click the upload button to upload the file";
     return false;
   }
-}
-
+};
 
 function submitForm(event) {
   event.preventDefault();
-
-
 
   if (
     !checkTitleValidity() ||
@@ -463,26 +475,15 @@ function submitForm(event) {
     !checkPoolAmountValidity() ||
     !checkTokenValidity() ||
     !form.checkValidity() ||
-    !validateFileInput()) {
+    !validateFileInput()
+  ) {
     return;
   }
 
-  // valid &= checkTitleValidity();
-  // valid &= checkDescriptionValidity();
-  // valid &= checkBlockchainValidity();
-  // valid &= checkExpiryDateValidity();
-  // valid &= checkPayoutDateValidity();
-  // valid &= checkMinutesRequiredValidity();
-  // valid &= checkParticipantsLimitValidity();
-  // valid &= checkPoolAmountValidity();
-  // valid &= checkTokenValidity();
-  // valid &= form.checkValidity();
-  // valid &= validateFileInput();
-
-
-  // if (!valid) {
-  //   return;
-  // }
+  if (questionsTexts.length == 0) {
+    error.innerText = "there must be at least 1 question";
+    return;
+  }
 
   const formData = serializeForm(event.target);
 
@@ -516,17 +517,16 @@ function submitForm(event) {
     });
 }
 
+const fileInput = document.getElementById("fileInput");
+const preview = document.getElementById("preview");
 
-const fileInput = document.getElementById('fileInput');
-const preview = document.getElementById('preview');
-
-fileInput.addEventListener('change', () => {
+fileInput.addEventListener("change", () => {
   const file = fileInput.files[0];
   const reader = new FileReader();
 
   reader.onload = (e) => {
     preview.src = e.target.result;
-    preview.style.display = 'block';
+    preview.style.display = "block";
   };
 
   if (file) {
@@ -534,26 +534,25 @@ fileInput.addEventListener('change', () => {
   }
 });
 
-
 function uploadFile() {
   const formData = new FormData();
-  formData.append('file', fileInput.files[0]);
+  formData.append("file", fileInput.files[0]);
 
-  fetch('/uploadQuestPicture', {
-    method: 'POST',
-    body: formData
+  fetch("/uploadQuestPicture", {
+    method: "POST",
+    body: formData,
   })
-    .then(response => response.json())
-    .then(data => {
+    .then((response) => response.json())
+    .then((data) => {
       if (data.name) {
-        const questThumbnail = document.getElementById('questThumbnail');
-        error.textContent = '';
+        const questThumbnail = document.getElementById("questThumbnail");
+        error.textContent = "";
         questThumbnail.value = data.name;
       } else if (data.errors) {
         error.textContent = data.errors[0];
       }
     })
-    .catch(error => {
-      console.error('Error:', error);
+    .catch((error) => {
+      console.error("Error:", error);
     });
 }

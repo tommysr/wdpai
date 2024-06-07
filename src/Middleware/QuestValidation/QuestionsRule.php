@@ -9,8 +9,8 @@ class QuestionsRule implements IValid
 {
   public function validate($data): bool|string
   {
-    if (!isset($data) || !is_array($data)) {
-      return "Questions field is required and must be an array.";
+    if (!isset($data) || !is_array($data) || empty($data)) {
+      return "Questions field is required";
     }
 
     foreach ($data as $question) {
@@ -24,6 +24,10 @@ class QuestionsRule implements IValid
         return "Each question must have 'text'";
       }
 
+      if (strlen($question['text']) < 3 || strlen($question['text']) > 500) {
+        return "Question must be between 3 and 500 characters";
+      }
+
       $isCorrectCount = 0;
       $hasOptions = false;
 
@@ -33,6 +37,10 @@ class QuestionsRule implements IValid
         foreach ($question['options'] as $option) {
           if (!isset($option['text'])) {
             return "Each option must have 'text' and 'isCorrect' fields.";
+          }
+
+          if(strlen($option['text']) == 0 || strlen($option['text']) > 50) {
+            return "Option must be between 1 and 50 characters";
           }
 
           if (isset($option['isCorrect'])) {
