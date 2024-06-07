@@ -115,6 +115,7 @@ class Request implements IFullRequest
         return $this->getHeaders()[$name] ?? '';
     }
 
+    // might be beneficial to use in middleware to communicate by response codes
     public function getStatusCode(): int
     {
         return http_response_code();

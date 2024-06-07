@@ -3,7 +3,7 @@ namespace App\Config;
 
 use App\Config\IConfig;
 
-class Config implements IConfig
+abstract class Config implements IConfig
 {
   private $hashmap = [];
 

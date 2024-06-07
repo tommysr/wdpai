@@ -30,6 +30,7 @@ services:
     working_dir: /app
     networks:
       - pg-network
+    command: ["php", "/app/vendor/bin/phpunit", "--colors=always", "/app/tests"]
   
   pgadmin:
     image: dpage/pgadmin4:latest

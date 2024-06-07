@@ -1,0 +1,1 @@
+<html><head><title><?= $title; ?></title></head><body><?php require_once __DIR__ . '/'. $content . '.php'; ?></body></html>

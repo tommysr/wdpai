@@ -1,4 +1,3 @@
-
 FROM php:8.3.7RC1-fpm-alpine3.19
 
 ENV RUN_DEPS \
@@ -39,6 +38,8 @@ WORKDIR /app
 ENV COMPOSER_ALLOW_SUPERUSER=1
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN chmod +x /usr/bin/composer
+
+RUN ./vendor/bin/phpunit tests
 
 # Define volumes
 VOLUME ["/app"]
