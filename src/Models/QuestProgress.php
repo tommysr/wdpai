@@ -24,7 +24,7 @@ class QuestProgress implements IQuestProgress
       $data['score'],
       $data['quest_id'],
       $data['wallet_id'],
-      $data['last_question_id'],
+      $data['next_question_id'],
       QuestState::from($data['state'])
     );
   }

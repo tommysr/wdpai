@@ -16,15 +16,15 @@ class QuestValidationChain extends ValidationChain
     // TODO: add some rules
     $this->strict = true;
     $this->addRules('questThumbnail', [new RequiredValidationRule()]);
-    $this->addRules('title', [new RequiredValidationRule(), new MinMaxLengthValidationRule(3, 100)]);
-    $this->addRules('description', [new RequiredValidationRule(), new MinMaxLengthValidationRule(3, 200)]);
-    $this->addRules('blockchain', [new RequiredValidationRule(), new MinMaxLengthValidationRule(3, 20)]);
-    $this->addRules('minutesRequired', [new RequiredValidationRule()]);
-    $this->addRules('expiryDate', [new RequiredValidationRule()]);
-    $this->addRules('payoutDate', [new RequiredValidationRule()]);
-    $this->addRules('participantsLimit', [new RequiredValidationRule(), new MinMaxValidationRule(1, 1000)]);
-    $this->addRules('poolAmount', [new RequiredValidationRule()]);
-    $this->addRules('token', [new RequiredValidationRule(), new MinMaxLengthValidationRule(2, 4)]);
+    $this->addRules('title', [new RequiredValidationRule(), new MinMaxLengthValidationRule(5, 90)]);
+    $this->addRules('description', [new RequiredValidationRule(), new MinMaxLengthValidationRule(20, 300)]);
+    $this->addRules('blockchain', [new RequiredValidationRule(), new MinMaxLengthValidationRule(3, 50)]);
+    $this->addRules('minutesRequired', [new RequiredValidationRule(), new MinMaxValidationRule(1, 120)]);
+    $this->addRules('expiryDate', [new RequiredValidationRule()]); // TODO:
+    $this->addRules('payoutDate', [new RequiredValidationRule()]); // TODO:
+    $this->addRules('participantsLimit', [new RequiredValidationRule(), new MinMaxValidationRule(20, 1000)]);
+    $this->addRules('poolAmount', [new RequiredValidationRule(), new MinMaxValidationRule(0, PHP_INT_MAX)]); // TODO: do it for float
+    $this->addRules('token', [new RequiredValidationRule(), new MinMaxLengthValidationRule(3, 20)]);
     $this->addRules('questions', [new QuestionsRule()]);
   }
 }

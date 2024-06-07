@@ -30,17 +30,19 @@ RUN apk add --no-cache --virtual .build-deps $BUILD_DEPS \
 
 RUN apk add --no-cache --virtual .run-deps $RUN_DEPS
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-RUN echo 'memory_limit = -1' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini;
-
 # Copy the application code
 COPY . /app
-
 # Change working directory
 WORKDIR /app
 
-# Install PHPUnit
-RUN composer install
+# ENV COMPOSER_ALLOW_SUPERUSER=1
+# COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# RUN chmod +x /usr/bin/composer
+# RUN composer install
+
+# RUN ./vendor/bin/phpunit --colors=always tests/
 
 # Define volumes
 VOLUME ["/app"]
+
+

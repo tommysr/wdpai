@@ -8,6 +8,7 @@ use App\Middleware\LoginValidation\LoginValidationMiddleware;
 use App\Middleware\QuestAuthorization\QuestAuthorizationMiddleware;
 use App\Middleware\QuestValidation\QuestValidationChain;
 use App\Middleware\QuestValidation\QuestValidationMiddleware;
+use App\Middleware\RedirectResponse;
 use App\Middleware\RegisterValidation\RegisterChainFactory;
 use App\Middleware\RegisterValidation\RegisterValidationMiddleware;
 use App\Models\UserRole;
@@ -45,10 +46,15 @@ $questAuthorizeStrategyFactory = new AuthorizationFactory($sessionService, $auth
 $questAuthorizeService = new QuestAuthorizeService($questAuthorizeStrategyFactory);
 $questAuthorizeMiddleware = new QuestAuthorizationMiddleware($questAuthorizeService);
 
-// ACL
+// need to move it, somehow hide it
 
+// ACL
 $roleRepository = new RoleRepository();
-$rolesFromDatabase = $roleRepository->getRoles();
+try {
+  $rolesFromDatabase = $roleRepository->getRoles();
+} catch (Exception $e) {
+  die();
+}
 $acl = new Acl();
 foreach ($rolesFromDatabase as $role) {
   $name = $role->getName();
@@ -123,17 +129,13 @@ Router::post('/publishQuest/{questId}', 'QuestsController@publishQuest', [$authM
 Router::post('/unpublishQuest/{questId}', 'QuestsController@unpublishQuest', [$authMiddleware, $roleAuthorizationMiddleware]);
 
 $request = new Request($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
-$response = Router::dispatch($request);
 $emitter = new Emitter();
-$emitter->emit($response);
+try {
+  $response = Router::dispatch($request);
 
-
-// Router::get('startQuest', 'QuestsController');
-// // PROFILE
-// Router::get('dashboard', 'QuestsController');
-
-// // GAMEPLAY
-// Router::get('gameplay', 'GameController');
-// Router::get('processUserResponse', 'GameController');
-// Router::get('nextQuestion', 'GameController');
+  $emitter->emit($response);
+} catch (Exception $e) {
+  error_log($e->getMessage());
+  $emitter->emit(new RedirectResponse('/error/500'));
+}
 
