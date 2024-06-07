@@ -56,7 +56,7 @@ The database design follows best practices for data integrity and efficiency:
 - Tables such as `users`, `roles`, `quests`, `ratings`, `user_responses`, `quest_progress`, `similarities`, and `pictures` store essential data related to users, roles, quests, ratings, quest progress, recommendations, and multimedia assets.
 - Foreign key constraints and unique constraints ensure data consistency and enforce relationships between entities.
 
-![Database ERD](ERD.png)
+![Database ERD](erd.png)
 
 ## Design Patterns
 
