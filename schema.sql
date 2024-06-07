@@ -6,8 +6,9 @@ BEGIN;
 CREATE TABLE IF NOT EXISTS public.blockchains
 (
     blockchain_id serial NOT NULL,
-    name character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT blockchains_pkey PRIMARY KEY (blockchain_id)
+    name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT blockchains_pkey PRIMARY KEY (blockchain_id),
+    CONSTRAINT blockchain_name_unique UNIQUE (name)
 );
 
 CREATE TABLE IF NOT EXISTS public.options
@@ -15,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.options
     option_id serial NOT NULL,
     question_id integer NOT NULL,
     text text COLLATE pg_catalog."default" NOT NULL,
-    is_correct boolean NOT NULL,
+    is_correct boolean NOT NULL DEFAULT false,
     CONSTRAINT options_pkey PRIMARY KEY (option_id)
 );
 
@@ -23,7 +24,8 @@ CREATE TABLE IF NOT EXISTS public.pictures
 (
     picture_id serial NOT NULL,
     picture_url text COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT pictures_pkey PRIMARY KEY (picture_id)
+    CONSTRAINT pictures_pkey PRIMARY KEY (picture_id),
+    CONSTRAINT picture_url_unique UNIQUE (picture_url)
 );
 
 CREATE TABLE IF NOT EXISTS public.quest_progress
@@ -31,9 +33,9 @@ CREATE TABLE IF NOT EXISTS public.quest_progress
     wallet_id integer NOT NULL,
     quest_id integer NOT NULL,
     completion_date date,
-    score integer,
-    last_question_id integer,
-    state integer,
+    score integer NOT NULL DEFAULT 0,
+    next_question_id integer NOT NULL,
+    state integer NOT NULL,
     CONSTRAINT quest_progress_pkey PRIMARY KEY (quest_id, wallet_id)
 );
 
@@ -50,19 +52,20 @@ CREATE TABLE IF NOT EXISTS public.questions
 CREATE TABLE IF NOT EXISTS public.quests
 (
     quest_id serial NOT NULL,
-    creator_id integer,
-    picture_id integer,
-    blockchain_id integer,
-    token_id integer,
-    title character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    creator_id integer NOT NULL,
+    picture_id integer NOT NULL,
+    blockchain_id integer NOT NULL,
+    token_id integer NOT NULL,
+    title character varying(90) COLLATE pg_catalog."default" NOT NULL,
     description text COLLATE pg_catalog."default" NOT NULL,
     expiry_date date NOT NULL,
     participants_limit integer NOT NULL,
-    pool_amount numeric(10, 2) DEFAULT 0,
-    required_minutes integer DEFAULT 5,
-    approved boolean DEFAULT false,
-    payout_date date,
-    CONSTRAINT quests_pkey PRIMARY KEY (quest_id)
+    pool_amount numeric(10, 2) NOT NULL DEFAULT 0,
+    required_minutes integer NOT NULL DEFAULT 5,
+    approved boolean NOT NULL DEFAULT false,
+    payout_date date NOT NULL,
+    CONSTRAINT quests_pkey PRIMARY KEY (quest_id),
+    CONSTRAINT picture_id_unique UNIQUE (picture_id)
 );
 
 CREATE TABLE IF NOT EXISTS public.ratings
@@ -76,8 +79,9 @@ CREATE TABLE IF NOT EXISTS public.ratings
 CREATE TABLE IF NOT EXISTS public.roles
 (
     role_id serial NOT NULL,
-    name character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT roles_pkey PRIMARY KEY (role_id)
+    name character varying(20) COLLATE pg_catalog."default" NOT NULL DEFAULT 'normal'::character varying,
+    CONSTRAINT roles_pkey PRIMARY KEY (role_id),
+    CONSTRAINT role_unique UNIQUE (name)
 );
 
 CREATE TABLE IF NOT EXISTS public.similarities
@@ -91,8 +95,9 @@ CREATE TABLE IF NOT EXISTS public.similarities
 CREATE TABLE IF NOT EXISTS public.tokens
 (
     token_id serial NOT NULL,
-    name character varying(10) COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT tokens_pkey PRIMARY KEY (token_id)
+    name character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT tokens_pkey PRIMARY KEY (token_id),
+    CONSTRAINT token_unique UNIQUE (name)
 );
 
 CREATE TABLE IF NOT EXISTS public.user_responses
@@ -106,7 +111,7 @@ CREATE TABLE IF NOT EXISTS public.users
 (
     user_id serial NOT NULL,
     role_id integer NOT NULL,
-    avatar_id integer,
+    avatar_id integer NOT NULL DEFAULT 1,
     email character varying(255) COLLATE pg_catalog."default" NOT NULL,
     username character varying(255) COLLATE pg_catalog."default" NOT NULL,
     password character varying(255) COLLATE pg_catalog."default" NOT NULL,
@@ -120,11 +125,12 @@ CREATE TABLE IF NOT EXISTS public.wallets
 (
     wallet_id serial NOT NULL,
     blockchain_id integer NOT NULL,
-    user_id integer,
+    user_id integer NOT NULL,
     address character varying(255) COLLATE pg_catalog."default" NOT NULL,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT wallets_pkey PRIMARY KEY (wallet_id)
+    created_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT wallets_pkey PRIMARY KEY (wallet_id),
+    CONSTRAINT unique_address UNIQUE (address)
 );
 
 ALTER TABLE IF EXISTS public.options
@@ -263,5 +269,11 @@ ALTER TABLE IF EXISTS public.wallets
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
     NOT VALID;
+
+INSERT INTO public.pictures(picture_url) VALUES ('https://picsum.photos/300/200');
+INSERT INTO public.roles(name) VALUES ('normal');
+INSERT INTO public.roles(name) VALUES ('admin');
+INSERT INTO public.roles(name) VALUES ('creator');
+INSERT INTO public.tokens(name) VALUES ('guest');
 
 END;
