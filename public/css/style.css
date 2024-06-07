@@ -462,8 +462,13 @@ a.main-button {
 
 i {
   color: #65ccb8;
+
 }
 
+.follow-bar i, .follow-bar-mobile i{
+  color: #ebf6e5;
+  font-size: 1.2em;
+}
 
 .profile-column {
   max-width: 900px;
@@ -748,7 +753,7 @@ input[type="number"] {
 
 dialog button {
   background: #b0da99;
-  color: black;
+  /* color: black; */
   border: none;
   padding: 8px 16px;
   border-radius: 10px;
@@ -787,7 +792,7 @@ menu {
   display: flex;
   justify-content: end;
   align-items: center;
-  gap: 2em;
+  gap: 1em;
 }
 
 /* used in routes where there is no top bar */
