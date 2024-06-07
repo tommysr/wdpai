@@ -58,15 +58,15 @@ class ProfileController extends AppController implements IProfileController
         }
 
         if (strlen($newPassword) < 8 || strlen($newPassword) > 255) {
-            return new JsonResponse(['errors' => 'Password must be between 8 and 255 characters long'], 400);
+            return new JsonResponse(['errors' => ['Password must be between 8 and 255 characters long']], 400);
         }
 
         if ($newPassword !== $confirmPassword) {
-            return new JsonResponse(['errors' => 'Passwords do not match'], 400);
+            return new JsonResponse(['errors' => ['Passwords do not match']], 400);
         }
 
         if (!$this->userService->verifyPassword($userId, $currentPassword)) {
-            return new JsonResponse(['errors' => 'Current password is incorrect'], 400);
+            return new JsonResponse(['errors' => ['Current password is incorrect']], 400);
         }
 
         $this->userService->changePassword($userId, $newPassword);

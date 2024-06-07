@@ -81,7 +81,10 @@ $roleAuthorizationMiddleware = new RoleAuthorizationMiddleware($acl, $authServic
 // GENERAL ROUTES
 Router::get('/error/{code}', 'ErrorController@error');
 Router::get('/', 'QuestsController@showQuests', [$authMiddleware, $questAuthorizeMiddleware, $questAuthorizeMiddleware]);
+
+// PROFILE ROUTES
 Router::post('/changePassword', 'ProfileController@changePassword', [$authMiddleware]);
+Router::get('/dashboard', 'ProfileController@showProfile', [$authMiddleware]);
 
 // AUTHENTICATION ROUTES
 Router::get('/login', 'LoginController@login', [$authMiddleware]);
@@ -100,7 +103,6 @@ Router::post('/uploadQuestPicture', 'QuestsController@uploadQuestPicture', [$aut
 Router::get('/reportQuest/{questId}', 'QuestsController@reportQuest', [$authMiddleware, $roleAuthorizationMiddleware]);
 
 // NORMAL USER ROUTES
-Router::get('/dashboard', 'QuestsController@dashboard', [$authMiddleware, $questAuthorizeMiddleware]);
 Router::get('/showQuests', 'QuestsController@showQuests', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
 Router::get('/showTopRatedQuests', 'QuestsController@showTopRatedQuests', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
 Router::get('/showRecommendedQuests', 'QuestsController@showRecommendedQuests', [$authMiddleware, $roleAuthorizationMiddleware, $questAuthorizeMiddleware]);
