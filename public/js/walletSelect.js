@@ -65,6 +65,7 @@ function addWallet(event, blockchain) {
         select.add(option);
         select.value = walletId;
         form.style.display = "none";
+        handleWalletSelect(select);
       }
     })
     .catch((error) => {

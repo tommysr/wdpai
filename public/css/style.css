@@ -462,10 +462,22 @@ a.main-button {
 
 i {
   color: #65ccb8;
-
 }
 
-.follow-bar i, .follow-bar-mobile i{
+.fa-gold {
+  color: #e9c46a;
+}
+
+.fa-silver {
+  color: #a0a0a0;
+}
+
+.fa-bronze {
+  color: #cd7f32;
+}
+
+.follow-bar i,
+.follow-bar-mobile i {
   color: #ebf6e5;
   font-size: 1.2em;
 }
