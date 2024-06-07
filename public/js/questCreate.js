@@ -451,7 +451,6 @@ function submitForm(event) {
   event.preventDefault();
 
 
-  let valid = true;
 
   if (
     !checkTitleValidity() ||

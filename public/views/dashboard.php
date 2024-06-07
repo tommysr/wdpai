@@ -3,7 +3,7 @@
     <div class="cards w-100">
       <div class="profile-column  flex-column-center-center gap-1">
 
-        <h1 class="user-welcome" style="margin-top:0;">Hello, <?= $username; ?></h1>
+        <h1 class="user-welcome">Hello, <?= $username; ?></h1>
         <div class="profile-picture">
           <img src="https://picsum.photos/300/200" alt="image" />
         </div>
@@ -17,7 +17,7 @@
         </div>
 
         <div class="one-line-list">
-          <button class="achievement bg-green-box">
+          <button class="achievement bg-green-box" id="change-password">
             change password
           </button>
         </div>
@@ -64,7 +64,7 @@
             $progress = $stat['progress'];
             ?>
             <div class="card">
-              <div class="container-card bg-green-box" style="padding-bottom: 0.7em!important;">
+              <div class="container-card bg-green-box progress-card">
                 <div class="card-top">
                   <img class="image-green-box card-image"
                     src="<?= $quest->getPictureUrl() == 'none' ? "https://picsum.photos/300/200" : "/public/uploads/" . $quest->getPictureUrl(); ?>"
@@ -84,7 +84,7 @@
                 </div>
                 <span class="title"><?= $quest->getTitle(); ?></span>
 
-                <div class="infos" style="margin-top: 1em;">
+                <div class="infos mt-1">
                   <span class="info">
                     <i class="fas fa-link"></i>
                     <?= $quest->getBlockchain(); ?>
@@ -114,7 +114,7 @@
                 </span>
 
                 <a href="https://explorer.bitquery.io/solana/address/<?= $progress->getWalletAddress(); ?>"
-                  style="text-decoration:none; box-sizing: border-box; margin-top:1em;" class="show-more-btn">view
+                  class="show-more-btn view-button">view
                   explorer</a>
               </div>
             </div>
@@ -124,3 +124,30 @@
       </div>
     </div>
 </main>
+
+<dialog id="confirmationDialog">
+  <div class="flex-column-center-center w-100">
+    <h3>Password change</h3>
+    <div class="form-container">
+
+      <form class="flex-column-center-center gap-1 password-form">
+        <label for="current-password">Current Password</label>
+        <input type="password" id="current-password" name="current-password" class="login-input" required>
+
+        <label for="new-password">New Password</label>
+        <input type="password" id="new-password" name="new-password" class="login-input" required>
+
+        <label for="confirm-password">Confirm New Password</label>
+        <input type="password" id="confirm-password" name="confirm-password" class="login-input" required>
+        <span class="error-message"></span>
+
+      </form>
+      <menu>
+        <button id="confirm-yes" onclick="handleClick(event)">change</button>
+        <button id="confirm-no" onclick="closeModal(event)">cancel</button>
+      </menu>
+    </div>
+  </div>
+</dialog>
+
+<script type="text/javascript" src="/public/js/changePasswordModal.js" defer></script>
