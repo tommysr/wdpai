@@ -14,6 +14,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Lekton:ital,wght@0,400;0,700;1,400&display=swap"
     rel="stylesheet" />
 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+
   <script type="text/javascript" src="public/js/register.js" defer></script>
 
   <title><?= $title; ?></title>
@@ -21,14 +23,9 @@
 
 <body>
   <main class="full-container flex-row-evenly-center">
-    <div class="follow-bar absolute-follow">
-      <span class="text-bold-sm">Follow us</span>
-      <img src="public/assets/follow-bar/line.svg" />
-      <img src="public/assets/follow-bar/fb.svg" />
-      <img src="public/assets/follow-bar/ig.svg" />
-      <img src="public/assets/follow-bar/linkedin.svg" />
-      <img src="public/assets/follow-bar/arrow_left.svg" />
-    </div>
+    <span class="absolute-follow">
+      <?php require_once 'public/views/components/follow_bar.php'; ?>
+    </span>
 
     <div class="logo">
       <img src="public/assets/logo_with_name.svg" />

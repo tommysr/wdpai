@@ -92,7 +92,10 @@ body {
 
 .m-20 {
   margin: 20px;
+}
 
+.mt-1 {
+  margin-top: 1em;
 }
 
 .grid-3 {
@@ -154,6 +157,12 @@ h1 {
   letter-spacing: 0.05em;
   color: #ebf6e5;
 } */
+
+.view-button {
+  text-decoration: none;
+  box-sizing: border-box;
+  margin-top: 1em;
+}
 
 .wallet-name {
   font-size: 3em;
@@ -464,6 +473,23 @@ i {
   color: #65ccb8;
 }
 
+.fa-gold {
+  color: #e9c46a;
+}
+
+.fa-silver {
+  color: #a0a0a0;
+}
+
+.fa-bronze {
+  color: #cd7f32;
+}
+
+.follow-bar i,
+.follow-bar-mobile i {
+  color: #ebf6e5;
+  font-size: 1.2em;
+}
 
 .profile-column {
   max-width: 900px;
@@ -479,6 +505,11 @@ i {
   font-size: 3em;
   color: #ebf6e5;
   text-transform: capitalize;
+  margin-top: 0;
+}
+
+.progress-card {
+  padding-bottom: 0.7em !important;
 }
 
 .profile-picture {
@@ -669,6 +700,10 @@ i {
   cursor: pointer;
 }
 
+.password-form {
+  width: 50%;
+}
+
 
 /* Dialog to confirm abandoning the quest */
 
@@ -680,7 +715,7 @@ dialog {
   max-width: 1000px;
   width: 80%;
   color: #ddd;
-  background: #121d0b;
+  background:  #121d0c;
   border: none;
   padding: 30px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -727,8 +762,27 @@ input[type="number"] {
   /* Firefox */
 }
 
+.form-container {
+  width: 70%;
+}
+.form-container > form {
+  width: 100%;
+}
+
+.form-container > form > input {
+  max-width: 350px;
+}
+
+.form-container > menu > button {
+  max-width: 300px;
+}
 
 @media screen and (max-width: 600px) {
+
+  .form-container {
+    width: 90%;
+  }
+
   dialog[open] {
     width: auto;
     height: 100%;
@@ -742,13 +796,18 @@ input[type="number"] {
     padding: 0;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 10px;
+  }
+
+  menu > button {
+    width: 100%;
   }
 }
 
 dialog button {
   background: #b0da99;
-  color: black;
+  /* color: black; */
   border: none;
   padding: 8px 16px;
   border-radius: 10px;
@@ -787,7 +846,7 @@ menu {
   display: flex;
   justify-content: end;
   align-items: center;
-  gap: 2em;
+  gap: 1em;
 }
 
 /* used in routes where there is no top bar */

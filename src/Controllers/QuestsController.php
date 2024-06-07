@@ -38,10 +38,9 @@ class QuestsController extends AppController implements IQuestsController
   private IQuestBuilderService $questBuilderService;
   private IWalletService $walletService;
   private IQuestProgressService $questProgressService;
-  private IUserRepository $userRepository;
   private IRecommendationService $recommendationService;
 
-  public function __construct(IFullRequest $request, IQuestService $questService = null, IAuthService $authService = null, IQuestBuilderService $questBuilderService = null, IWalletService $walletService = null, IQuestProgressService $questProgressService = null, IUserRepository $userRepository = null, IRecommendationService $recommendationService = null)
+  public function __construct(IFullRequest $request, IQuestService $questService = null, IAuthService $authService = null, IQuestBuilderService $questBuilderService = null, IWalletService $walletService = null, IQuestProgressService $questProgressService = null, IRecommendationService $recommendationService = null)
   {
     parent::__construct($request);
     $this->questService = $questService ?: new QuestService();
@@ -49,7 +48,6 @@ class QuestsController extends AppController implements IQuestsController
     $this->questBuilderService = $questBuilderService ?: new QuestBuilderService(new QuestBuilder());
     $this->walletService = $walletService ?: new WalletService();
     $this->questProgressService = $questProgressService ?: new QuestProgressService($this->sessionService);
-    $this->userRepository = $userRepository ?: new UserRepository();
     $this->recommendationService = $recommendationService ?: new RecommendationService();
   }
 
@@ -324,17 +322,4 @@ class QuestsController extends AppController implements IQuestsController
     return new JsonResponse(['walletId' => $walletId, 'walletAddress' => $walletAddress]);
   }
 
-  public function getDashboard(IRequest $request): IResponse
-  {
-    $userId = $this->authService->getIdentity()->getId();
-    $user = $this->userRepository->getUserById($userId);
-    $joinDate = \DateTime::createFromFormat('Y-m-d', $user->getJoinDate())->format('F Y');
-
-    $stats = $this->questProgressService->getUserQuests($userId);
-
-
-    // somehow get user points
-    // there is also list of quests user has participated in
-    return $this->render('layout', ['title' => 'dashboard', 'username' => $user->getName(), 'joinDate' => $joinDate, 'points' => sizeof($stats), 'stats' => $stats], 'dashboard');
-  }
 }

@@ -66,9 +66,9 @@
       <img src="/public/assets/follow-bar/line.svg" />
     </div>
     <div>
-      <img src="/public/assets/follow-bar/fb.svg" />
-      <img src="/public/assets/follow-bar/ig.svg" />
-      <img src="/public/assets/follow-bar/linkedin.svg" />
+      <a href="https://facebook.com"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://instagram.com"></a><i class="fab fa-instagram"></i></a>
+      <a href="https://linkedin.com"></a><i class="fab fa-linkedin-in"></i></a>
       <img src="/public/assets/follow-bar/arrow_left.svg" />
     </div>
   </div>

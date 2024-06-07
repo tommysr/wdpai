@@ -11,7 +11,6 @@ interface IQuestsController extends IRootController
   // BASE ACTIONS
   public function getShowQuests(IRequest $request): IResponse;
   public function getShowTopRatedQuests(IRequest $request): IResponse;
-  public function getDashboard(IRequest $request): IResponse;
   public function getShowRecommendedQuests(IRequest $request): IResponse;
 
   // CREATOR ACTIONS

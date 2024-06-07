@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models\Interfaces;
+
 use App\Models\Interfaces\IRole;
 
 interface IUser
@@ -12,6 +13,5 @@ interface IUser
   public function getJoinDate(): string;
   public function getRole(): IRole;
   public function getAvatarUrl(): string;
-  public function setPoints(int $points): void;
-  public function getPoints(): int;
+  public function setPassword(string $password): void;
 }

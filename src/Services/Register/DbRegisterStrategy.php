@@ -13,7 +13,6 @@ use App\Request\IFullRequest;
 use App\Services\Register\DBRegisterResult;
 use App\Models\User;
 
-
 class DbRegisterStrategy implements IRegisterStrategy
 {
   private IUserRepository $userRepository;
@@ -29,11 +28,11 @@ class DbRegisterStrategy implements IRegisterStrategy
 
   private function validateRegistrationData($email, $username, $password, $confirmedPassword): IRegisterResult
   {
-    if ($this->userRepository->userExists($email)) {
+    if ($this->userRepository->getUserByEmail($email)) {
       return new DBRegisterResult(['Email exists']);
     }
 
-    if ($this->userRepository->userNameExists($username)) {
+    if ($this->userRepository->getUserByName($username)) {
       return new DBRegisterResult(['Username already taken']);
     }
 
@@ -58,7 +57,6 @@ class DbRegisterStrategy implements IRegisterStrategy
     }
 
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
-
     $defaultRole = $this->roleRepository->getRole(UserRole::NORMAL->value);
     $user = new User(0, $email, $password_hash, $username, $defaultRole);
     $this->userRepository->addUser($user);
