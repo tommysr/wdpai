@@ -8,6 +8,7 @@ use App\Middleware\LoginValidation\LoginValidationMiddleware;
 use App\Middleware\QuestAuthorization\QuestAuthorizationMiddleware;
 use App\Middleware\QuestValidation\QuestValidationChain;
 use App\Middleware\QuestValidation\QuestValidationMiddleware;
+use App\Middleware\RedirectResponse;
 use App\Middleware\RegisterValidation\RegisterChainFactory;
 use App\Middleware\RegisterValidation\RegisterValidationMiddleware;
 use App\Models\UserRole;
@@ -123,17 +124,14 @@ Router::post('/publishQuest/{questId}', 'QuestsController@publishQuest', [$authM
 Router::post('/unpublishQuest/{questId}', 'QuestsController@unpublishQuest', [$authMiddleware, $roleAuthorizationMiddleware]);
 
 $request = new Request($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
-$response = Router::dispatch($request);
 $emitter = new Emitter();
+$response = Router::dispatch($request);
+
 $emitter->emit($response);
+// try {
 
-
-// Router::get('startQuest', 'QuestsController');
-// // PROFILE
-// Router::get('dashboard', 'QuestsController');
-
-// // GAMEPLAY
-// Router::get('gameplay', 'GameController');
-// Router::get('processUserResponse', 'GameController');
-// Router::get('nextQuestion', 'GameController');
+// } catch (Exception $e) {
+//   error_log($e->getMessage());
+//   $emitter->emit(new RedirectResponse('/error/500'));
+// }
 

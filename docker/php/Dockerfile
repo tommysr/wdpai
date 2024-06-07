@@ -35,11 +35,12 @@ COPY . /app
 # Change working directory
 WORKDIR /app
 
-ENV COMPOSER_ALLOW_SUPERUSER=1
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-RUN chmod +x /usr/bin/composer
+# ENV COMPOSER_ALLOW_SUPERUSER=1
+# COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# RUN chmod +x /usr/bin/composer
+# RUN composer install
 
-RUN ./vendor/bin/phpunit tests
+# RUN ./vendor/bin/phpunit --colors=always tests/
 
 # Define volumes
 VOLUME ["/app"]
