@@ -4,7 +4,10 @@ namespace App\Services\Quests;
 
 use App\Repository\IOptionsRepository;
 use App\Repository\IWalletRepository;
+use App\Result\IResult;
+use App\Result\Result;
 use App\Services\Authenticate\IIdentity;
+use App\Services\Question\IQuestionService;
 use App\Services\Quests\IQuestService;
 use App\Repository\IQuestRepository;
 use App\Repository\IQuestionsRepository;
@@ -14,30 +17,22 @@ use App\Models\IQuest;
 class QuestService implements IQuestService
 {
   private IQuestRepository $questRepository;
-  private IQuestionsRepository $questionRepository;
-  private IOptionsRepository $optionRepository;
+  private IQuestionService $questionService;
   private IWalletRepository $walletRepository;
 
   public function __construct(
     IQuestRepository $questRepository,
-    IQuestionsRepository $questionRepository,
-    IOptionsRepository $optionRepository,
+    IQuestionService $questionService,
     IWalletRepository $walletRepository
   ) {
     $this->questRepository = $questRepository;
-    $this->questionRepository = $questionRepository;
-    $this->optionRepository = $optionRepository;
+    $this->questionRepository = $questionService;
     $this->walletRepository = $walletRepository;
   }
 
   public function getQuestsToApproval(): array
   {
-    $quests = $this->questRepository->getQuests();
-
-
-    return array_filter($quests, function ($quest) {
-      return !$quest->getIsApproved();
-    });
+    return $this->questRepository->getQuestToApprove();
   }
 
 
@@ -46,8 +41,7 @@ class QuestService implements IQuestService
     return $this->questRepository->getApprovedQuests();
   }
 
-
-  public function getQuests(array $questIds): array
+  public function getQuestsByIds(array $questIds): array
   {
     $quests = [];
     foreach ($questIds as $questId) {
@@ -82,83 +76,19 @@ class QuestService implements IQuestService
   {
     $creatorId = $identity->getId();
     return $this->questRepository->getCreatorQuests($creatorId);
-
-    // return array_filter($quests, function ($quest) {
-    //   return !$quest->getIsApproved();
-    // });
   }
 
-  public function getQuestBlockchain(int $questId): string
+  public function editQuest(IQuest $quest): void
   {
-    $quest = $this->questRepository->getQuestById($questId);
-
-    if (!$quest) {
-      throw new \Exception('Quest not found');
-    }
-
-    return $quest->getBlockchain();
-  }
-
-  public function editQuest(IQuest $quest): IQuestResult
-  {
-    // Update quest without flag
     $this->questRepository->updateQuest($quest);
-
-    // Handle questions and options
-    foreach ($quest->getQuestions() as $question) {
-      switch ($question->getFlag()) {
-        case 'added':
-          $question->setQuestId($quest->getQuestID());
-          $questionId = $this->questionRepository->saveQuestion($question);
-
-          foreach ($question->getOptions() as $option) {
-            $option->setQuestionId($questionId);
-            $this->optionRepository->saveOption($option);
-          }
-          break;
-        case 'removed':
-
-          $this->optionRepository->deleteAllOptions($question->getQuestionId());
-          $this->questionRepository->deleteQuestionById($question->getQuestionId());
-          break;
-        default:
-          $this->questionRepository->updateQuestions([$question]);
-
-          foreach ($question->getOptions() as $option) {
-            switch ($option->getFlag()) {
-              case 'added':
-                $option->setQuestionId($question->getQuestionId());
-                $this->optionRepository->saveOption($option);
-                break;
-              case 'removed':
-                $this->optionRepository->deleteOptionById($option->getOptionId());
-                break;
-              default:
-                $this->optionRepository->updateOptions([$option]);
-            }
-          }
-      }
-    }
-    return new QuestResult([], [], true);
+    $this->questionService->processQuestions($quest);
   }
 
-  public function createQuest(IQuest $quest): IQuestResult
+  public function createQuest(IQuest $quest): void
   {
     $questId = $this->questRepository->saveQuest($quest);
-    $questions = $quest->getQuestions();
-
-    // Handle questions and options
-    foreach ($questions as $question) {
-      $question->setQuestId($questId);
-      $questionId = $this->questionRepository->saveQuestion($question);
-
-      foreach ($question->getOptions() as $option) {
-        $option->setQuestionId($questionId);
-        $this->optionRepository->saveOption($option);
-      }
-    }
-
-    return new QuestResult([], [], true);
+    $quest->setQuestID($questId);
+    $this->questionService->processQuestions($quest);
   }
 
   public function addParticipant(int $questId): bool
@@ -185,19 +115,12 @@ class QuestService implements IQuestService
   {
     $quest = $this->questRepository->getQuestById($questId);
 
-    if ($quest === null) {
+    if ($quest) {
       return null;
     }
 
-    $questions = $this->questionRepository->getQuestionsByQuestId($questId);
-
-    foreach ($questions as $question) {
-      $options = $this->optionRepository->getOptionsByQuestionId($question->getQuestionId());
-      $question->setOptions($options);
-    }
-
+    $questions = $this->questionService->fetchQuestions($quest);
     $quest->setQuestions($questions);
-
     return $quest;
   }
 

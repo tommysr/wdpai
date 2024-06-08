@@ -54,7 +54,7 @@ class Question implements IQuestion
     return $this->questionId;
   }
 
-  public function setQuestId(int $questId)
+  public function setQuestId(int $questId): void
   {
     $this->questId = $questId;
   }

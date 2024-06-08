@@ -17,5 +17,7 @@ interface IQuestion
   public function getOptions(): array;
   public function addOption(IOption $option): void;
   public function setOptions(array $options): void;
+  public function setQuestId(int $questId): void;
+  public function setQuestionId(int $questionId): void;
 }
 

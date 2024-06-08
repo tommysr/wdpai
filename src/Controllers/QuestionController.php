@@ -2,64 +2,46 @@
 
 namespace App\Controllers;
 
-use App\Controllers\AppController;
-use App\Controllers\Interfaces\IGameController;
+use App\Controllers\Interfaces\IQuestionController;
 use App\Middleware\IResponse;
-use App\Middleware\JsonResponse;
 use App\Middleware\RedirectResponse;
 use App\Models\IQuestion;
 use App\Models\QuestionType;
 use App\Models\QuestState;
-use App\Models\Rating;
 use App\Request\IFullRequest;
 use App\Services\Authenticate\IAuthService;
 use App\Services\QuestProgress\IQuestProgressService;
-use App\Services\Rating\IRatingService;
+use App\Services\Quests\IQuestService;
+use App\Services\Recommendation\IRecommendationService;
 use App\Services\Session\ISessionService;
 use App\View\IViewRenderer;
 
 
-class GameController extends AppController implements IGameController
+class QuestionController extends AppController implements IQuestionController
 {
-  private IQuestProgressService $questProgressService;
+  private IQuestService $questService;
   private IAuthService $authService;
-  private IRatingService $ratingService;
+  private IQuestProgressService $questProgressService;
 
-  public function __construct(IFullRequest $request, ISessionService $sessionService, IViewRenderer $viewRenderer, IQuestProgressService $questProgressService, IAuthService $authService, IRatingService $ratingService)
-  {
+  public function __construct(
+    IFullRequest $request,
+    ISessionService $sessionService,
+    IViewRenderer $viewRenderer,
+    IQuestService $questService,
+    IAuthService $authService,
+    IQuestProgressService $questProgressService,
+    IRecommendationService $recommendationService
+  ) {
     parent::__construct($request, $sessionService, $viewRenderer);
-    $this->questProgressService = $questProgressService;
+    $this->questService = $questService;
     $this->authService = $authService;
-    $this->ratingService = $ratingService;
-  }
-
-  public function postAbandonQuest(IFullRequest $request): IResponse
-  {
-    $this->questProgressService->abandonQuest();
-    return new JsonResponse(['message' => 'Quest abandoned']);
+    $this->questProgressService = $questProgressService;
+    $this->recommendationService = $recommendationService;
   }
 
   public function getIndex(IFullRequest $request): IResponse
   {
-    return new JsonResponse([]);
-  }
-
-
-  public function postEnterQuest(IFullRequest $request, int $questId): IResponse
-  {
-    $walletId = $this->request->getParsedBodyParam('walletId');
-
-    if (!$walletId) {
-      return new JsonResponse(['errors' => ['Wallet id is required']]);
-    }
-
-    try {
-      $this->questProgressService->startProgress($questId, (int) $walletId);
-
-      return new JsonResponse(['redirect' => '/play']);
-    } catch (\Exception $e) {
-      return new JsonResponse(['errors' => ['Could not start quest']]);
-    }
+    return $this->getPlay($request);
   }
 
   public function getPlay(IFullRequest $request): IResponse
@@ -71,9 +53,9 @@ class GameController extends AppController implements IGameController
         $question = $this->questProgressService->getQuestion($questProgress->getQuestId(), $questProgress->getLastQuestionId());
         return $this->getNextQuestion($question);
       case QuestState::Unrated:
-        return $this->getRating($request);
+        return new RedirectResponse('/rating');
       case QuestState::Finished:
-        return $this->getSummary($request);
+        return new RedirectResponse('/summary');
       case QuestState::Abandoned:
         return new RedirectResponse('/error/404');
       default:
@@ -148,43 +130,7 @@ class GameController extends AppController implements IGameController
       'title' => 'Points gained'
     ]);
   }
-
-  public function getReset(IFullRequest $request): IResponse
-  {
-    $this->questProgressService->resetSession();
-    return new RedirectResponse('/showQuests');
-  }
-
-  private function getSummary(IFullRequest $request): IResponse
-  {
-
-    $summary = $this->questProgressService->getQuestSummary($this->authService->getIdentity()->getId());
-
-    return $this->render('questSummary', ['score' => $summary['score'], 'maxScore' => $summary['maxScore'], 'title' => 'Quest summary', 'better_than' => $summary['better_than']]);
-  }
-
-  public function postRating(IFullRequest $request): IResponse
-  {
-    $userId = $this->authService->getIdentity()->getId();
-    $questProgress = $this->questProgressService->getCurrentProgressFromSession();
-
-    if (!$questProgress->isCompleted()) {
-      return new RedirectResponse('/error/404');
-    }
-
-    $rating = $this->request->getParsedBodyParam('rating');
-    $rating = new Rating($userId, $questProgress->getQuestId(), (int) $rating);
-    $this->ratingService->addRating($rating);
-
-    $this->questProgressService->completeQuest();
-
-    return new RedirectResponse('/play');
-  }
-
-  public function getRating(IFullRequest $request): IResponse
-  {
-    return $this->render('rating');
-  }
 }
+
 
 

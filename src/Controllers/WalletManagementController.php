@@ -37,7 +37,13 @@ class WalletManagementController extends AppController implements IWalletManagem
   public function getShowQuestWallets(IFullRequest $request, int $questId): IResponse
   {
     $identity = $this->authService->getIdentity();
-    $blockchain = $this->questService->getQuestBlockchain($questId);
+    $quest = $this->questService->getQuest($questId); 
+
+    if (!$quest) {
+      return new RedirectResponse('/error/404', ['no such quest']);
+    }
+
+    $blockchain = $quest->getBlockchain();
     $wallets = $this->walletService->getBlockchainWallets($identity, $blockchain);
 
     return $this->render('showWallets', ['title' => 'enter quest', 'questId' => $questId, 'wallets' => $wallets, 'chain' => $blockchain]);
