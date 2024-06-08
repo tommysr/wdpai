@@ -36,7 +36,7 @@ class QuestAuthorizationMiddleware extends BaseMiddleware
       }
 
       if (!$authResult->isValid()) {
-        return new RedirectResponse('/error/401');
+        return new RedirectResponse('/error/401', ['cannot authorize this action']);
       }
     }
 

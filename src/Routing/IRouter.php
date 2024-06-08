@@ -7,7 +7,7 @@ use App\Middleware\IResponse;
 
 interface IRouter
 {
-  public static function get(string $path, string $controllerAction, array $middlewares = []);
-  public static function post(string $path, string $controllerAction, array $middlewares = []);
-  public static function dispatch(IFullRequest $request): IResponse;
+  public function get(string $path, string $controllerAction, array $middlewares = []);
+  public function post(string $path, string $controllerAction, array $middlewares = []);
+  public function dispatch(IFullRequest $request): IResponse;
 }

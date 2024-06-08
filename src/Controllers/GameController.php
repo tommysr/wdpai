@@ -26,6 +26,7 @@ use App\Services\QuestProgress\QuestProgressService;
 use App\Services\Rating\IRatingService;
 use App\Services\Rating\RatingService;
 use App\Services\Session\ISessionService;
+use App\View\IViewRenderer;
 
 
 class GameController extends AppController implements IGameController
@@ -34,28 +35,27 @@ class GameController extends AppController implements IGameController
   private IAuthService $authService;
   private IRatingService $ratingService;
 
-
-  public function __construct(IFullRequest $request, ISessionService $sessionService = null, IQuestProgressService $questProgressService = null, IAuthService $authService = null, IRatingService $ratingService = null)
+  public function __construct(IFullRequest $request, ISessionService $sessionService, IViewRenderer $viewRenderer, IQuestProgressService $questProgressService, IAuthService $authService, IRatingService $ratingService)
   {
-    parent::__construct($request, $sessionService);
-    $this->questProgressService = $questProgressService ?: new QuestProgressService($this->sessionService);
-    $this->authService = $authService ?: new AuthenticateService($this->sessionService);
-    $this->ratingService = $ratingService ?: new RatingService();
+    parent::__construct($request, $sessionService, $viewRenderer);
+    $this->questProgressService = $questProgressService;
+    $this->authService = $authService;
+    $this->ratingService = $ratingService;
   }
 
-  public function postAbandonQuest(IRequest $request): IResponse
+  public function postAbandonQuest(IFullRequest $request): IResponse
   {
     $this->questProgressService->abandonQuest();
     return new JsonResponse(['message' => 'Quest abandoned']);
   }
 
-  public function getIndex(IRequest $request): IResponse
+  public function getIndex(IFullRequest $request): IResponse
   {
     return new JsonResponse([]);
   }
 
 
-  public function postEnterQuest(IRequest $request, int $questId): IResponse
+  public function postEnterQuest(IFullRequest $request, int $questId): IResponse
   {
     $walletId = $this->request->getParsedBodyParam('walletId');
 
@@ -72,7 +72,7 @@ class GameController extends AppController implements IGameController
     }
   }
 
-  public function getPlay(IRequest $request): IResponse
+  public function getPlay(IFullRequest $request): IResponse
   {
     $questProgress = $this->questProgressService->getCurrentProgressFromSession();
 
@@ -120,7 +120,7 @@ class GameController extends AppController implements IGameController
     return $this->render('readText', ['question' => $question, 'title' => 'Read text']);
   }
 
-  public function postAnswer(IRequest $request, int $questionId): IResponse
+  public function postAnswer(IFullRequest $request, int $questionId): IResponse
   {
     $questProgress = $this->questProgressService->getCurrentProgressFromSession();
 
@@ -159,13 +159,13 @@ class GameController extends AppController implements IGameController
     ]);
   }
 
-  public function getReset(IRequest $request): IResponse
+  public function getReset(IFullRequest $request): IResponse
   {
     $this->questProgressService->resetSession();
     return new RedirectResponse('/showQuests');
   }
 
-  private function getSummary(IRequest $request): IResponse
+  private function getSummary(IFullRequest $request): IResponse
   {
 
     $summary = $this->questProgressService->getQuestSummary($this->authService->getIdentity()->getId());
@@ -173,7 +173,7 @@ class GameController extends AppController implements IGameController
     return $this->render('questSummary', ['score' => $summary['score'], 'maxScore' => $summary['maxScore'], 'title' => 'Quest summary', 'better_than' => $summary['better_than']]);
   }
 
-  public function postRating(IRequest $request): IResponse
+  public function postRating(IFullRequest $request): IResponse
   {
     $userId = $this->authService->getIdentity()->getId();
     $questProgress = $this->questProgressService->getCurrentProgressFromSession();
@@ -191,7 +191,7 @@ class GameController extends AppController implements IGameController
     return new RedirectResponse('/play');
   }
 
-  public function getRating(IRequest $request): IResponse
+  public function getRating(IFullRequest $request): IResponse
   {
     return $this->render('rating');
   }

@@ -12,9 +12,9 @@ class WalletService implements IWalletService
 {
   private IWalletRepository $walletRepository;
 
-  public function __construct(IWalletRepository $walletRepository = null)
+  public function __construct(IWalletRepository $walletRepository)
   {
-    $this->walletRepository = $walletRepository ?: new WalletRepository();
+    $this->walletRepository = $walletRepository;
   }
 
   public function getBlockchainWallets(IIdentity $identity, string $blockchain): array

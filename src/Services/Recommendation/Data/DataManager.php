@@ -9,7 +9,7 @@ class DataManager implements IDataManager
   protected array $data = [];
   protected array $similarityMatrix = [];
 
-  public function __construct(array $data, array $similarityMatrix)
+  public function __construct(array $data = [], array $similarityMatrix = [])
   {
     $this->data = $data;
     $this->similarityMatrix = $similarityMatrix;

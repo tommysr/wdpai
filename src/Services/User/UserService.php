@@ -12,9 +12,9 @@ class UserService implements IUserService
     private IUserRepository $userRepository;
     private IRoleRepository $roleRepository;
 
-    public function __construct(IUserRepository $userRepository = null)
+    public function __construct(IUserRepository $userRepository)
     {
-        $this->userRepository = $userRepository ?: new UserRepository();
+        $this->userRepository = $userRepository;
     }
 
     public function getUserById(int $userId): ?IUser
@@ -35,5 +35,4 @@ class UserService implements IUserService
         $user = $this->userRepository->getUserById($userId);
         return password_verify($password, $user->getPassword());
     }
-
 }

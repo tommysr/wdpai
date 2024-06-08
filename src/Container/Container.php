@@ -59,23 +59,28 @@ class Container implements IContainer
     }
 
     $constructor = $reflector->getConstructor();
+ 
     if ($constructor === null) {
       return new $class;
     }
 
     $parameters = $constructor->getParameters();
+
     $dependencies = [];
 
     foreach ($parameters as $parameter) {
       $type = $parameter->getType();
+ 
       if ($type === null || $type->isBuiltin()) {
+
         if ($parameter->isDefaultValueAvailable()) {
           $dependencies[] = $parameter->getDefaultValue();
         } else {
           throw new \Exception("Unresolvable dependency [{$parameter->getName()}] in class {$parameter->getDeclaringClass()->getName()}");
         }
-      } else {
+      } else {  
         $dependencies[] = $this->get($type->getName());
+              
       }
     }
 
@@ -84,8 +89,10 @@ class Container implements IContainer
 
   public function callMethod($object, string $method, array $parameters = [])
   {
+
     $reflector = new ReflectionMethod($object, $method);
     $methodParameters = $reflector->getParameters();
+
     $dependencies = [];
 
     foreach ($methodParameters as $index => $parameter) {
@@ -100,6 +107,7 @@ class Container implements IContainer
         if ($parameter->isDefaultValueAvailable()) {
           $dependencies[] = $parameter->getDefaultValue();
         } else {
+
           throw new \RuntimeException("Unresolvable dependency [{$name}] in method [$method]");
         }
       } else {

@@ -16,22 +16,24 @@ use App\View\IViewRenderer;
 use App\View\ViewRenderer;
 use App\Middleware\IResponse;
 
-class AppController implements IHandler
+abstract class AppController implements IHandler
 {
     protected IFullRequest $request;
     protected ISessionService $sessionService;
     protected IViewRenderer $viewRenderer;
 
-    public function __construct(IFullRequest $request, ISessionService $sessionService = null, IViewRenderer $viewRenderer = null)
+    public function __construct(IFullRequest $request, ISessionService $sessionService, IViewRenderer $viewRenderer)
     {
+      
         $this->request = $request;
-        $this->sessionService = $sessionService ?: new SessionService();
-        $this->viewRenderer = $viewRenderer ?: new ViewRenderer('public/views');
+        $this->sessionService = $sessionService;
+        $this->viewRenderer = $viewRenderer;
     }
 
-    public function handle(IRequest $request): IResponse
+    public function handle(IFullRequest $request): IResponse
     {
         $actionMethod = $this->getActionMethod();
+
 
         if (!method_exists($this, $actionMethod)) {
             return new BaseResponse(404, [], 'Not Found');

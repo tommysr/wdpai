@@ -38,7 +38,7 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
   {
     $stateInProgress = QuestState::InProgress;
     $stateInt = $stateInProgress->getStateId();
-    $sql = "SELECT qp.completion_date, qp.score, qp.quest_id, qp.wallet_id, qp.last_question_id, qp.state, w.address FROM quest_progress qp 
+    $sql = "SELECT qp.completion_date, qp.score, qp.quest_id, qp.wallet_id, qp.next_question_id, qp.state, w.address FROM quest_progress qp 
               INNER JOIN wallets w ON qp.wallet_id = w.wallet_id 
               INNER JOIN users u ON w.user_id = u.user_id 
               WHERE state = :state AND u.user_id = :user_id";
@@ -56,7 +56,7 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
 
   public function getQuestProgress(int $userId, int $questId): ?IQuestProgress
   {
-    $sql = "SELECT qp.completion_date, qp.score, qp.quest_id, qp.wallet_id, qp.last_question_id, qp.state, w.address FROM quest_progress qp
+    $sql = "SELECT qp.completion_date, qp.score, qp.quest_id, qp.wallet_id, qp.next_question_id, qp.state, w.address FROM quest_progress qp
               INNER JOIN wallets w ON qp.wallet_id = w.wallet_id
               INNER JOIN users u ON w.user_id = u.user_id
               WHERE u.user_id = :user_id AND qp.quest_id = :quest_id";
@@ -73,8 +73,8 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
   public function saveQuestProgress(IQuestProgress $questProgress): void
   {
     $pdo = $this->db->connect();
-    $sql = "INSERT INTO quest_progress (wallet_id, quest_id, score, completion_date, last_question_id, state)
-              VALUES (:wallet_id, :quest_id, :score, :completion_date, :last_question_id, :state)";
+    $sql = "INSERT INTO quest_progress (wallet_id, quest_id, score, completion_date, next_question_id, state)
+              VALUES (:wallet_id, :quest_id, :score, :completion_date, :next_question_id, :state)";
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
@@ -92,7 +92,7 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
     $sql = "UPDATE quest_progress
               SET score = :score,
                   completion_date = :completion_date,
-                  last_question_id = :last_question_id,
+                  next_question_id = :last_question_id,
                   state = :state
               WHERE wallet_id = :wallet_id
               AND quest_id = :quest_id";
@@ -147,7 +147,7 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
 
   public function getUserEntries(int $userId): array
   {
-    $sql = "SELECT qp.completion_date, qp.score, qp.quest_id, qp.wallet_id, qp.last_question_id, qp.state, w.address FROM quest_progress qp
+    $sql = "SELECT qp.completion_date, qp.score, qp.quest_id, qp.wallet_id, qp.next_question_id, qp.state, w.address FROM quest_progress qp
               INNER JOIN wallets w ON qp.wallet_id = w.wallet_id
               INNER JOIN users u ON w.user_id = u.user_id
               WHERE u.user_id = :user_id";

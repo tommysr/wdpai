@@ -25,8 +25,10 @@ use App\Services\Quests\QuestService;
 use App\Services\Rating\RatingService;
 use App\Services\Recommendation\IRecommendationService;
 use App\Services\Recommendation\RecommendationService;
+use App\Services\Session\ISessionService;
 use App\Services\Wallets\IWalletService;
 use App\Services\Wallets\WalletService;
+use App\View\IViewRenderer;
 
 class QuestsController extends AppController implements IQuestsController
 {
@@ -40,27 +42,27 @@ class QuestsController extends AppController implements IQuestsController
   private IQuestProgressService $questProgressService;
   private IRecommendationService $recommendationService;
 
-  public function __construct(IFullRequest $request, IQuestService $questService = null, IAuthService $authService = null, IQuestBuilderService $questBuilderService = null, IWalletService $walletService = null, IQuestProgressService $questProgressService = null, IRecommendationService $recommendationService = null)
+  public function __construct(IFullRequest $request, ISessionService $sessionService, IViewRenderer $viewRenderer, IQuestService $questService, IAuthService $authService, IQuestBuilderService $questBuilderService, IWalletService $walletService, IQuestProgressService $questProgressService, IRecommendationService $recommendationService)
   {
-    parent::__construct($request);
-    $this->questService = $questService ?: new QuestService();
-    $this->authService = $authService ?: new AuthenticateService($this->sessionService);
-    $this->questBuilderService = $questBuilderService ?: new QuestBuilderService(new QuestBuilder());
-    $this->walletService = $walletService ?: new WalletService();
-    $this->questProgressService = $questProgressService ?: new QuestProgressService($this->sessionService);
-    $this->recommendationService = $recommendationService ?: new RecommendationService();
+    parent::__construct($request, $sessionService, $viewRenderer);
+    $this->questService = $questService;
+    $this->authService = $authService;
+    $this->questBuilderService = $questBuilderService;
+    $this->walletService = $walletService;
+    $this->questProgressService = $questProgressService;
+    $this->recommendationService = $recommendationService;
   }
 
   /*
       User actions
   */
-  public function getIndex(IRequest $request): IResponse
+  public function getIndex(IFullRequest $request): IResponse
   {
     return $this->getShowQuests($request);
   }
 
   // shows all quests which are approved and can be played
-  public function getShowQuests(IRequest $request): IResponse
+  public function getShowQuests(IFullRequest $request): IResponse
   {
     $id = $this->authService->getIdentity()->getId();
     $quests = $this->questService->getQuestsToPlay();
@@ -72,14 +74,14 @@ class QuestsController extends AppController implements IQuestsController
     return $this->render('layout', ['title' => 'quest list', 'quests' => $quests], 'quests');
   }
 
-  public function getShowTopRatedQuests(IRequest $request): IResponse
+  public function getShowTopRatedQuests(IFullRequest $request): IResponse
   {
     $quests = $this->questService->getTopRatedQuests();
 
     return new JsonResponse(['quests' => $quests], 200);
   }
 
-  public function getShowRecommendedQuests(IRequest $request): IResponse
+  public function getShowRecommendedQuests(IFullRequest $request): IResponse
   {
     $userId = $this->authService->getIdentity()->getId();
     $questsIds = $this->recommendationService->getRecommendations($userId);
@@ -97,32 +99,32 @@ class QuestsController extends AppController implements IQuestsController
 
 
   // returns create quest view
-  public function getShowCreateQuest(IRequest $request): IResponse
+  public function getShowCreateQuest(IFullRequest $request): IResponse
   {
     return $this->renderEditAndCreateView();
   }
 
   // returns edit quest view
-  public function getShowEditQuest(IRequest $request, int $questId): IResponse
+  public function getShowEditQuest(IFullRequest $request, int $questId): IResponse
   {
     $quest = $this->questService->getQuestWithQuestions($questId);
 
     if (!$quest) {
-      return new RedirectResponse('/error/404', 0);
+      return new RedirectResponse('/error/404', [], 0);
     }
 
     return $this->renderEditAndCreateView($quest);
   }
 
   // show created quests list which are not approved yet, but can be edited by creator
-  public function getShowCreatedQuests(IRequest $request): IResponse
+  public function getShowCreatedQuests(IFullRequest $request): IResponse
   {
     $quests = $this->questService->getCreatorQuests($this->authService->getIdentity());
 
     return $this->render('layout', ['title' => 'created quests', 'quests' => $quests], 'createdQuests');
   }
 
-  public function postCreateQuest(IRequest $request): IResponse
+  public function postCreateQuest(IFullRequest $request): IResponse
   {
     $formData = $this->request->getBody();
     $parsedData = json_decode($formData, true);
@@ -138,7 +140,7 @@ class QuestsController extends AppController implements IQuestsController
     }
   }
 
-  public function postEditQuest(IRequest $request, int $questId): IResponse
+  public function postEditQuest(IFullRequest $request, int $questId): IResponse
   {
     $formData = $this->request->getBody();
     $parsedData = json_decode($formData, true);
@@ -186,7 +188,7 @@ class QuestsController extends AppController implements IQuestsController
     return $targetFile;
   }
 
-  public function postUploadQuestPicture(IRequest $request): IResponse
+  public function postUploadQuestPicture(IFullRequest $request): IResponse
   {
     $fileData = $this->request->getUploadedFiles()['file'];
     $errors = $this->validateQuestFile($fileData);
@@ -207,7 +209,7 @@ class QuestsController extends AppController implements IQuestsController
     return new JsonResponse(['errors' => ['file not uploaded']]);
   }
 
-  public function getReportQuest(IRequest $request, int $questId): IResponse
+  public function getReportQuest(IFullRequest $request, int $questId): IResponse
   {
     $quest = $this->questService->getQuestWithQuestions($questId);
 
@@ -266,14 +268,14 @@ class QuestsController extends AppController implements IQuestsController
   */
 
   // shows list of quests which are not approved yet, but can be approved by admin
-  public function getShowQuestsToApproval(IRequest $request): IResponse
+  public function getShowQuestsToApproval(IFullRequest $request): IResponse
   {
     $quests = $this->questService->getQuestsToApproval();
 
     return $this->render('layout', ['title' => 'quests to approval', 'quests' => $quests], 'adminQuests');
   }
 
-  public function getShowApprovedQuests(IRequest $request): IResponse
+  public function getShowApprovedQuests(IFullRequest $request): IResponse
   {
     $quests = $this->questService->getApprovedQuests();
 
@@ -281,7 +283,7 @@ class QuestsController extends AppController implements IQuestsController
   }
 
   // publishes/approves quest
-  public function postPublishQuest(IRequest $request, int $questId): IResponse
+  public function postPublishQuest(IFullRequest $request, int $questId): IResponse
   {
     $this->questService->publishQuest($questId);
 
@@ -289,20 +291,20 @@ class QuestsController extends AppController implements IQuestsController
   }
 
   // unpublishes quest
-  public function postUnpublishQuest(IRequest $request, int $questId): IResponse
+  public function postUnpublishQuest(IFullRequest $request, int $questId): IResponse
   {
     $this->questService->unpublishQuest($questId);
 
     return new JsonResponse(['message' => 'quest unpublished']);
   }
 
-  public function getRefreshRecommendations(IRequest $request): IResponse
+  public function getRefreshRecommendations(IFullRequest $request): IResponse
   {
     $this->recommendationService->refreshRecommendations();
     return new JsonResponse(['message' => 'recommendations refreshed']);
   }
 
-  public function getShowQuestWallets(IRequest $request, int $questId): IResponse
+  public function getShowQuestWallets(IFullRequest $request, int $questId): IResponse
   {
     $identity = $this->authService->getIdentity();
     $blockchain = $this->questService->getQuestBlockchain($questId);
@@ -312,7 +314,7 @@ class QuestsController extends AppController implements IQuestsController
   }
 
 
-  public function postAddWallet(IRequest $request, string $blockchain): IResponse
+  public function postAddWallet(IFullRequest $request, string $blockchain): IResponse
   {
     $userId = $this->authService->getIdentity()->getId();
     $walletAddress = $this->request->getParsedBodyParam('walletAddress');

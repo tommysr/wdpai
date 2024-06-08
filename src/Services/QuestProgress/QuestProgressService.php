@@ -29,14 +29,14 @@ class QuestProgressService implements IQuestProgressService
   private IQuestService $questService;
   private IWalletRepository $walletRepository;
 
-  public function __construct(ISessionService $sessionService, IQuestProgressRepository $questProgressRepository = null, IQuestionsRepository $questionsRepository = null, IQuestService $questService = null, IOptionsRepository $optionsRepository = null, IWalletRepository $walletRepository = null)
+  public function __construct(ISessionService $sessionService, IQuestProgressRepository $questProgressRepository, IQuestionsRepository $questionsRepository, IQuestService $questService, IOptionsRepository $optionsRepository, IWalletRepository $walletRepository)
   {
     $this->sessionService = $sessionService;
-    $this->questProgressRepository = $questProgressRepository ?: new QuestProgressRepository();
-    $this->questionsRepository = $questionsRepository ?: new QuestionsRepository();
-    $this->optionsRepository = $optionsRepository ?: new OptionsRepository();
-    $this->questService = $questService ?: new QuestService();
-    $this->walletRepository = $walletRepository ?: new WalletRepository();
+    $this->questProgressRepository = $questProgressRepository;
+    $this->questionsRepository = $questionsRepository;
+    $this->optionsRepository = $optionsRepository;
+    $this->questService = $questService;
+    $this->walletRepository = $walletRepository;
   }
 
   public function isQuestPlayed(int $userId, int $questId): bool

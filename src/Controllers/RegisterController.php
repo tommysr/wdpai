@@ -5,45 +5,38 @@ namespace App\Controllers;
 use App\Controllers\AppController;
 use App\Controllers\Interfaces\IRegisterController;
 use App\Middleware\JsonResponse;
-use App\Repository\IUserRepository;
-use App\Repository\UserRepository;
-use App\Request\IRequest;
 use App\Middleware\IResponse;
-use App\Services\Register\DbRegisterStrategy;
 use App\Services\Register\IRegisterService;
-use App\Services\Register\RegisterService;
 use App\Request\IFullRequest;
-use App\Services\Register\StrategyFactory;
+use App\Services\Session\ISessionService;
+use App\View\IViewRenderer;
 
 class RegisterController extends AppController implements IRegisterController
 {
   private IRegisterService $registerService;
 
-  public function __construct(IFullRequest $request, IRegisterService $registerService = null, IUserRepository $userRepository = null)
-  {
-    parent::__construct($request);
+  public function __construct(
+    IFullRequest $request,
+    ISessionService $sessionService,
+    IViewRenderer $viewRenderer,
+    IRegisterService $registerService
+  ) {
+    parent::__construct($request, $sessionService, $viewRenderer);
 
-    if ($registerService === null) {
-      $strategyFactory = new StrategyFactory($this->request);
-      $userRepository = $userRepository ?: new UserRepository();
-      $strategyFactory->registerStrategy('db', new DbRegisterStrategy($this->request, $userRepository));
-      $this->registerService = new RegisterService($this->request, $strategyFactory);
-    } else {
-      $this->registerService = $registerService;
-    }
+    $this->registerService = $registerService;
   }
 
-  public function getIndex(IRequest $request): IResponse
+  public function getIndex(IFullRequest $request): IResponse
   {
     return $this->getRegister($request);
   }
 
-  public function getRegister(IRequest $request): IResponse
+  public function getRegister(IFullRequest $request): IResponse
   {
     return $this->render('register', ['title' => 'Sign up', 'message' => '']);
   }
 
-  public function postRegister(IRequest $request): IResponse
+  public function postRegister(IFullRequest $request): IResponse
   {
     $result = $this->registerService->register();
 

@@ -18,11 +18,11 @@ class RatingService implements IRatingService
   private IQuestRepository $questRepository;
   private IUserRepository $userRepository;
 
-  public function __construct(IRatingRepository $ratingRepository = null, IQuestRepository $questRepository = null, IUserRepository $userRepository = null)
+  public function __construct(IRatingRepository $ratingRepository, IQuestRepository $questRepository, IUserRepository $userRepository)
   {
-    $this->ratingRepository = $ratingRepository ?: new RatingRepository();
-    $this->questRepository = $questRepository ?: new QuestRepository();
-    $this->userRepository = $userRepository ?: new UserRepository();
+    $this->ratingRepository = $ratingRepository;
+    $this->questRepository = $questRepository;
+    $this->userRepository = $userRepository;
   }
 
   public function addRating(IRating $rating): void

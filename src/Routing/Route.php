@@ -1,6 +1,7 @@
 <?php
 namespace App\Routing;
 
+use App\Container\IContainer;
 use App\Request\IRequest;
 use App\Routing\IRoute;
 use App\Middleware\IMiddleware;
@@ -14,33 +15,11 @@ class Route implements IRoute
     private string $controller;
     private string $action;
     private array $middlewares = [];
-    private ?IMiddleware $middleware = null;
+    // private ?IMiddleware $middleware = null;
     private array $paramNames = [];
-
-    public function buildMiddlewares(): void
-    {
-        foreach ($this->middlewares as $middleware) {
-            if (!$middleware instanceof IMiddleware) {
-                throw new \Exception('Middleware must implement IMiddleware');
-            }
-
-            if ($this->middleware) {
-                $this->middleware->setNext($middleware);
-            } else {
-                $this->middleware = $middleware;
-            }
-        }
-
-        $last = array_pop($this->middlewares);
-        
-        if ($last) {
-            $last->removeNext();
-        }
-    }
 
     public function __construct(string $method, string $path, string $controller, string $action, array $middlewares = [])
     {
-        // $this->setMiddlewares($middlewares);
         $this->method = $method;
         $this->path = $path;
         $this->controller = $controller;
@@ -62,8 +41,8 @@ class Route implements IRoute
         }
 
         $regex = preg_replace('/\{(\w+)\}/', '(\w+)', $this->path);
-
         $regex = str_replace('/', '\/', $regex);
+
         if (preg_match('/^' . $regex . '$/', $request->getPath(), $matches)) {
             array_shift($matches);
             $params = array_combine($this->paramNames, $matches);
@@ -73,9 +52,9 @@ class Route implements IRoute
         return false;
     }
 
-    public function getMiddleware(): ?IMiddleware
+    public function getMiddlewares(): array
     {
-        return $this->middleware;
+        return $this->middlewares;
     }
 
     public function getController(): string

@@ -32,7 +32,7 @@ class RoleAuthorizationMiddleware extends BaseMiddleware
     $privilege = $request->getAttribute('action');
 
     if (!$this->acl->isAllowed($role, $resource, $privilege)) {
-      return new RedirectResponse('/error/401');
+      return new RedirectResponse('/error/401', ['not allowed']);
     }
 
     if ($this->next !== null) {

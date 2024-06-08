@@ -5,10 +5,8 @@ namespace App\Services\Authenticate;
 use App\Services\Authenticate\IAuthAdapter;
 use App\Services\Authenticate\IAuthResult;
 use App\Repository\IUserRepository;
-
-
 use App\Services\Authenticate\DBAuthResult;
-use App\Repository\UserRepository;
+
 
 
 class DBAuthAdapter implements IAuthAdapter
@@ -17,11 +15,11 @@ class DBAuthAdapter implements IAuthAdapter
     private string $password;
     private IUserRepository $userRepository;
 
-    public function __construct(string $email, string $password, IUserRepository $userRepository = null)
+    public function __construct(string $email, string $password, IUserRepository $userRepository)
     {
         $this->email = $email;
         $this->password = $password;
-        $this->userRepository = $userRepository ?: new UserRepository();
+        $this->userRepository = $userRepository;
     }
 
     public function authenticate(): IAuthResult

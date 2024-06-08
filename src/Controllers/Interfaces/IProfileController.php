@@ -3,10 +3,10 @@
 namespace App\Controllers\Interfaces;
 
 use App\Middleware\IResponse;
-use App\Request\IRequest;
+use App\Request\IFullRequest;
 
 interface IProfileController extends IRootController
 {
-    public function getShowProfile(IRequest $request): IResponse;
-    public function postChangePassword(IRequest $request): IResponse;
+    public function getShowProfile(IFullRequest $request): IResponse;
+    public function postChangePassword(IFullRequest $request): IResponse;
 }
