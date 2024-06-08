@@ -106,10 +106,11 @@ class Router implements IRouter
           return $this->container->callMethod($middleware, 'process', [$request, $controllerInstance]);
         }
 
+        
         return $this->container->callMethod($controllerInstance, 'handle', [$request]);
       }
     }
 
-    return new RedirectResponse('/error/404');
+    return new RedirectResponse('/error/404', ['route not found']);
   }
 }

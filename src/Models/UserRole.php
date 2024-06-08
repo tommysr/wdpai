@@ -9,5 +9,4 @@ enum UserRole: string
   case NORMAL = 'normal';
   case GUEST = 'guest';
   case CREATOR = 'creator';
-
 }

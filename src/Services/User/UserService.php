@@ -2,6 +2,7 @@
 namespace App\Services\User;
 
 use App\Models\Interfaces\IUser;
+use App\Models\UserRole;
 use App\Repository\IUserRepository;
 use App\Repository\Role\IRoleRepository;
 use App\Repository\UserRepository;
@@ -12,9 +13,10 @@ class UserService implements IUserService
     private IUserRepository $userRepository;
     private IRoleRepository $roleRepository;
 
-    public function __construct(IUserRepository $userRepository)
+    public function __construct(IUserRepository $userRepository, IRoleRepository $roleRepository)
     {
         $this->userRepository = $userRepository;
+        $this->roleRepository = $roleRepository;
     }
 
     public function getUserById(int $userId): ?IUser
@@ -34,5 +36,13 @@ class UserService implements IUserService
     {
         $user = $this->userRepository->getUserById($userId);
         return password_verify($password, $user->getPassword());
+    }
+
+    public function promoteToCreator(string $name): void
+    {
+        $user = $this->userRepository->getUserByName($name);
+        $role = $this->roleRepository->getRole(UserRole::CREATOR->value);
+        $user->setRole($role);
+        $this->userRepository->updateUser($user);
     }
 }

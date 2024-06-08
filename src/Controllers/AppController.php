@@ -4,17 +4,15 @@ namespace App\Controllers;
 // interfaces
 use App\Middleware\BaseResponse;
 use App\Middleware\IHandler;
+use App\Middleware\RedirectResponse;
 use App\Request\IFullRequest;
-use App\Request\IRequest;
-use App\Request\Request;
+use App\Services\Session\ISessionService;
+use App\View\IViewRenderer;
+use App\Middleware\IResponse;
+
 
 // concrete default implementations
 use App\Services\Authenticate\UserIdentity;
-use App\Services\Session\SessionService;
-use App\Services\Session\ISessionService;
-use App\View\IViewRenderer;
-use App\View\ViewRenderer;
-use App\Middleware\IResponse;
 
 abstract class AppController implements IHandler
 {
@@ -24,7 +22,7 @@ abstract class AppController implements IHandler
 
     public function __construct(IFullRequest $request, ISessionService $sessionService, IViewRenderer $viewRenderer)
     {
-      
+
         $this->request = $request;
         $this->sessionService = $sessionService;
         $this->viewRenderer = $viewRenderer;
@@ -34,10 +32,10 @@ abstract class AppController implements IHandler
     {
         $actionMethod = $this->getActionMethod();
 
-
         if (!method_exists($this, $actionMethod)) {
-            return new BaseResponse(404, [], 'Not Found');
+            return new RedirectResponse(404, ['not found']);
         }
+
         $params = $this->request->getAttribute('params', []);
         return call_user_func_array([$this, $actionMethod], array_merge([$request], $params));
     }

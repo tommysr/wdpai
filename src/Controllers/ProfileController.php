@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Controllers\Interfaces\IProfileController;
-
 use App\Middleware\IResponse;
 use App\Middleware\JsonResponse;
 use App\Request\IFullRequest;
