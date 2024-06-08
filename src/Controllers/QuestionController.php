@@ -10,6 +10,9 @@ use App\Models\QuestionType;
 use App\Models\QuestState;
 use App\Request\IFullRequest;
 use App\Services\Authenticate\IAuthService;
+use App\Services\Question\IQuestionService;
+use App\Services\QuestProgress\IQuestProgressManagementService;
+use App\Services\QuestProgress\IQuestProgressRetrievalService;
 use App\Services\QuestProgress\IQuestProgressService;
 use App\Services\Quests\IQuestService;
 use App\Services\Recommendation\IRecommendationService;
@@ -21,7 +24,9 @@ class QuestionController extends AppController implements IQuestionController
 {
   private IQuestService $questService;
   private IAuthService $authService;
-  private IQuestProgressService $questProgressService;
+  private IQuestProgressManagementService $questProgressManagement;
+  private IQuestProgressRetrievalService $questProgressService;
+  private IQuestionService $questionService;
 
   public function __construct(
     IFullRequest $request,
@@ -29,14 +34,16 @@ class QuestionController extends AppController implements IQuestionController
     IViewRenderer $viewRenderer,
     IQuestService $questService,
     IAuthService $authService,
-    IQuestProgressService $questProgressService,
-    IRecommendationService $recommendationService
+    IQuestProgressRetrievalService $questProgressService,
+    IQuestionService $questionService,
+    IQuestProgressManagementService $questProgressManagementService
   ) {
     parent::__construct($request, $sessionService, $viewRenderer);
     $this->questService = $questService;
     $this->authService = $authService;
     $this->questProgressService = $questProgressService;
-    $this->recommendationService = $recommendationService;
+    $this->questionService = $questionService;
+    $this->questProgressManagementService = $questProgressManagementService;
   }
 
   public function getIndex(IFullRequest $request): IResponse
@@ -46,16 +53,16 @@ class QuestionController extends AppController implements IQuestionController
 
   public function getPlay(IFullRequest $request): IResponse
   {
-    $questProgress = $this->questProgressService->getCurrentProgressFromSession();
+    $questProgress = $this->questProgressService->getCurrentProgress();
 
     switch ($questProgress->getState()) {
       case QuestState::InProgress:
-        $question = $this->questProgressService->getQuestion($questProgress->getQuestId(), $questProgress->getLastQuestionId());
+        $question = $this->questionService->getQuestionWithOptions($questProgress->getLastQuestionId());
         return $this->getNextQuestion($question);
       case QuestState::Unrated:
         return new RedirectResponse('/rating');
       case QuestState::Finished:
-        return new RedirectResponse('/summary');
+        return new RedirectResponse('/summary' . $questProgress->getQuestId());
       case QuestState::Abandoned:
         return new RedirectResponse('/error/404');
       default:
@@ -94,7 +101,9 @@ class QuestionController extends AppController implements IQuestionController
 
   public function postAnswer(IFullRequest $request, int $questionId): IResponse
   {
-    $questProgress = $this->questProgressService->getCurrentProgressFromSession();
+    $questProgress = $this->questProgressService->getCurrentProgress();
+    $userId = $this->authService->getIdentity()->getId();
+    $maxScore = $this->questService->getQuest($questProgress->getQuestId())->getMaxPoints();
 
     if ($questProgress->getLastQuestionId() !== $questionId) {
       return new RedirectResponse('/error/404');
@@ -102,16 +111,13 @@ class QuestionController extends AppController implements IQuestionController
 
     $selectedOptions = $this->request->getParsedBodyParam('options') ?? [];
     $selectedOptionsInt = array_map('intval', $selectedOptions);
-    $result = $this->questProgressService->evaluateOptions($questionId, $selectedOptionsInt);
-    $this->questProgressService->updateQuestProgress($result['points']);
+    $result = $this->questionService->evaluateOptions($questionId, $selectedOptionsInt);
 
-    $userId = $this->authService->getIdentity()->getId();
-    $this->questProgressService->recordResponses($userId, $result['options']);
-    $this->questProgressService->adjustQuestProgress($questionId);
-    $questProgress = $this->questProgressService->getCurrentProgressFromSession();
-    $maxScore = $this->questProgressService->getMaxScore($questProgress->getQuestId());
+    $this->questProgressManagement->addPoints($result['points']);
+    $this->questProgressManagement->recordResponses($userId, $result['options']);
+    $this->questProgressManagement->changeProgress($questionId);
 
-    return $this->renderQuestionSummary($result['points'], $result['maxPoints'], $questProgress->getScore(), $maxScore);
+    return $this->renderQuestionSummary($result['points'], $result['maxPoints'], $questProgress->getScore() + $result['points'], $maxScore);
   }
 
   private function renderQuestionSummary(int $questionScore, int $questionMaxScore, int $score, int $maxScore): IResponse

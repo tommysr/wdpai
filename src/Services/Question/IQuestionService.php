@@ -9,7 +9,7 @@ use App\Models\IQuestion;
 interface IQuestionService
 {
   public function fetchQuestions(IQuest $quest): array;
-  public function processQuestions(IQuest $quest): void;
-  private function processQuestion(IQuestion $question): void;
-  private function processOptions(IQuestion $question): void;
+  public function updateQuestions(IQuest $quest): void;
+  public function getQuestionWithOptions(int $questionId): ?IQuestion;
+  public function evaluateOptions(int $questionId, array $selectedOptions): array;
 }

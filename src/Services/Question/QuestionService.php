@@ -2,6 +2,7 @@
 
 namespace App\Services\Question;
 
+use App\Models\QuestionType;
 use App\Repository\IQuestionsRepository;
 use App\Repository\IOptionsRepository;
 use App\Models\IQuest;
@@ -21,7 +22,7 @@ class QuestionService implements IQuestionService
     $this->optionRepository = $optionRepository;
   }
 
-  public function processQuestions(IQuest $quest): void
+  public function updateQuestions(IQuest $quest): void
   {
     $questId = $quest->getQuestID();
     foreach ($quest->getQuestions() as $question) {
@@ -75,5 +76,53 @@ class QuestionService implements IQuestionService
     }
 
     return $questions;
+  }
+
+  public function getQuestionWithOptions(int $questionId): ?IQuestion
+  {
+    $question = $this->questionRepository->getById($questionId);
+
+    if (!$question) {
+      return null;
+    }
+
+    $options = $this->optionRepository->getOptionsByQuestionId($questionId);
+    $question->setOptions($options);
+    return $question;
+  }
+
+
+  public function evaluateOptions(int $questionId, array $selectedOptions): array
+  {
+    $question = $this->questionRepository->getById($questionId);
+
+    if ($question->getType() === QuestionType::READ_TEXT) {
+      return ['points' => $question->getPoints(), 'options' => [], 'maxPoints' => $question->getPoints()];
+    }
+
+    $options = $this->optionRepository->getOptionsByQuestionId($questionId);
+    $optionIds = array_map(fn($option) => $option->getOptionId(), $options);
+    $correctIds = $this->optionRepository->getCorrectOptionsIdsForQuestionId($questionId);
+    $correctCount = count($correctIds);
+    $chosenCount = count(array_intersect($correctIds, $selectedOptions));
+
+    if ($question->getType() === QuestionType::SINGLE_CHOICE && $chosenCount != 1) {
+      throw new \Exception("Single choice question must have exactly one option selected");
+    }
+
+    if ($question->getType() === QuestionType::MULTIPLE_CHOICE && $chosenCount < 1) {
+      throw new \Exception("Multiple choice question must have at least one option selected");
+    }
+
+    $points = $question->getPoints();
+
+    if ($correctCount != 0) {
+      $points = round(($chosenCount / $correctCount) * $question->getPoints());
+    }
+    return [
+      'points' => $points,
+      'maxPoints' => $question->getPoints(),
+      'options' => array_intersect($correctIds, $optionIds)
+    ];
   }
 }

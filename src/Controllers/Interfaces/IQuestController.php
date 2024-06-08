@@ -9,6 +9,6 @@ interface IQuestController extends IRootController
 {
   public function postEnterQuest(IFullRequest $request, int $walletId): IResponse;
   public function postAbandonQuest(IFullRequest $request): IResponse;
-  public function getSummary(IFullRequest $request): IResponse;
+  public function getSummary(IFullRequest $request, int $questId): IResponse;
   public function getReset(IFullRequest $request): IResponse;
 }

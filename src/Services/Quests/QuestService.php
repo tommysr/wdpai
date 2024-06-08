@@ -35,7 +35,6 @@ class QuestService implements IQuestService
     return $this->questRepository->getQuestToApprove();
   }
 
-
   public function getApprovedQuests(): array
   {
     return $this->questRepository->getApprovedQuests();
@@ -81,14 +80,14 @@ class QuestService implements IQuestService
   public function editQuest(IQuest $quest): void
   {
     $this->questRepository->updateQuest($quest);
-    $this->questionService->processQuestions($quest);
+    $this->questionService->updateQuestions($quest);
   }
 
   public function createQuest(IQuest $quest): void
   {
     $questId = $this->questRepository->saveQuest($quest);
     $quest->setQuestID($questId);
-    $this->questionService->processQuestions($quest);
+    $this->questionService->updateQuestions($quest);
   }
 
   public function addParticipant(int $questId): bool

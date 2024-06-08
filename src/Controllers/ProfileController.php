@@ -8,7 +8,9 @@ use App\Middleware\JsonResponse;
 use App\Request\IFullRequest;
 use App\Request\IRequest;
 use App\Services\Authenticate\IAuthService;
+use App\Services\QuestProgress\IQuestProgressRetrievalService;
 use App\Services\QuestProgress\IQuestProgressService;
+use App\Services\Quests\IQuestService;
 use App\Services\Session\ISessionService;
 use App\Services\User\IUserService;
 use App\View\IViewRenderer;
@@ -18,10 +20,17 @@ class ProfileController extends AppController implements IProfileController
 {
     private IUserService $userService;
     private IAuthService $authService;
-    private IQuestProgressService $questProgressService;
+    private IQuestProgressRetrievalService $questProgressService;
+    private IQuestService $questsService;
 
-    public function __construct(IFullRequest $request, ISessionService $sessionService, IViewRenderer $viewRenderer, IUserService $userService, IAuthService $authService, IQuestProgressService $questProgressService)
-    {
+    public function __construct(
+        IFullRequest $request,
+        ISessionService $sessionService,
+        IViewRenderer $viewRenderer,
+        IUserService $userService,
+        IAuthService $authService,
+        IQuestProgressRetrievalService $questProgressService
+    ) {
         parent::__construct($request, $sessionService, $viewRenderer);
 
         $this->userService = $userService;

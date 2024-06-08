@@ -3,7 +3,6 @@
 namespace App\Services\Quests;
 
 use App\Models\IQuest;
-use App\Result\IResult;
 use App\Services\Authenticate\IIdentity;
 
 interface IQuestService

@@ -8,7 +8,7 @@ use App\Middleware\JsonResponse;
 use App\Request\IFullRequest;
 use App\Middleware\IResponse;
 use App\Services\Authenticate\IAuthService;
-use App\Services\QuestProgress\IQuestProgressService;
+use App\Services\QuestProgress\IQuestProgressRetrievalService;
 use App\Services\Quests\IQuestService;
 use App\Services\Recommendation\IRecommendationService;
 use App\Services\Session\ISessionService;
@@ -18,8 +18,9 @@ class QuestViewController extends AppController implements IQuestViewController
 {
   private IQuestService $questService;
   private IAuthService $authService;
-  private IQuestProgressService $questProgressService;
   private IRecommendationService $recommendationService;
+  private IQuestProgressRetrievalService $questProgressService;
+  private
 
   public function __construct(
     IFullRequest $request,
@@ -27,7 +28,7 @@ class QuestViewController extends AppController implements IQuestViewController
     IViewRenderer $viewRenderer,
     IQuestService $questService,
     IAuthService $authService,
-    IQuestProgressService $questProgressService,
+    IQuestProgressRetrievalService $questProgressService,
     IRecommendationService $recommendationService
   ) {
     parent::__construct($request, $sessionService, $viewRenderer);
@@ -71,7 +72,6 @@ class QuestViewController extends AppController implements IQuestViewController
 
       foreach ($question->getOptions() as $option) {
         $responseCount = $this->questProgressService->getResponsesCount($option->getOptionId());
-
         $optionsArray[] = [
           'option_id' => $option->getOptionId(),
           'text' => $option->getText(),
