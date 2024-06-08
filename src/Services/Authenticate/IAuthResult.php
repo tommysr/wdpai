@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Services\Authenticate;
+
+use App\Result\IResult;
 use App\Services\Authenticate\IIdentity;
 
-interface IAuthResult {
+interface IAuthResult extends IResult
+{
     public function getIdentity(): ?IIdentity;
-    public function getMessages(): array;   
-    public function isValid(): bool;
 }

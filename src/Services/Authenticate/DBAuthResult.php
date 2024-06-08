@@ -1,9 +1,10 @@
 <?php
 namespace App\Services\Authenticate;
 
+use App\Result\Result;
 use App\Services\Authenticate\IAuthResult;
 
-class DBAuthResult implements IAuthResult
+class DBAuthResult extends Result implements IAuthResult
 {
     private ?IIdentity $identity;
     private array $messages;
@@ -11,23 +12,12 @@ class DBAuthResult implements IAuthResult
 
     public function __construct(IIdentity $identity = null, array $messages = [], bool $isValid = false)
     {
+        parent::__construct($messages, $isValid);
         $this->identity = $identity;
-        $this->messages = $messages;
-        $this->isValid = $isValid;
     }
 
     public function getIdentity(): ?IIdentity
     {
         return $this->identity;
-    }
-
-    public function getMessages(): array
-    {
-        return $this->messages;
-    }
-
-    public function isValid(): bool
-    {
-        return $this->isValid;
     }
 }

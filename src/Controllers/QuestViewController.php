@@ -134,6 +134,7 @@ class QuestViewController extends AppController implements IQuestViewController
     $userId = $this->authService->getIdentity()->getId();
     $questsIds = $this->recommendationService->getRecommendations($userId);
     $quests = $this->questService->getQuests($questsIds);
+
     return new JsonResponse(['quests' => $quests], 200);
   }
 
@@ -141,7 +142,7 @@ class QuestViewController extends AppController implements IQuestViewController
   public function getShowCreatedQuests(IFullRequest $request): IResponse
   {
     $quests = $this->questService->getCreatorQuests($this->authService->getIdentity());
-
+    
     return $this->render('layout', ['title' => 'created quests', 'quests' => $quests], 'createdQuests');
   }
 }

@@ -43,12 +43,12 @@ class WalletManagementController extends AppController implements IWalletManagem
     return $this->render('showWallets', ['title' => 'enter quest', 'questId' => $questId, 'wallets' => $wallets, 'chain' => $blockchain]);
   }
 
+  // TODO: add validation
   public function postAddWallet(IFullRequest $request, string $blockchain): IResponse
   {
-    $userId = $this->authService->getIdentity()->getId();
+    $identity = $this->authService->getIdentity();
     $walletAddress = $this->request->getParsedBodyParam('walletAddress');
-    $wallet = new Wallet(0, $userId, $blockchain, $walletAddress, date('Y-m-d'), date('Y-m-d'));
-    $walletId = $this->walletService->createWallet($wallet);
+    $walletId = $this->walletService->createWallet($identity, $blockchain, $walletAddress);
 
     return new JsonResponse(['walletId' => $walletId, 'walletAddress' => $walletAddress]);
   }
