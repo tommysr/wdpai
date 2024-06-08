@@ -2,26 +2,14 @@
 
 namespace App\Services\Quests;
 
-use App\Models\IOption;
-use App\Models\IQuestion;
-use App\Models\Option;
-use App\Models\Question;
-use App\Models\QuestionType;
-use App\Models\QuestionTypeUtil;
 use App\Repository\IOptionsRepository;
 use App\Repository\IWalletRepository;
-use App\Repository\WalletRepository;
 use App\Services\Authenticate\IIdentity;
 use App\Services\Quests\IQuestService;
 use App\Repository\IQuestRepository;
 use App\Repository\IQuestionsRepository;
 use App\Models\IQuest;
-use App\Models\Quest;
-use App\Repository\OptionsRepository;
-use App\Repository\QuestRepository;
-use App\Repository\QuestionsRepository;
-use App\Validator\IValidationChain;
-use App\Validator\Quest\QuestValidationChain;
+
 
 class QuestService implements IQuestService
 {
@@ -31,15 +19,15 @@ class QuestService implements IQuestService
   private IWalletRepository $walletRepository;
 
   public function __construct(
-    IQuestRepository $questRepository = null,
-    IQuestionsRepository $questionRepository = null,
-    IOptionsRepository $optionRepository = null,
-    IWalletRepository $walletRepository = null
+    IQuestRepository $questRepository,
+    IQuestionsRepository $questionRepository,
+    IOptionsRepository $optionRepository,
+    IWalletRepository $walletRepository
   ) {
-    $this->questRepository = $questRepository ?: new QuestRepository();
-    $this->questionRepository = $questionRepository ?: new QuestionsRepository();
-    $this->optionRepository = $optionRepository ?: new OptionsRepository();
-    $this->walletRepository = $walletRepository ?: new WalletRepository();
+    $this->questRepository = $questRepository;
+    $this->questionRepository = $questionRepository;
+    $this->optionRepository = $optionRepository;
+    $this->walletRepository = $walletRepository;
   }
 
   public function getQuestsToApproval(): array

@@ -19,10 +19,10 @@ class DbRegisterStrategy implements IRegisterStrategy
   private IRoleRepository $roleRepository;
   private IFullRequest $request;
 
-  public function __construct(IFullRequest $request, IUserRepository $userRepository = null, IRoleRepository $roleRepository = null)
+  public function __construct(IFullRequest $request, IUserRepository $userRepository, IRoleRepository $roleRepository)
   {
-    $this->userRepository = $userRepository ?: new UserRepository();
-    $this->roleRepository = $roleRepository ?: new RoleRepository();
+    $this->userRepository = $userRepository;
+    $this->roleRepository = $roleRepository;
     $this->request = $request;
   }
 

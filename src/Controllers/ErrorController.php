@@ -2,18 +2,19 @@
 namespace App\Controllers;
 
 use App\Controllers\Interfaces\IErrorController;
-use App\Request\IRequest;
+use App\Request\IFullRequest;
 use App\Middleware\IResponse;
 
 class ErrorController extends AppController implements IErrorController
 {
-  public function getIndex(IRequest $request): IResponse
+  public function getIndex(IFullRequest $request): IResponse
   {
     return $this->render('error', ['code' => 404, 'message' => '']);
   }
 
-  public function getError(IRequest $request, int $code): IResponse
+  public function getError(IFullRequest $request, int $code, array $messages = []): IResponse
   {
-    return $this->render('error', ['code' => $code, 'message' => '']);
+    $query_messages = $request->getQuery('messages', []);
+    return $this->render('error', ['code' => $code, 'messages' => array_merge($messages, $query_messages)]);
   }
 }

@@ -11,10 +11,10 @@ class RegisterService implements IRegisterService
   private IFullRequest $request;
   private IRegisterStrategyFactory $registerStrategyFactory;
 
-  public function __construct(IFullRequest $request, IRegisterStrategyFactory $strategy = null)
+  public function __construct(IFullRequest $request, IRegisterStrategyFactory $strategy)
   {
     $this->request = $request;
-    $this->registerStrategyFactory = $strategy ?: new StrategyFactory($request);
+    $this->registerStrategyFactory = $strategy;
   }
 
   public function register(): IRegisterResult

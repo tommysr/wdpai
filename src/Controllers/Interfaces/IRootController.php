@@ -2,10 +2,10 @@
 
 namespace App\Controllers\Interfaces;
 
-use App\Request\IRequest;
+use App\Request\IFullRequest;
 use App\Middleware\IResponse;
 
 interface IRootController
 {
-    public function getIndex(IRequest $request): IResponse;
+    public function getIndex(IFullRequest $request): IResponse;
 }

@@ -24,17 +24,19 @@ class RecommendationService implements IRecommendationService
   private IRecommender $recommender;
   private IDataManager $dataManager;
 
-  public function __construct(IRatingService $ratingService = null, ISimilarityRepository $similarityRepository = null, IRecommender $recommender = null, IDataManager $dataManager = null)
+  public function __construct(IRatingService $ratingService, ISimilarityRepository $similarityRepository, IRecommender $recommender, IDataManager $dataManager)
   {
-    $this->ratingService = $ratingService ?: new RatingService();
-    $this->similarityRepository = $similarityRepository ?: new SimilarityRepository();
+    $this->ratingService = $ratingService;
+    $this->similarityRepository = $similarityRepository;
 
     $data = $this->ratingService->getUserItemMatrix();
     $similarityMatrix = $this->similarityRepository->getSimilarityMatrix();
-    $this->dataManager = new DataManager($data, $similarityMatrix);
-    $this->recommender = $recommender ?: new Recommender($this->dataManager);
 
-    // TODO: replace it with something else, e.g DI
+    $this->dataManager = $dataManager;
+
+    $this->recommender = $recommender;
+    $this->dataManager->setData($data);
+    $this->dataManager->setSimilarityMatrix($similarityMatrix);
     $this->recommender->setSimilarityStrategy(new CosineSimilarity());
     $this->recommender->setPredictionStrategy(new KnnPredictor($data, $similarityMatrix));
   }
@@ -42,8 +44,8 @@ class RecommendationService implements IRecommendationService
 
   public function getRecommendations(int $userId): array
   {
-    $predicted=  $this->recommender->estimate($userId);
-    $sortedRecommendations = array_filter($predicted, function($value, $key) {
+    $predicted = $this->recommender->estimate($userId);
+    $sortedRecommendations = array_filter($predicted, function ($value, $key) {
       return $value !== 0.0 && $key !== 0;
     }, ARRAY_FILTER_USE_BOTH);
     arsort($sortedRecommendations);

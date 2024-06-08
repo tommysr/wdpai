@@ -1,10 +1,10 @@
 <?php
 namespace App\Middleware;
 
-use App\Request\IRequest;
+use App\Request\IFullRequest;
 use App\Middleware\IResponse;
 
 interface IHandler
 {
-    public function handle(IRequest $request): IResponse;
+    public function handle(IFullRequest $request): IResponse;
 }

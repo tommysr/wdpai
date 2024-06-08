@@ -49,7 +49,14 @@ class Emitter implements IEmitter
 
   private function emitRedirectResponse(IRedirectResponse $response)
   {
-    header('Location: ' . "http://$_SERVER[HTTP_HOST]".  $response->getRedirectUri(), true, $response->getStatusCode());
+    $messages = $response->getMessages();
+    $redirectUri = $response->getRedirectUri();
+
+    if (!empty($messages)) {
+      $queryParams = http_build_query(['messages' => $messages]);
+      $redirectUri .= (parse_url($response->getRedirectUri(), PHP_URL_QUERY) ? '&' : '?') . $queryParams;
+    }
+    header('Location: ' . "http://$_SERVER[HTTP_HOST]" . $redirectUri, true, $response->getStatusCode());
     exit();
   }
 }
