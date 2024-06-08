@@ -41,6 +41,12 @@ class User implements IUser
     }
   }
 
+
+  public function setRole(IRole $role): void
+  {
+    $this->role = $role;
+  }
+
   public function setPassword(string $password): void
   {
     $this->password = $password;

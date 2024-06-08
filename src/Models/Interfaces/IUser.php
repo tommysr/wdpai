@@ -14,4 +14,5 @@ interface IUser
   public function getRole(): IRole;
   public function getAvatarUrl(): string;
   public function setPassword(string $password): void;
+  public function setRole(IRole $role): void;
 }

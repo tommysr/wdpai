@@ -9,7 +9,7 @@ class ErrorController extends AppController implements IErrorController
 {
   public function getIndex(IFullRequest $request): IResponse
   {
-    return $this->render('error', ['code' => 404, 'message' => '']);
+    return $this->render('error', ['code' => 404, 'message' => 'not found']);
   }
 
   public function getError(IFullRequest $request, int $code, array $messages = []): IResponse

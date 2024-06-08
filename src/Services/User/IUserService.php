@@ -8,4 +8,5 @@ interface IUserService
     public function changePassword(int $userId, string $newPassword): void;
     public function verifyPassword(int $userId, string $password): bool;
     public function getUserById(int $userId): ?IUser;
+    public function promoteToCreator(string $name): void;
 }

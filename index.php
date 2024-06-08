@@ -131,7 +131,6 @@ $app->set(QuestAuthorizationMiddleware::class, function ($app) {
   return new QuestAuthorizationMiddleware($questAuthorizeService);
 });
 
-
 $app->singleton(IDatabase::class, function () {
   return Database::getInstance(new DefaultDBConfig());
 });
@@ -181,7 +180,7 @@ $app->set(IRegisterService::class, function ($app) {
 });
 
 $app->set(IUserService::class, function ($app) {
-  return new UserService($app->get(IUserRepository::class));
+  return new UserService($app->get(IUserRepository::class), $app->get(IRoleRepository::class));
 });
 
 $app->set(IQuestService::class, function ($app) {
@@ -235,24 +234,29 @@ $app->set(IAcl::class, function ($app) {
   }
 
 
-  $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'showCreatedQuests');
-  $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'createQuest');
-  $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'showCreateQuest');
-  $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'showEditQuest');
-  $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'editQuest');
-  $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'uploadQuestPicture');
-  $acl->allow((string) UserRole::CREATOR->value, 'QuestsController', 'reportQuest');
+  $acl->allow(UserRole::CREATOR->value, 'QuestViewController', 'showCreatedQuests');
+  $acl->allow(UserRole::CREATOR->value, 'QuestViewController', 'questReport');
+  $acl->allow(UserRole::ADMIN->value, 'QuestViewController', 'showQuestsToApproval');
+  $acl->allow(UserRole::ADMIN->value, 'QuestViewController', 'showApprovedQuests');
 
-  $acl->allow((string) UserRole::NORMAL->value, 'QuestsController', 'showQuestWallets');
-  $acl->allow((string) UserRole::NORMAL->value, 'QuestsController', 'enterQuest');
-  $acl->allow((string) UserRole::NORMAL->value, 'QuestsController', 'addWallet');
+  $acl->allow(UserRole::CREATOR->value, 'QuestManagementController', 'createQuest');
+  $acl->allow(UserRole::CREATOR->value, 'QuestManagementController', 'showCreateQuest');
+  $acl->allow(UserRole::CREATOR->value, 'QuestManagementController', 'showEditQuest');
+  $acl->allow(UserRole::CREATOR->value, 'QuestManagementController', 'editQuest');
+  // to preview
+  $acl->allow(UserRole::ADMIN->value, 'QuestManagementController', 'showEditQuest');
 
-  $acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'refreshRecommendations');
-  $acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'showQuestsToApproval');
-  $acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'showApprovedQuests');
-  $acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'publishQuest');
-  $acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'unpublishQuest');
-  $acl->allow((string) UserRole::ADMIN->value, 'QuestsController', 'showEditQuest');
+  $acl->allow(UserRole::CREATOR->value, 'UploadController', 'uploadPicture');
+
+  $acl->allow(UserRole::NORMAL->value, 'WalletManagementController', 'showQuestWallets');
+  $acl->allow(UserRole::NORMAL->value, 'WalletManagementController', 'addWallet');
+
+  $acl->allow(UserRole::NORMAL->value, 'GameController', 'enterQuest');
+ 
+  $acl->allow(UserRole::ADMIN->value, 'AdminController', 'refreshRecommendations');
+  $acl->allow(UserRole::ADMIN->value, 'AdminController', 'publishQuest');
+  $acl->allow(UserRole::ADMIN->value, 'AdminController', 'unpublishQuest');
+  $acl->allow(UserRole::ADMIN->value, 'AdminController', 'promoteUser');
 
   return $acl;
 });
@@ -260,9 +264,18 @@ $app->set(IAcl::class, function ($app) {
 
 $r = new Router($app);
 
-// GENERAL ROUTES
+// ERROR ROUTES
 $r->get('/error/{code}', 'ErrorController@error');
-$r->get('/', 'QuestsController@showQuests', [AuthenticationMiddleware::class, QuestAuthorizationMiddleware::class]);
+
+// QUEST DATA VIEW / FETCH ROUTES
+$r->get('/', 'QuestViewController@showQuests', [AuthenticationMiddleware::class, QuestAuthorizationMiddleware::class]);
+$r->get('/showCreatedQuests', 'QuestViewController@showCreatedQuests', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
+$r->get('/showQuestsToApproval', 'QuestViewController@showQuestsToApproval', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
+$r->get('/showApprovedQuests', 'QuestViewController@showApprovedQuests', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
+$r->get('/reportQuest/{questId}', 'QuestViewController@questReport', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
+$r->get('/showQuests', 'QuestViewController@showQuests', [AuthenticationMiddleware::class, QuestAuthorizationMiddleware::class]);
+$r->get('/showTopRatedQuests', 'QuestViewController@showTopRatedQuests', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
+$r->get('/showRecommendedQuests', 'QuestViewController@showRecommendedQuests', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
 
 // PROFILE ROUTES
 $r->post('/changePassword', 'ProfileController@changePassword', [AuthenticationMiddleware::class]);
@@ -271,25 +284,32 @@ $r->get('/dashboard', 'ProfileController@showProfile', [AuthenticationMiddleware
 // AUTHENTICATION ROUTES
 $r->get('/login', 'LoginController@login', [AuthenticationMiddleware::class]);
 $r->get('/logout', 'LoginController@logout', [AuthenticationMiddleware::class]);
-$r->get('/register', 'RegisterController@register', [AuthenticationMiddleware::class]);
 $r->post('/login', 'LoginController@login', [LoginValidationMiddleware::class, AuthenticationMiddleware::class]);
+
+// REGISTRATION ROUTES
+$r->get('/register', 'RegisterController@register', [AuthenticationMiddleware::class]);
 $r->post('/register', 'RegisterController@register', [AuthenticationMiddleware::class, RegisterValidationMiddleware::class]);
 
-// CREATOR ROUTES`
-$r->get('/showCreatedQuests', 'QuestsController@showCreatedQuests', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
-$r->get('/showCreateQuest', 'QuestsController@showCreateQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
-$r->get('/showEditQuest/{questId}', 'QuestsController@showEditQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
-$r->post('/createQuest', 'QuestsController@createQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestValidationMiddleware::class, QuestAuthorizationMiddleware::class]);
-$r->post('/editQuest/{questId}', 'QuestsController@editQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestValidationMiddleware::class, QuestAuthorizationMiddleware::class]);
-$r->post('/uploadQuestPicture', 'QuestsController@uploadQuestPicture', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
-$r->get('/reportQuest/{questId}', 'QuestsController@reportQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
+// QUEST MANAGEMENT ROUTES - CREATOR
+$r->get('/showCreateQuest', 'QuestManagementController@showCreateQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
+$r->get('/showEditQuest/{questId}', 'QuestManagementController@showEditQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
+$r->post('/createQuest', 'QuestManagementController@createQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestValidationMiddleware::class, QuestAuthorizationMiddleware::class]);
+$r->post('/editQuest/{questId}', 'QuestManagementController@editQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestValidationMiddleware::class, QuestAuthorizationMiddleware::class]);
 
-// NORMAL USER ROUTES
-$r->get('/showQuests', 'QuestsController@showQuests', [AuthenticationMiddleware::class, QuestAuthorizationMiddleware::class]);
-$r->get('/showTopRatedQuests', 'QuestsController@showTopRatedQuests', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
-$r->get('/showRecommendedQuests', 'QuestsController@showRecommendedQuests', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
-$r->get('/showQuestWallets/{questId}', 'QuestsController@showQuestWallets', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
-$r->post('/addWallet/{blockchain}', 'QuestsController@addWallet', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
+// WALLET MANAGEMENT ROUTES
+$r->get('/showQuestWallets/{questId}', 'WalletManagementController@showQuestWallets', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
+$r->post('/addWallet/{blockchain}', 'WalletManagementController@addWallet', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
+
+// FILE UPLOAD FOR CREATORS
+$r->post('/uploadPicture', 'UploadController@uploadPicture', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
+
+// ADMIN CONTROLLER ROUTES
+$r->get('/refreshRecommendations', 'AdminController@refreshRecommendations', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
+$r->post('/publishQuest/{questId}', 'AdminController@publishQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
+$r->post('/unpublishQuest/{questId}', 'AdminController@unpublishQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
+$r->get('/promoteToCreator/{userName}', 'AdminController@promoteUser', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
+
+// GAME ROUTES
 $r->post('/enterQuest/{questId}', 'GameController@enterQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
 $r->get('/play', 'GameController@play', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
 $r->post('/answer/{questionId}', 'GameController@answer', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
@@ -297,17 +317,8 @@ $r->post('/rating', 'GameController@rating', [AuthenticationMiddleware::class, R
 $r->post('/abandonQuest', 'GameController@abandonQuest', [AuthenticationMiddleware::class]);
 $r->get('/endQuest', 'GameController@reset', [AuthenticationMiddleware::class]);
 
-// Admin routes
-$r->get('/refreshRecommendations', 'QuestsController@refreshRecommendations', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
-$r->get('/showQuestsToApproval', 'QuestsController@showQuestsToApproval', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
-$r->get('/showApprovedQuests', 'QuestsController@showApprovedQuests', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
-$r->post('/publishQuest/{questId}', 'QuestsController@publishQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
-$r->post('/unpublishQuest/{questId}', 'QuestsController@unpublishQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
-
 $request = new Request($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
 $emitter = new Emitter();
-
-
 
 try {
   $response = $r->dispatch($request);
