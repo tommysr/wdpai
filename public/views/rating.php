@@ -29,7 +29,7 @@
         </div>
     </nav>
 
-    <form action="/rating" method="post" class="question-container gap-4 justify-center">
+    <form action="/rating/" <?= $questId; ?> method="post" class="question-container gap-4 justify-center">
         <span class="back-text">Rate the quest</span>
 
         <div class="rating-options">
@@ -51,16 +51,16 @@
     </form>
 
     <dialog id="confirmationDialog">
-    <form method="dialog">
-      <h4>Confirm</h4>
-      <p>Do you really want to abandon the quest?</p>
-      <menu>
-        <button id="confirm-yes" value="yes">Yes</button>
-        <button id="confirm-no" value="no">No</button>
-      </menu>
-    </form>
-    <span class="error-message"></span>
-  </dialog>
+        <form method="dialog">
+            <h4>Confirm</h4>
+            <p>Do you really want to abandon the quest?</p>
+            <menu>
+                <button id="confirm-yes" value="yes">Yes</button>
+                <button id="confirm-no" value="no">No</button>
+            </menu>
+        </form>
+        <span class="error-message"></span>
+    </dialog>
 </body>
 
 </html>

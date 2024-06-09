@@ -3,7 +3,7 @@
 namespace App\Services\QuestProgress;
 
 
-interface IQuestProgressManagementService
+interface IQuestProgressManager
 {
   public function resetSession(): void;
   public function startProgress(int $questId, int $walletId): void;

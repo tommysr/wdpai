@@ -10,40 +10,41 @@ use App\Models\QuestionType;
 use App\Models\QuestState;
 use App\Request\IFullRequest;
 use App\Services\Authenticate\IAuthService;
+use App\Services\Quest\IQuestProvider;
 use App\Services\Question\IQuestionService;
 use App\Services\QuestProgress\IQuestProgressManagementService;
+use App\Services\QuestProgress\IQuestProgressManager;
+use App\Services\QuestProgress\IQuestProgressProvider;
 use App\Services\QuestProgress\IQuestProgressRetrievalService;
-use App\Services\QuestProgress\IQuestProgressService;
 use App\Services\Quests\IQuestService;
-use App\Services\Recommendation\IRecommendationService;
 use App\Services\Session\ISessionService;
 use App\View\IViewRenderer;
 
 
 class QuestionController extends AppController implements IQuestionController
 {
-  private IQuestService $questService;
+  private IQuestProvider $questProvider;
   private IAuthService $authService;
-  private IQuestProgressManagementService $questProgressManagement;
-  private IQuestProgressRetrievalService $questProgressService;
+  private IQuestProgressManager $questProgressManager;
+  private IQuestProgressProvider $questProgressProvider;
   private IQuestionService $questionService;
 
   public function __construct(
     IFullRequest $request,
     ISessionService $sessionService,
     IViewRenderer $viewRenderer,
-    IQuestService $questService,
+    IQuestProvider $questProvider,
     IAuthService $authService,
-    IQuestProgressRetrievalService $questProgressService,
+    IQuestProgressProvider $questProgressProvider,
     IQuestionService $questionService,
-    IQuestProgressManagementService $questProgressManagementService
+    IQuestProgressManager $questProgressManager
   ) {
     parent::__construct($request, $sessionService, $viewRenderer);
-    $this->questService = $questService;
+    $this->questProvider = $questProvider;
     $this->authService = $authService;
-    $this->questProgressService = $questProgressService;
+    $this->questProgressProvider = $questProgressProvider;
     $this->questionService = $questionService;
-    $this->questProgressManagementService = $questProgressManagementService;
+    $this->questProgressManager = $questProgressManager;
   }
 
   public function getIndex(IFullRequest $request): IResponse
@@ -53,20 +54,24 @@ class QuestionController extends AppController implements IQuestionController
 
   public function getPlay(IFullRequest $request): IResponse
   {
-    $questProgress = $this->questProgressService->getCurrentProgress();
+    $questProgress = $this->questProgressProvider->getCurrentProgress();
+
+    if (!$questProgress) {
+      return new RedirectResponse('/error/403', ['you are not supposed to be here']);
+    }
 
     switch ($questProgress->getState()) {
       case QuestState::InProgress:
         $question = $this->questionService->getQuestionWithOptions($questProgress->getLastQuestionId());
         return $this->getNextQuestion($question);
       case QuestState::Unrated:
-        return new RedirectResponse('/rating');
+        return new RedirectResponse('/rating/' . $questProgress->getQuestId());
       case QuestState::Finished:
-        return new RedirectResponse('/summary' . $questProgress->getQuestId());
+        return new RedirectResponse('/summary/' . $questProgress->getQuestId());
       case QuestState::Abandoned:
-        return new RedirectResponse('/error/404');
+        return new RedirectResponse('/showQuests');
       default:
-        return new RedirectResponse('/error/404');
+        return new RedirectResponse('/error/500', ['internal server error']);
     }
   }
 
@@ -80,7 +85,7 @@ class QuestionController extends AppController implements IQuestionController
       case QuestionType::READ_TEXT->value:
         return $this->renderReadTextQuestion($question);
       default:
-        throw new \Exception('unknown question type');
+        return new RedirectResponse('/error/500', ['internal server error']);
     }
   }
 
@@ -101,9 +106,9 @@ class QuestionController extends AppController implements IQuestionController
 
   public function postAnswer(IFullRequest $request, int $questionId): IResponse
   {
-    $questProgress = $this->questProgressService->getCurrentProgress();
+    $questProgress = $this->questProgressProvider->getCurrentProgress();
     $userId = $this->authService->getIdentity()->getId();
-    $maxScore = $this->questService->getQuest($questProgress->getQuestId())->getMaxPoints();
+    $maxScore = $this->questProvider->getQuest($questProgress->getQuestId())->getMaxPoints();
 
     if ($questProgress->getLastQuestionId() !== $questionId) {
       return new RedirectResponse('/error/404');
@@ -113,9 +118,9 @@ class QuestionController extends AppController implements IQuestionController
     $selectedOptionsInt = array_map('intval', $selectedOptions);
     $result = $this->questionService->evaluateOptions($questionId, $selectedOptionsInt);
 
-    $this->questProgressManagement->addPoints($result['points']);
-    $this->questProgressManagement->recordResponses($userId, $result['options']);
-    $this->questProgressManagement->changeProgress($questionId);
+    $this->questProgressManager->addPoints($result['points']);
+    $this->questProgressManager->recordResponses($userId, $result['options']);
+    $this->questProgressManager->changeProgress($questionId);
 
     return $this->renderQuestionSummary($result['points'], $result['maxPoints'], $questProgress->getScore() + $result['points'], $maxScore);
   }

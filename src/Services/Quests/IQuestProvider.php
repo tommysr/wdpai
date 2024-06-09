@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Services\Quests;
+namespace App\Services\Quest;
 
 use App\Models\IQuest;
 use App\Services\Authenticate\IIdentity;
 
-interface IQuestService
+interface IQuestProvider
 {
   // left for optimization
   public function getCreatorQuests(IIdentity $identity): array;
@@ -19,9 +19,4 @@ interface IQuestService
   public function getApprovedQuests(): array;
   public function getQuestWithQuestions(int $questId): ?IQuest;
   public function getQuest(int $questId): ?IQuest;
-  public function publishQuest(int $questId): void;
-  public function unpublishQuest(int $questId): void;
-  public function createQuest(IQuest $quest): void;
-  public function editQuest(IQuest $quest): void;
-  public function addParticipant(int $questId): bool;
 }

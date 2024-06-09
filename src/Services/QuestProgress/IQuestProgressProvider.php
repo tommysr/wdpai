@@ -4,7 +4,7 @@ namespace App\Services\QuestProgress;
 
 use App\Models\Interfaces\IQuestProgress;
 
-interface IQuestProgressRetrievalService
+interface IQuestProgressProvider
 {
   public function getProgress(int $userId, int $questId): ?IQuestProgress;
   public function getCurrentProgress(): ?IQuestProgress;

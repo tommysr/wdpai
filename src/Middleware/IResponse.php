@@ -9,5 +9,4 @@ interface IResponse
     public function getStatusCode(): int;
     public function getHeaders(): array;
     public function getBody(): string;
-
 }

@@ -3,24 +3,21 @@
 namespace App\Services\QuestProgress;
 
 use App\Models\Interfaces\IQuestProgress;
-use App\Repository\IOptionsRepository;
-use App\Repository\IQuestionsRepository;
-use App\Repository\IWalletRepository;
 use App\Repository\QuestProgress\IQuestProgressRepository;
-use App\Services\Quests\IQuestService;
+use App\Services\Quest\IQuestProvider;
 use App\Services\Session\ISessionService;
 
-class QuestProgressRetrievalService implements IQuestProgressRetrievalService
+class QuestProgressProvider implements IQuestProgressProvider
 {
   private IQuestProgressRepository $questProgressRepository;
   private ISessionService $sessionService;
-  private IQuestService $questService;
+  private IQuestProvider $questProvider;
 
-  public function __construct(ISessionService $sessionService, IQuestProgressRepository $questProgressRepository, IQuestService $questService)
+  public function __construct(ISessionService $sessionService, IQuestProgressRepository $questProgressRepository, IQuestProvider $questProvider)
   {
     $this->sessionService = $sessionService;
     $this->questProgressRepository = $questProgressRepository;
-    $this->questService = $questService;
+    $this->questProvider = $questProvider;
   }
 
   public function isQuestPlayed(int $userId, int $questId): bool
@@ -41,7 +38,7 @@ class QuestProgressRetrievalService implements IQuestProgressRetrievalService
       return [];
     }
 
-    $quest = $this->questService->getQuest($questId);
+    $quest = $this->questProvider->getQuest($questId);
     $percentileRank = $this->questProgressRepository->getPercentileRank($userId, $questId);
 
     return [
@@ -67,7 +64,7 @@ class QuestProgressRetrievalService implements IQuestProgressRetrievalService
     $progresses = $this->questProgressRepository->getUserEntries($userId);
 
     $stats = array_map(fn($progress) => [
-      'quest' => $this->questService->getQuest($progress->getQuestId()),
+      'quest' => $this->questProvider->getQuest($progress->getQuestId()),
       'progress' => $progress
     ], $progresses);
 

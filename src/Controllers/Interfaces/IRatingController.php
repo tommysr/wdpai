@@ -7,6 +7,6 @@ use App\Request\IFullRequest;
 
 interface IRatingController
 {
-  public function postRating(IFullRequest $request): IResponse;
-  public function getRating(IFullRequest $request): IResponse;
+  public function postRating(IFullRequest $request, int $questId): IResponse;
+  public function getRating(IFullRequest $request, int $questId): IResponse;
 }

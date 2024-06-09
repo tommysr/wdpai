@@ -2,19 +2,14 @@
 
 namespace App\Services\Quests;
 
-use App\Repository\IOptionsRepository;
 use App\Repository\IWalletRepository;
-use App\Result\IResult;
-use App\Result\Result;
 use App\Services\Authenticate\IIdentity;
+use App\Services\Quest\IQuestProvider;
 use App\Services\Question\IQuestionService;
-use App\Services\Quests\IQuestService;
 use App\Repository\IQuestRepository;
-use App\Repository\IQuestionsRepository;
 use App\Models\IQuest;
 
-
-class QuestService implements IQuestService
+class QuestProvider implements IQuestProvider
 {
   private IQuestRepository $questRepository;
   private IQuestionService $questionService;
@@ -26,7 +21,7 @@ class QuestService implements IQuestService
     IWalletRepository $walletRepository
   ) {
     $this->questRepository = $questRepository;
-    $this->questionRepository = $questionService;
+    $this->questionService = $questionService;
     $this->walletRepository = $walletRepository;
   }
 
@@ -77,39 +72,6 @@ class QuestService implements IQuestService
     return $this->questRepository->getCreatorQuests($creatorId);
   }
 
-  public function editQuest(IQuest $quest): void
-  {
-    $this->questRepository->updateQuest($quest);
-    $this->questionService->updateQuestions($quest);
-  }
-
-  public function createQuest(IQuest $quest): void
-  {
-    $questId = $this->questRepository->saveQuest($quest);
-    $quest->setQuestID($questId);
-    $this->questionService->updateQuestions($quest);
-  }
-
-  public function addParticipant(int $questId): bool
-  {
-    $quest = $this->questRepository->getQuestById($questId);
-
-    if ($quest === null) {
-      return false;
-    }
-
-    $participantsCount = $quest->getParticipantsCount();
-
-    if ($participantsCount >= $quest->getParticipantsLimit()) {
-      return false;
-    }
-
-    $quest->setParticipantsCount($participantsCount + 1);
-    $this->questRepository->updateQuest($quest);
-
-    return true;
-  }
-
   public function getQuestWithQuestions(int $questId): ?IQuest
   {
     $quest = $this->questRepository->getQuestById($questId);
@@ -121,16 +83,6 @@ class QuestService implements IQuestService
     $questions = $this->questionService->fetchQuestions($quest);
     $quest->setQuestions($questions);
     return $quest;
-  }
-
-  public function publishQuest(int $questId): void
-  {
-    $this->questRepository->changeApproved($questId, true);
-  }
-
-  public function unpublishQuest(int $questId): void
-  {
-    $this->questRepository->changeApproved($questId, false);
   }
 
   public function getQuest(int $id): ?IQuest

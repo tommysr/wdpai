@@ -9,10 +9,8 @@ use App\Middleware\JsonResponse;
 use App\Middleware\RedirectResponse;
 use App\Request\IFullRequest;
 use App\Services\Authenticate\IAuthService;
-use App\Services\QuestProgress\IQuestProgressManagementService;
-use App\Services\QuestProgress\IQuestProgressRetrievalService;
-use App\Services\QuestProgress\IQuestProgressService;
-use App\Services\Quests\IQuestService;
+use App\Services\QuestProgress\IQuestProgressManager;
+use App\Services\QuestProgress\IQuestProgressProvider;
 use App\Services\Rating\IRatingService;
 use App\Services\Session\ISessionService;
 use App\View\IViewRenderer;
@@ -20,25 +18,31 @@ use App\View\IViewRenderer;
 
 class QuestController extends AppController implements IQuestController
 {
-  private IQuestProgressManagementService $questProgressManagement;
-  private IQuestProgressRetrievalService $questProgressRetrieval;
+  private IQuestProgressManager $questProgressManager;
+  private IQuestProgressProvider $questProgressProvider;
   private IAuthService $authService;
   private IRatingService $ratingService;
-  private IQuestService $questService;
 
-  public function __construct(IFullRequest $request, ISessionService $sessionService, IViewRenderer $viewRenderer, IQuestProgressRetrievalService $questProgressRetrieval, IAuthService $authService, IRatingService $ratingService, IQuestProgressManagementService $questProgressManagement)
+  public function __construct(IFullRequest $request, ISessionService $sessionService, IViewRenderer $viewRenderer, IQuestProgressProvider $questProgressProvider, IAuthService $authService, IRatingService $ratingService, IQuestProgressManager $questProgressManager)
   {
     parent::__construct($request, $sessionService, $viewRenderer);
-    $this->questProgressRetrieval = $questProgressRetrieval;
+    $this->questProgressProvider = $questProgressProvider;
     $this->authService = $authService;
     $this->ratingService = $ratingService;
-    $this->questProgressManagement = $questProgressManagement;
+    $this->questProgressManager = $questProgressManager;
   }
 
   public function postAbandonQuest(IFullRequest $request): IResponse
   {
-    $this->questProgressManagement->abandonQuest();
+    $this->questProgressManager->abandonQuest();
     return new JsonResponse(['message' => 'Quest abandoned']);
+  }
+
+  public function postCompleteQuest(IFullRequest $request): IResponse
+  {
+    $this->questProgressManager->completeQuest();
+
+    return new RedirectResponse('/showQuests');
   }
 
   public function getIndex(IFullRequest $request): IResponse
@@ -56,7 +60,7 @@ class QuestController extends AppController implements IQuestController
     }
 
     try {
-      $this->questProgressManagement->startProgress($questId, (int) $walletId);
+      $this->questProgressManager->startProgress($questId, (int) $walletId);
 
       return new JsonResponse(['redirect' => '/play']);
     } catch (\Exception $e) {
@@ -66,14 +70,14 @@ class QuestController extends AppController implements IQuestController
 
   public function getReset(IFullRequest $request): IResponse
   {
-    $this->questProgressManagement->resetSession();
+    $this->questProgressManager->resetSession();
     return new RedirectResponse('/showQuests');
   }
 
   public function getSummary(IFullRequest $request, int $questId): IResponse
   {
     $userId = $this->authService->getIdentity()->getId();
-    $summary = $this->questProgressRetrieval->getQuestSummary($this->authService->getIdentity()->getId(), $questId);
+    $summary = $this->questProgressProvider->getQuestSummary($this->authService->getIdentity()->getId(), $questId);
 
     return $this->render('questSummary', ['score' => $summary['score'], 'maxScore' => $summary['maxScore'], 'title' => 'Quest summary', 'better_than' => $summary['better_than']]);
   }

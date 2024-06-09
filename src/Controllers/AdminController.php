@@ -9,6 +9,7 @@ use App\Middleware\RedirectResponse;
 use App\Repository\IUserRepository;
 use App\Request\IFullRequest;
 use App\Middleware\IResponse;
+use App\Services\Quests\IQuestManager;
 use App\Services\Quests\IQuestService;
 use App\Services\Recommendation\IRecommendationService;
 use App\Services\Session\ISessionService;
@@ -17,14 +18,14 @@ use App\View\IViewRenderer;
 
 class AdminController extends AppController implements IAdminController
 {
-  private IQuestService $questService;
+  private IQuestManager $questManager;
   private IRecommendationService $recommendationService;
   private IUserService $userService;
 
-  public function __construct(IFullRequest $request, ISessionService $sessionService, IViewRenderer $viewRenderer, IQuestService $questService, IRecommendationService $recommendationService, IUserService $userService)
+  public function __construct(IFullRequest $request, ISessionService $sessionService, IViewRenderer $viewRenderer, IQuestManager $questManager, IRecommendationService $recommendationService, IUserService $userService)
   {
     parent::__construct($request, $sessionService, $viewRenderer);
-    $this->questService = $questService;
+    $this->questManager = $questManager;
     $this->recommendationService = $recommendationService;
     $this->userService = $userService;
   }
@@ -37,13 +38,13 @@ class AdminController extends AppController implements IAdminController
 
   public function postPublishQuest(IFullRequest $request, int $questId): IResponse
   {
-    $this->questService->publishQuest($questId);
+    $this->questManager->publishQuest($questId);
     return new JsonResponse(['message' => 'quest published']);
   }
 
   public function postUnpublishQuest(IFullRequest $request, int $questId): IResponse
   {
-    $this->questService->unpublishQuest($questId);
+    $this->questManager->unpublishQuest($questId);
     return new JsonResponse(['message' => 'quest unpublished']);
   }
 

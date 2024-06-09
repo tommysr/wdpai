@@ -8,6 +8,8 @@ use App\Middleware\JsonResponse;
 use App\Request\IFullRequest;
 use App\Middleware\IResponse;
 use App\Services\Authenticate\IAuthService;
+use App\Services\Quest\IQuestProvider;
+use App\Services\QuestProgress\IQuestProgressProvider;
 use App\Services\QuestProgress\IQuestProgressRetrievalService;
 use App\Services\Quests\IQuestService;
 use App\Services\Recommendation\IRecommendationService;
@@ -16,25 +18,24 @@ use App\View\IViewRenderer;
 
 class QuestViewController extends AppController implements IQuestViewController
 {
-  private IQuestService $questService;
+  private IQuestProvider $questProvider;
   private IAuthService $authService;
   private IRecommendationService $recommendationService;
-  private IQuestProgressRetrievalService $questProgressService;
-  private
+  private IQuestProgressProvider $questProgressProvider;
 
   public function __construct(
     IFullRequest $request,
     ISessionService $sessionService,
     IViewRenderer $viewRenderer,
-    IQuestService $questService,
+    IQuestProvider $questProvider,
     IAuthService $authService,
-    IQuestProgressRetrievalService $questProgressService,
+    IQuestProgressProvider $questProgressProvider,
     IRecommendationService $recommendationService
   ) {
     parent::__construct($request, $sessionService, $viewRenderer);
-    $this->questService = $questService;
+    $this->questProvider = $questProvider;
     $this->authService = $authService;
-    $this->questProgressService = $questProgressService;
+    $this->questProgressProvider = $questProgressProvider;
     $this->recommendationService = $recommendationService;
   }
 
@@ -45,21 +46,21 @@ class QuestViewController extends AppController implements IQuestViewController
 
   public function getShowQuestsToApproval(IFullRequest $request): IResponse
   {
-    $quests = $this->questService->getQuestsToApproval();
+    $quests = $this->questProvider->getQuestsToApproval();
 
     return $this->render('layout', ['title' => 'quests to approval', 'quests' => $quests], 'adminQuests');
   }
 
   public function getShowApprovedQuests(IFullRequest $request): IResponse
   {
-    $quests = $this->questService->getApprovedQuests();
+    $quests = $this->questProvider->getApprovedQuests();
 
     return $this->render('layout', ['title' => 'approved quests', 'quests' => $quests], 'adminQuests');
   }
 
   public function getQuestReport(IFullRequest $request, int $questId): IResponse
   {
-    $quest = $this->questService->getQuestWithQuestions($questId);
+    $quest = $this->questProvider->getQuestWithQuestions($questId);
 
     if ($quest->getCreatorId() !== $this->authService->getIdentity()->getId()) {
       return new JsonResponse(['errors' => ['its not your quest']]);
@@ -71,7 +72,7 @@ class QuestViewController extends AppController implements IQuestViewController
       $optionsArray = [];
 
       foreach ($question->getOptions() as $option) {
-        $responseCount = $this->questProgressService->getResponsesCount($option->getOptionId());
+        $responseCount = $this->questProgressProvider->getResponsesCount($option->getOptionId());
         $optionsArray[] = [
           'option_id' => $option->getOptionId(),
           'text' => $option->getText(),
@@ -113,10 +114,10 @@ class QuestViewController extends AppController implements IQuestViewController
   public function getShowQuests(IFullRequest $request): IResponse
   {
     $id = $this->authService->getIdentity()->getId();
-    $quests = $this->questService->getQuestsToPlay();
+    $quests = $this->questProvider->getQuestsToPlay();
 
     $quests = array_filter($quests, function ($quest) use ($id) {
-      return !$this->questProgressService->isQuestPlayed($id, $quest->getQuestID());
+      return !$this->questProgressProvider->isQuestPlayed($id, $quest->getQuestID());
     });
 
     return $this->render('layout', ['title' => 'quest list', 'quests' => $quests], 'quests');
@@ -124,7 +125,7 @@ class QuestViewController extends AppController implements IQuestViewController
 
   public function getShowTopRatedQuests(IFullRequest $request): IResponse
   {
-    $quests = $this->questService->getTopRatedQuests();
+    $quests = $this->questProvider->getTopRatedQuests();
 
     return new JsonResponse(['quests' => $quests], 200);
   }
@@ -133,7 +134,7 @@ class QuestViewController extends AppController implements IQuestViewController
   {
     $userId = $this->authService->getIdentity()->getId();
     $questsIds = $this->recommendationService->getRecommendations($userId);
-    $quests = $this->questService->getQuestsByIds($questsIds);
+    $quests = $this->questProvider->getQuestsByIds($questsIds);
 
     return new JsonResponse(['quests' => $quests], 200);
   }
@@ -141,7 +142,7 @@ class QuestViewController extends AppController implements IQuestViewController
   // show created quests list which are not approved yet, but can be edited by creator
   public function getShowCreatedQuests(IFullRequest $request): IResponse
   {
-    $quests = $this->questService->getCreatorQuests($this->authService->getIdentity());
+    $quests = $this->questProvider->getCreatorQuests($this->authService->getIdentity());
 
     return $this->render('layout', ['title' => 'created quests', 'quests' => $quests], 'createdQuests');
   }

@@ -43,13 +43,27 @@ use App\Services\Authorize\Acl;
 use App\Services\Authorize\IAcl;
 use App\Services\Authorize\Quest\AuthorizationFactory;
 use App\Services\Authorize\Quest\QuestAuthorizeService;
+use App\Services\Quest\IQuestProvider;
+use App\Services\Question\IQuestionService;
+use App\Services\Question\QuestionService;
+use App\Services\QuestProgress\IQuestProgressManagementService;
+use App\Services\QuestProgress\IQuestProgressManager;
+use App\Services\QuestProgress\IQuestProgressProvider;
+use App\Services\QuestProgress\IQuestProgressRetrievalService;
 use App\Services\QuestProgress\IQuestProgressService;
+use App\Services\QuestProgress\QuestProgressManagementService;
+use App\Services\QuestProgress\QuestProgressManager;
+use App\Services\QuestProgress\QuestProgressProvider;
+use App\Services\QuestProgress\QuestProgressRetrievalService;
 use App\Services\QuestProgress\QuestProgressService;
 use App\Services\Quests\Builder\IQuestBuilder;
 use App\Services\Quests\Builder\IQuestBuilderService;
 use App\Services\Quests\Builder\QuestBuilder;
 use App\Services\Quests\Builder\QuestBuilderService;
+use App\Services\Quests\IQuestManager;
 use App\Services\Quests\IQuestService;
+use App\Services\Quests\QuestManager;
+use App\Services\Quests\QuestProvider;
 use App\Services\Quests\QuestService;
 use App\Services\Rating\IRatingService;
 use App\Services\Rating\RatingService;
@@ -183,12 +197,24 @@ $app->set(IUserService::class, function ($app) {
   return new UserService($app->get(IUserRepository::class), $app->get(IRoleRepository::class));
 });
 
-$app->set(IQuestService::class, function ($app) {
-  return new QuestService($app->get(IQuestRepository::class), $app->get(IQuestionsRepository::class), $app->get(IOptionsRepository::class), $app->get(IWalletRepository::class));
+$app->set(IQuestProvider::class, function ($app) {
+  return new QuestProvider($app->get(IQuestRepository::class), $app->get(IQuestionService::class), $app->get(IWalletRepository::class));
 });
 
-$app->set(IQuestProgressService::class, function ($app) {
-  return new QuestProgressService($app->get(ISessionService::class), $app->get(IQuestProgressRepository::class), $app->get(IQuestionsRepository::class), $app->get(IQuestService::class), $app->get(IOptionsRepository::class), $app->get(IWalletRepository::class));
+$app->set(IQuestManager::class, function ($app) {
+  return new QuestManager($app->get(IQuestRepository::class), $app->get(IQuestionService::class));
+});
+
+$app->set(IQuestionService::class, function ($app) {
+  return new QuestionService($app->get(IQuestionsRepository::class), $app->get(IOptionsRepository::class));
+});
+
+$app->set(IQuestProgressProvider::class, function ($app) {
+  return new QuestProgressProvider($app->get(ISessionService::class), $app->get(IQuestProgressRepository::class), $app->get(IQuestProvider::class));
+});
+
+$app->set(IQuestProgressManager::class, function ($app) {
+  return new QuestProgressManager($app->get(ISessionService::class), $app->get(IQuestProgressRepository::class), $app->get(IQuestionsRepository::class), $app->get(IQuestProvider::class), $app->get(IQuestManager::class), $app->get(IQuestProgressProvider::class));
 });
 
 $app->set(IQuestBuilderService::class, function ($app) {
@@ -252,7 +278,7 @@ $app->set(IAcl::class, function ($app) {
   $acl->allow(UserRole::NORMAL->value, 'WalletManagementController', 'addWallet');
 
   $acl->allow(UserRole::NORMAL->value, 'GameController', 'enterQuest');
- 
+
   $acl->allow(UserRole::ADMIN->value, 'AdminController', 'refreshRecommendations');
   $acl->allow(UserRole::ADMIN->value, 'AdminController', 'publishQuest');
   $acl->allow(UserRole::ADMIN->value, 'AdminController', 'unpublishQuest');
