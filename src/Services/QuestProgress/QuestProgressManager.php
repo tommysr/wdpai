@@ -39,11 +39,11 @@ class QuestProgressManager implements IQuestProgressManager
     $quest = $this->questProvider->getQuest($questId);
 
     if (!$quest) {
-      throw new \Exception("Quest not found");
+      throw new QuestNotFoundException("Quest not found");
     }
 
     if (!$this->questManager->addParticipant($questId)) {
-      throw new \Exception("Failed to add participant to quest");
+      throw new QuestNotFoundException("Failed to add participant to quest");
     }
 
     $nextQuestionId = $this->questionsRepository->getNextQuestion($questId, 0)->getQuestionId();
@@ -98,4 +98,8 @@ class QuestProgressManager implements IQuestProgressManager
     $this->sessionService->delete('questProgress');
     $this->questProgressRepository->updateQuestProgress($questProgress);
   }
+}
+
+class QuestNotFoundException extends \Exception
+{
 }

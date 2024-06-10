@@ -1,14 +1,16 @@
 <?php
 namespace App\Database;
+
 use PDO;
+use PDOException;
 
 class Database implements IDatabase
 {
     private ?PDO $connection = null;
-    private static IDatabase $instance;
+    private static ?IDatabase $instance = null;
     private IDatabaseConfig $config;
 
-    protected function __construct(IDatabaseConfig $config)
+    private function __construct(IDatabaseConfig $config)
     {
         $this->config = $config;
     }
@@ -27,15 +29,23 @@ class Database implements IDatabase
             return $this->connection;
         }
 
-        $connection = new PDO(
-            "pgsql:host={$this->config->getHost()};port={$this->config->getPort()};dbname={$this->config->getDatabase()}",
-            $this->config->getUsername(),
-            $this->config->getPassword(),
-            ["sslmode" => "prefer"]
-        );
+        try {
 
-        // set the PDO error mode to exception
-        $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        return $connection;
+            $this->connection = new PDO(
+                "pgsql:host={$this->config->getHost()};port={$this->config->getPort()};dbname={$this->config->getDatabase()}",
+                $this->config->getUsername(),
+                $this->config->getPassword(),
+                ["sslmode" => "prefer"]
+            );
+
+            // set the PDO error mode to exception
+            $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        } catch (PDOException $e) {
+            throw new \RuntimeException('Database connection error: ' . $e->getMessage());
+        }
+
+
+        return $this->connection;
     }
 }

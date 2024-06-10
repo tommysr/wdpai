@@ -52,7 +52,7 @@ class Router implements IRouter
       $middlewareInstance = $this->container->get($middlewareClass);
 
       if (!$middlewareInstance instanceof IMiddleware) {
-        throw new Exception("Middleware must implement IMiddleware");
+        throw new MissingImplementationException("Middleware must implement IMiddleware");
       }
 
       if ($lastMiddleware) {
@@ -91,11 +91,11 @@ class Router implements IRouter
         $controllerInstance = $this->container->build($controllerClassName);
 
         if (!$controllerInstance instanceof IRootController) {
-          throw new Exception('Controller must implement RouteInterface');
+          throw new MissingImplementationException('Controller must implement RouteInterface');
         }
 
         if (!$controllerInstance instanceof IHandler) {
-          throw new Exception('Controller must implement IHandler');
+          throw new MissingImplementationException('Controller must implement IHandler');
         }
 
         $this->container->set(IHandler::class, function () use ($controllerInstance) {
@@ -113,4 +113,8 @@ class Router implements IRouter
 
     return new RedirectResponse('/error/404', ['route not found']);
   }
+}
+
+class MissingImplementationException extends Exception
+{
 }

@@ -65,7 +65,7 @@ class Recommender implements IRecommender
   public function construct(): self
   {
     if (empty($this->dataManager->getData())) {
-      throw new \Exception('empty data');
+      throw new RatingDataMissingException('empty data');
     }
 
     $this->calculateSimilarityMatrix();
@@ -77,7 +77,7 @@ class Recommender implements IRecommender
   public function estimate(int $userIndex): array
   {
     if (empty($this->dataManager->getSimilarityMatrix())) {
-      throw new \Exception('no similarities calculated');
+      throw new SimilaritiesMissingException('no similarities calculated');
     }
 
     $itemCount = count($this->dataManager->getData()[0]);
@@ -96,4 +96,10 @@ class Recommender implements IRecommender
   }
 }
 
+class SimilaritiesMissingException extends \Exception
+{
+}
 
+class RatingDataMissingException extends \Exception
+{
+}

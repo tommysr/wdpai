@@ -44,18 +44,18 @@ class Container implements IContainer
       return $factory($this);
     }
 
-    throw new \InvalidArgumentException("No binding found for [$id].");
+    throw new BindingNotFoundException("No binding found for [$id].");
   }
 
   public function build(string $class)
   {
     if (!class_exists($class)) {
-      throw new \Exception("Class \"$class\" does not exist.");
+      throw new UnknownClassException("Class \"$class\" does not exist.");
     }
 
     $reflector = new ReflectionClass($class);
     if (!$reflector->isInstantiable()) {
-      throw new \Exception("Target [$class] is not instantiable.");
+      throw new NotInstantiableException("Target [$class] is not instantiable.");
     }
 
     $constructor = $reflector->getConstructor();
@@ -76,7 +76,7 @@ class Container implements IContainer
         if ($parameter->isDefaultValueAvailable()) {
           $dependencies[] = $parameter->getDefaultValue();
         } else {
-          throw new \Exception("Unresolvable dependency [{$parameter->getName()}] in class {$parameter->getDeclaringClass()->getName()}");
+          throw new UnresolvableException("Unresolvable dependency [{$parameter->getName()}] in class {$parameter->getDeclaringClass()->getName()}");
         }
       } else {  
         $dependencies[] = $this->get($type->getName());
@@ -108,7 +108,7 @@ class Container implements IContainer
           $dependencies[] = $parameter->getDefaultValue();
         } else {
 
-          throw new \RuntimeException("Unresolvable dependency [{$name}] in method [$method]");
+          throw new UnresolvableException("Unresolvable dependency [{$name}] in method [$method]");
         }
       } else {
         $dependencies[] = $this->get($type->getName());
@@ -119,3 +119,18 @@ class Container implements IContainer
   }
 }
 
+class UnresolvableException extends Exception
+{
+}
+
+class BindingNotFoundException extends Exception
+{
+}
+
+class NotInstantiableException extends Exception
+{
+}
+
+class UnknownClassException extends Exception
+{
+}
