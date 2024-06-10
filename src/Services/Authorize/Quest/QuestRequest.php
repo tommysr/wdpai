@@ -2,10 +2,10 @@
 
 namespace App\Services\Authorize\Quest;
 
-enum QuestRequest
+enum QuestRequest: string
 {
-  case ACCESS;
-  case EDIT;
+  case ACCESS = 'access';
+  case EDIT = 'edit';
 
 
   public static function from(string $action): ?self

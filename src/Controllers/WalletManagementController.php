@@ -6,22 +6,21 @@ use App\Controllers\AppController;
 use App\Controllers\Interfaces\IWalletManagementController;
 use App\Middleware\JsonResponse;
 use App\Middleware\RedirectResponse;
-use App\Models\Wallet;
 use App\Request\IFullRequest;
 use App\Middleware\IResponse;
 use App\Services\Authenticate\IAuthService;
-use App\Services\Quests\IQuestService;
+use App\Services\Quest\IQuestProvider;
 use App\Services\Session\ISessionService;
 use App\Services\Wallets\IWalletService;
 use App\View\IViewRenderer;
 
 class WalletManagementController extends AppController implements IWalletManagementController
 {
-  private IQuestService $questService;
+  private IQuestProvider $questService;
   private IAuthService $authService;
   private IWalletService $walletService;
 
-  public function __construct(IFullRequest $request, ISessionService $sessionService, IViewRenderer $viewRenderer, IQuestService $questService, IAuthService $authService, IWalletService $walletService)
+  public function __construct(IFullRequest $request, ISessionService $sessionService, IViewRenderer $viewRenderer, IQuestProvider $questService, IAuthService $authService, IWalletService $walletService)
   {
     parent::__construct($request, $sessionService, $viewRenderer);
     $this->questService = $questService;

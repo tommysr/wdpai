@@ -7,13 +7,7 @@ use App\Request\IFullRequest;
 
 class StrategyFactory implements IRegisterStrategyFactory
 {
-  private $strategies = [];
-  private IFullRequest $request;
-
-  public function __construct(IFullRequest $request)
-  {
-    $this->request = $request;
-  }
+  private array $strategies = [];
 
   public function registerStrategy(string $method, IRegisterStrategy $strategy)
   {

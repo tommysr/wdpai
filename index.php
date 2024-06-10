@@ -235,7 +235,10 @@ $app->set(IDataManager::class, function ($app) {
 });
 
 $app->set(IRecommender::class, function ($app) {
-  return new Recommender($app->get(IDataManager::class));
+  $recommender = new Recommender($app->get(IDataManager::class));
+  $recommender->setSimilarityStrategy(new CosineSimilarity());
+  $recommender->setPredictionStrategy(new KnnPredictor($app->get(IDataManager::class)));
+  return $recommender;
 });
 
 $app->set(IRecommendationService::class, function ($app) {

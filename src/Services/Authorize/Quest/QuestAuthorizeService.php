@@ -17,7 +17,7 @@ class QuestAuthorizeService implements IQuestAuthorizeService
     $this->strategyFactory = $strategyFactory;
   }
 
-  public function authorizeQuest(QuestRequest $request, int $questId = null): IAuthResult
+  public function authorizeQuest(string $request, int $questId = null): IAuthResult
   {
     $strategy = $this->strategyFactory->create($request);
     return $strategy->authorize($questId);

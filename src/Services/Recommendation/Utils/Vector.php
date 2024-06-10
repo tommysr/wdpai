@@ -15,6 +15,11 @@ class Vector implements IVector
     $this->dimensions = count($data);
   }
 
+  public static function fromArr(array $data): IVector
+  {
+    return new Vector($data);
+  }
+
   public function intersect(IVector $other): IVector
   {
     $res = array_fill(0, $this->dimensions, 0);
