@@ -19,7 +19,7 @@ class ViewRenderer implements IViewRenderer
     $templatePath = "{$this->viewPath}/{$template}.php";
 
     if (!file_exists($templatePath)) {
-      throw new \Exception('Template file not found');
+      throw new TemplateNotFound('Template file not found');
     }
 
     extract($variables);
@@ -27,4 +27,9 @@ class ViewRenderer implements IViewRenderer
     include $templatePath;
     return ob_get_clean();
   }
+}
+
+
+class TemplateNotFound extends \Exception
+{
 }

@@ -3,6 +3,7 @@
 namespace App\Services\Register;
 
 use App\Request\IFullRequest;
+use App\Result\IResult;
 use App\Services\Register\IRegisterService;
 use App\Services\Register\IRegisterStrategyFactory;
 
@@ -17,7 +18,7 @@ class RegisterService implements IRegisterService
     $this->registerStrategyFactory = $strategy;
   }
 
-  public function register(): IRegisterResult
+  public function register(): IResult
   {
     $method = $this->request->getParsedBodyParam('registration_method');
     $strategy = $this->registerStrategyFactory->create($method);

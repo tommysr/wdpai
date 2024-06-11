@@ -1,91 +1,113 @@
 # Chain Quest Application
 
-Chain Quest is a comprehensive application designed to facilitate the creation, management, and participation in interactive quizzes. It offers a rich set of features for users, creators, and administrators, ensuring an engaging and seamless experience for all stakeholders.
+Chain Quest is an application that allows creators to create quizzes with multiple questions. Users can then play these quizzes, and the creator, after the quiz ends, distributes the shared pool amount between addresses given by users during quiz start. Everything is managed by an admin who publishes quests after creation. Creators can then generate reports with user wallet addresses and answers to each question.
 
 ## Table of Contents
 1. [Features](#features)
 2. [Technologies Used](#technologies-used)
 3. [Database Design and Structure](#database-design-and-structure)
-4. [Design Patterns](#design-patterns)
+4. [Design Patterns Used](#design-patterns-used)
 5. [Installation](#installation)
 6. [Screenshots](#screenshots)
 7. [License](#license)
 
 ## Features
 
-1. **User Registration and Authentication**: Users can register for an account and authenticate securely to access quest-related functionalities.
-2. **Quest Creation and Management**:
-    - Creators can design quests with multiple questions, specifying various question types such as text, single-choice, and multiple-choice.
-    - Quests can be published after approval by administrators.
-3. **Quest Participation**:
-    - Users can explore and play quests, adhering to permission rules based on quest status and previous interactions.
-    - Quest progress is tracked, and users can view their points and percentile score.
-4. **Quest Recommendation**:
-    - Users are presented with top-rated and recommended quests based on collaborative filtering algorithms.
-5. **Rating System**:
-    - Users are prompted to rate quests upon completion, contributing to quest rankings.
-6. **Administration and Moderation**:
-    - Administrators oversee the approval process for quests and have access to administrative features for quest management.
-    - Quests can be inspected before publication to ensure quality and validity.
-7. **User Profile Management**:
-    - Users can manage their profiles, change passwords, and view their quest results and rankings.
-8. **Middleware Authorization**:
-    - Role-based and quest-based authorization mechanisms ensure that users, creators, and administrators have appropriate access levels.
-9. **Support for Multiple Wallets**:
-    - Each blockchain supported by the application allows users to manage multiple wallets.
+1. Users can register into the system and start playing quests right away.
+2. Application has a system of permissions:
+   - Users can play only published quests and those they didn't play/abandon before.
+   - Users are forced to end/abandon the quest after starting it.
+   - Creators, after approval by the system administrator, can create quests and update them.
+   - Administrators can approve quests created by creators, allowing users to find them.
+3. Users can choose top-rated quests and recommended ones.
+4. Recommended quests are provided by the system using a memory-based collaborative filtering service.
+5. Question types include read text, single choice, and multiple choice.
+6. A rating system forces users to rate the quest after completing it from 1 to 5.
+7. Users see their progress and points accrued after each question and after ending the quest.
+8. Users can see their percentile score.
+9. Users can change their password on the profile page.
+10. Users can see their results for each quest and rank based on quizzes done.
+11. Middleware authentication:
+    - Authentication: Used in middleware to prevent users from entering routes unauthenticated.
+12. Middleware authorization:
+    - Role-based: Determines if users can access routes based on their roles using ACL for each route registered.
+    - Quest-based: Used by creators and users to prevent users from entering other routes during gameplay which they need to first end. Creators also use this to prevent them from modifying quests already published and from editing/viewing quests not created by them.
+13. Admin inspection - Admin can preview quests with questions to check the validity of the quest before publishing it.
+14. Support for multiple wallets for each blockchain.
 
 ## Technologies Used
 
-Chain Quest leverages a modern technology stack to deliver a robust and scalable solution:
+- PHP
+- HTML
+- CSS
+- JavaScript
+- NGINX
+- PostgreSQL
+- Docker
+- PHPUnit testing tool
 
-- **Backend**:
-    - PHP for server-side logic.
-    - PostgreSQL as the relational database management system.
-    - NGINX as the web server.
-    - Docker for containerization and deployment.
-    - PHPUnit for PHP unit testing.
-- **Frontend**:
-    - HTML, CSS, and JavaScript for user interface development.
-- **Design Patterns**:
-    - Model-View-Controller (MVC), Repository, Singleton, Adapter, Strategy, Factory, Middleware, Chain of Responsibility, and Builder patterns for efficient and maintainable code architecture.
+The app is designed to be responsive and the backend is designed to comply with SOLID principles.
 
 ## Database Design and Structure
 
-The database design follows best practices for data integrity and efficiency:
+The application uses a PostgreSQL database with tables storing quests, questions with options, users and their roles, user wallets, ratings, user responses for each question, and user progress. Due to the recommendation feature, there is a need to store a similarities matrix for calculating recommendations.
 
-- Tables such as `users`, `roles`, `quests`, `ratings`, `user_responses`, `quest_progress`, `similarities`, and `pictures` store essential data related to users, roles, quests, ratings, quest progress, recommendations, and multimedia assets.
-- Foreign key constraints and unique constraints ensure data consistency and enforce relationships between entities.
+### Tables:
+- **blockchains**: Stores blockchain information.
+- **options**: Stores possible answers to questions.
+- **pictures**: Stores URLs of pictures.
+- **quest_progress**: Tracks user progress in quests.
+- **questions**: Stores questions for each quest.
+- **quests**: Stores quests created by users.
+- **ratings**: Stores user ratings for quests.
+- **roles**: Defines user roles.
+- **similarities**: Stores similarity scores for recommendations.
+- **tokens**: Stores token information.
+- **user_responses**: Stores responses given by users.
+- **users**: Stores user information.
+- **wallets**: Stores user wallets and associated blockchain information.
 
-![Database ERD](erd.png)
+![ERD](ERD.png)
 
-## Design Patterns
+## Design Patterns Used
 
-Chain Quest incorporates various design patterns to optimize code organization, scalability, and extensibility:
+This project leverages both the Model-View-Controller (MVC) architecture and the Repository pattern to optimize data handling:
 
-- **Model-View-Controller (MVC)**: Separates application logic into model, view, and controller components, ensuring a clear separation of concerns.
-- **Repository Pattern**: Abstracts data access logic from business logic, promoting code reusability and maintainability.
-- **Singleton Pattern**: Ensures a single instance of critical classes, such as database connections, exists throughout the application's lifecycle.
-- **Adapter Pattern**: Facilitates integration of diverse components and services, such as authentication and recommendation systems.
-- **Strategy Pattern**: Enables dynamic selection of algorithms and behaviors, such as similarity calculation methods in recommendation services.
-- **Factory Pattern**: Simplifies object creation, allowing for easy instantiation of related objects based on varying conditions.
-- **Middleware Pattern**: Implements cross-cutting concerns, such as authentication and authorization, in a modular and reusable manner.
-- **Chain of Responsibility Pattern**: Chains together processing logic, allowing multiple handlers to process requests sequentially until one successfully handles the request.
-- **Builder Pattern**: Constructs complex objects, such as quests with multiple questions and options, in a step-by-step manner, providing flexibility and ease of use.
+- **Models**: Define the data structure and its related business logic.
+- **Repositories**: Manage data operations, acting as an intermediary between the models and the database, ensuring that data interactions are handled cleanly and maintainably.
+- **Controllers**: Handle incoming requests, interacting with models or repositories to retrieve data and return responses.
+- **Views**: Present data to the user, rendering the final output on the screen.
+
+Additionally, the Singleton design pattern is utilized for managing the database connections:
+- **Singleton Pattern**: Ensures a single instance of the Database class exists, promoting a single shared connection to the database which optimizes resource usage and maintains consistent access.
+
+Other patterns used include:
+- **Adapter Pattern**: Used for dispatching login actions.
+- **Strategy Pattern**: Used in the recommendation system to choose between similarity and prediction strategies. Strategies and adapters utilize the factory creational pattern for easy creation and registration in the factory registry.
+- **Middleware Pattern**: Used for managing authorization/authentication requests before running actual actions in routes. This pattern is a reverse chain of responsibility pattern.
+- **Chain of Responsibility Pattern**: Used in validation of inputs, allowing chaining of validation rules and processing them altogether.
+- **Builder Pattern**: Used to create complicated quests with all the questions and options in one model to allow service-side to easily process them after receiving them in the controller actions.
 
 ## Installation
 
-To set up and run Chain Quest locally, follow these steps:
-
+To install and run the project, follow these steps:
 1. Ensure Docker is installed on your machine.
-2. Clone the repository to your local environment.
-3. Navigate to the project directory.
-4. Use Docker Compose to build and start the application services:
-    ```bash
+2. Clone the repository and navigate to the project directory.
+3. Use Docker Compose to build and start the services:
+   ```sh
    docker-compose up --build
+   ```
+4. Import the database schema and data from the provided SQL dump into your PostgreSQL instance.
+5. Modify the initialize method in DefaultDBConfig.php to suit your environment settings, specifically for database connections:
+   ```php
+    $this->setValue(self::USERNAME_KEY, 'docker');
+    $this->setValue(self::PASSWORD_KEY, 'docker');
+    $this->setValue(self::HOST_KEY, 'db');
+    $this->setValue(self::DATABASE_KEY, 'db');
+    $this->setValue(self::PORT_KEY, '5432');
     ```
-5. Import the database schema and data from the provided SQL dump into your PostgreSQL instance.
-6. Modify the database connection settings in the application configuration files, if necessary, to match your environment.
 7. Access the application via the provided URL in your web browser.
+8. You can explore routes, to promote users to creators, default admin credentials are: admin:admin.
 
 ## Screenshots
 
@@ -93,6 +115,4 @@ Screenshots of the application's user interface can be found in the `screenshots
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE.md). Feel free to modify and distribute the application according to the terms of the license.
-
-For more details, refer to the [LICENSE](LICENSE.md) file.
+This project is licensed under the [MIT License](LICENSE.md). - see the file for details.

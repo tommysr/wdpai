@@ -3,6 +3,7 @@
 namespace App\Services\Wallets;
 
 use App\Models\IWallet;
+use App\Models\Wallet;
 use App\Repository\IWalletRepository;
 use App\Repository\WalletRepository;
 use App\Services\Authenticate\IIdentity;
@@ -23,8 +24,10 @@ class WalletService implements IWalletService
     return $this->walletRepository->getBlockchainWallets($userId, $blockchain);
   }
 
-  public function createWallet(IWallet $wallet): int
+  public function createWallet(IIdentity $identity, string $blockchain, string $address): int
   {
+    $userId = $identity->getId();
+    $wallet = new Wallet(0, $userId, $blockchain, $address, date('Y-m-d'), date('Y-m-d'));
     return $this->walletRepository->addWallet($wallet);
   }
 }

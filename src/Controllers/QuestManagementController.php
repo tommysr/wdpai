@@ -11,13 +11,15 @@ use App\Models\IQuest;
 use App\Request\IFullRequest;
 use App\Services\Authenticate\IAuthService;
 use App\Services\Quests\Builder\IQuestBuilderService;
-use App\Services\Quests\IQuestService;
+use App\Services\Quests\IQuestManager;
+use App\Services\Quests\IQuestProvider;
 use App\Services\Session\ISessionService;
 use App\View\IViewRenderer;
 
 class QuestsManagementController extends AppController implements IQuestManagementController
 {
-  private IQuestService $questService;
+  private IQuestProvider $questProvider;
+  private IQuestManager $questManager;
   private IAuthService $authService;
   private IQuestBuilderService $questBuilderService;
 
@@ -25,12 +27,14 @@ class QuestsManagementController extends AppController implements IQuestManageme
     IFullRequest $request,
     ISessionService $sessionService,
     IViewRenderer $viewRenderer,
-    IQuestService $questService,
+    IQuestProvider $questProvider,
+    IQuestManager $questManager,
     IAuthService $authService,
     IQuestBuilderService $questBuilderService
   ) {
     parent::__construct($request, $sessionService, $viewRenderer);
-    $this->questService = $questService;
+    $this->questProvider = $questProvider;
+    $this->questManager = $questManager;
     $this->authService = $authService;
     $this->questBuilderService = $questBuilderService;
   }
@@ -52,7 +56,7 @@ class QuestsManagementController extends AppController implements IQuestManageme
 
   public function getShowEditQuest(IFullRequest $request, int $questId): IResponse
   {
-    $quest = $this->questService->getQuestWithQuestions($questId);
+    $quest = $this->questProvider->getQuestWithQuestions($questId);
 
     if (!$quest) {
       return new RedirectResponse('/error/404', ['no such quest exist'], 0);
@@ -68,13 +72,9 @@ class QuestsManagementController extends AppController implements IQuestManageme
     $creatorId = $this->authService->getIdentity()->getId();
     $parsedData['creatorId'] = $creatorId;
     $quest = $this->questBuilderService->buildQuest($parsedData);
-    $questResult = $this->questService->createQuest($quest);
+    $this->questManager->createQuest($quest);
 
-    if (!$questResult->isSuccess()) {
-      return new JsonResponse(['errors' => $questResult->getMessages()]);
-    } else {
-      return new JsonResponse(['redirectUrl' => '/showCreatedQuests']);
-    }
+    return new JsonResponse(['redirectUrl' => '/showCreatedQuests']);
   }
 
   public function postEditQuest(IFullRequest $request, int $questId): IResponse
@@ -83,13 +83,8 @@ class QuestsManagementController extends AppController implements IQuestManageme
     $parsedData = json_decode($formData, true);
     $parsedData['questId'] = $questId;
     $quest = $this->questBuilderService->buildQuest($parsedData);
-    $questResult = $this->questService->editQuest($quest);
+    $this->questManager->editQuest($quest);
 
-    if (!$questResult->isSuccess()) {
-      return new JsonResponse(['errors' => $questResult->getMessages()]);
-    } else {
-      return new JsonResponse(['redirectUrl' => '/showCreatedQuests']);
-    }
+    return new JsonResponse(['redirectUrl' => '/showCreatedQuests']);
   }
-
 }

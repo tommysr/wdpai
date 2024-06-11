@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Services\Register;
+namespace App\Result;
 
-use App\Services\Register\IRegisterResult;
+use App\Result\IResult;
 
-class DBRegisterResult implements IRegisterResult
+class Result implements IResult
 {
-  private $messages;
-  private $isValid;
+  private array $messages;
+  private bool $isValid;
 
   public function __construct(array $messages, bool $isValid = false)
   {
@@ -15,12 +15,12 @@ class DBRegisterResult implements IRegisterResult
     $this->isValid = $isValid;
   }
 
-  public function getMessages()
+  public function getMessages(): array
   {
     return $this->messages;
   }
 
-  public function isValid()
+  public function isValid(): bool
   {
     return $this->isValid;
   }

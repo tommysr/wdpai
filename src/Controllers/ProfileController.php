@@ -8,7 +8,7 @@ use App\Middleware\JsonResponse;
 use App\Request\IFullRequest;
 use App\Request\IRequest;
 use App\Services\Authenticate\IAuthService;
-use App\Services\QuestProgress\IQuestProgressService;
+use App\Services\QuestProgress\IQuestProgressProvider;
 use App\Services\Session\ISessionService;
 use App\Services\User\IUserService;
 use App\View\IViewRenderer;
@@ -18,15 +18,21 @@ class ProfileController extends AppController implements IProfileController
 {
     private IUserService $userService;
     private IAuthService $authService;
-    private IQuestProgressService $questProgressService;
+    private IQuestProgressProvider $questProgressProvider;
 
-    public function __construct(IFullRequest $request, ISessionService $sessionService, IViewRenderer $viewRenderer, IUserService $userService, IAuthService $authService, IQuestProgressService $questProgressService)
-    {
+    public function __construct(
+        IFullRequest $request,
+        ISessionService $sessionService,
+        IViewRenderer $viewRenderer,
+        IUserService $userService,
+        IAuthService $authService,
+        IQuestProgressProvider $questProgressProvider
+    ) {
         parent::__construct($request, $sessionService, $viewRenderer);
 
         $this->userService = $userService;
         $this->authService = $authService;
-        $this->questProgressService = $questProgressService;
+        $this->questProgressProvider = $questProgressProvider;
     }
 
     public function getIndex(IRequest $request): IResponse
@@ -39,7 +45,7 @@ class ProfileController extends AppController implements IProfileController
         $userId = $this->authService->getIdentity()->getId();
         $user = $this->userService->getUserById($userId);
         $joinDate = \DateTime::createFromFormat('Y-m-d', $user->getJoinDate())->format('F Y');
-        $stats = $this->questProgressService->getUserQuests($userId);
+        $stats = $this->questProgressProvider->getUserQuests($userId);
         return $this->render('layout', ['title' => 'dashboard', 'username' => $user->getName(), 'joinDate' => $joinDate, 'points' => sizeof($stats), 'stats' => $stats], 'dashboard');
     }
 

@@ -6,11 +6,9 @@ namespace App\Services\Register;
 use App\Models\UserRole;
 use App\Repository\IUserRepository;
 use App\Repository\Role\IRoleRepository;
-use App\Repository\Role\RoleRepository;
-use App\Services\Register\IRegisterResult;
-use App\Repository\UserRepository;
+use App\Result\IResult;
+use App\Result\Result;
 use App\Request\IFullRequest;
-use App\Services\Register\DBRegisterResult;
 use App\Models\User;
 
 class DbRegisterStrategy implements IRegisterStrategy
@@ -26,24 +24,24 @@ class DbRegisterStrategy implements IRegisterStrategy
     $this->request = $request;
   }
 
-  private function validateRegistrationData($email, $username, $password, $confirmedPassword): IRegisterResult
+  private function validateRegistrationData($email, $username, $password, $confirmedPassword): IResult
   {
     if ($this->userRepository->getUserByEmail($email)) {
-      return new DBRegisterResult(['Email exists']);
+      return new Result(['Email exists']);
     }
 
     if ($this->userRepository->getUserByName($username)) {
-      return new DBRegisterResult(['Username already taken']);
+      return new Result(['Username already taken']);
     }
 
     if ($password !== $confirmedPassword) {
-      return new DBRegisterResult(['Passwords do not match']);
+      return new Result(['Passwords do not match']);
     }
 
-    return new DBRegisterResult([], true);
+    return new Result([], true);
   }
 
-  public function register(): IRegisterResult
+  public function register(): IResult
   {
     $email = $this->request->getParsedBodyParam('email');
     $password = $this->request->getParsedBodyParam('password');
@@ -61,6 +59,6 @@ class DbRegisterStrategy implements IRegisterStrategy
     $user = new User(0, $email, $password_hash, $username, $defaultRole);
     $this->userRepository->addUser($user);
 
-    return new DBRegisterResult(['User registered successfully'], true);
+    return new Result(['User registered successfully'], true);
   }
 }

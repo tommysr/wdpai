@@ -33,12 +33,9 @@ class RecommendationService implements IRecommendationService
     $similarityMatrix = $this->similarityRepository->getSimilarityMatrix();
 
     $this->dataManager = $dataManager;
-
     $this->recommender = $recommender;
     $this->dataManager->setData($data);
     $this->dataManager->setSimilarityMatrix($similarityMatrix);
-    $this->recommender->setSimilarityStrategy(new CosineSimilarity());
-    $this->recommender->setPredictionStrategy(new KnnPredictor($data, $similarityMatrix));
   }
 
 

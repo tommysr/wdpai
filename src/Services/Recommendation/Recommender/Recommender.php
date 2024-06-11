@@ -7,9 +7,12 @@ use App\Services\Recommendation\Similarity\ISimilarityStrategy;
 use App\Services\Recommendation\Prediction\IPredictionStrategy;
 use App\Services\Recommendation\Data\IDataManager;
 use App\Services\Recommendation\Calculator\SimilarityCalculator;
+use App\Services\Recommendation\Utils\IVector;
+use App\Services\Recommendation\Utils\Vector;
 
 class Recommender implements IRecommender
 {
+  protected IVector $vector;
   protected IDataManager $dataManager;
   protected ISimilarityStrategy $similarityStrategy;
   protected IPredictionStrategy $predictionStrategy;
@@ -37,18 +40,36 @@ class Recommender implements IRecommender
   public function calculateSimilarityMatrix(): void
   {
     $data = $this->dataManager->getData();
-    $similarityCalculator = new SimilarityCalculator($data, $this->similarityStrategy);
-    $this->dataManager->setSimilarityMatrix($similarityCalculator->calculate());
+
+    $userCount = count($data);
+    $similarityMatrix = [];
+
+    for ($i = 0; $i < $userCount; $i++) {
+      for ($j = 0; $j < $userCount; $j++) {
+        if ($i == $j) {
+          $similarityMatrix[$i][$j] = 1.0;
+        } else {
+
+          $vector1 = Vector::fromArr($data[$i]);
+          $vector2 = Vector::fromArr($data[$j]);
+
+
+          $similarityMatrix[$i][$j] = $this->similarityStrategy->calculate($vector1->intersect($vector2), $vector2->intersect($vector1));
+        }
+      }
+    }
+
+    $this->dataManager->setSimilarityMatrix($similarityMatrix);
   }
 
   public function construct(): self
   {
     if (empty($this->dataManager->getData())) {
-      throw new \Exception('empty data');
+      throw new RatingDataMissingException('empty data');
     }
 
     $this->calculateSimilarityMatrix();
-    
+
 
     return $this;
   }
@@ -56,7 +77,7 @@ class Recommender implements IRecommender
   public function estimate(int $userIndex): array
   {
     if (empty($this->dataManager->getSimilarityMatrix())) {
-      throw new \Exception('no similarities calculated');
+      throw new SimilaritiesMissingException('no similarities calculated');
     }
 
     $itemCount = count($this->dataManager->getData()[0]);
@@ -73,4 +94,12 @@ class Recommender implements IRecommender
   {
     return $this->dataManager->getSimilarityMatrix();
   }
+}
+
+class SimilaritiesMissingException extends \Exception
+{
+}
+
+class RatingDataMissingException extends \Exception
+{
 }

@@ -43,8 +43,6 @@ class RatingService implements IRatingService
       }
     }
 
-
-
     foreach ($ratings as $rating) {
       $userId = $rating->getUserId();
       $questId = $rating->getQuestId();
