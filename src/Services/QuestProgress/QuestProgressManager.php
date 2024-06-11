@@ -6,7 +6,7 @@ use App\Models\QuestProgress;
 use App\Models\QuestState;
 use App\Repository\IQuestionsRepository;
 use App\Repository\QuestProgress\IQuestProgressRepository;
-use App\Services\Quest\IQuestProvider;
+use App\Services\Quests\IQuestProvider;
 use App\Services\Quests\IQuestManager;
 use App\Services\Session\ISessionService;
 

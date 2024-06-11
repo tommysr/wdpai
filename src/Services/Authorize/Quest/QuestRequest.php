@@ -8,7 +8,7 @@ enum QuestRequest: string
   case EDIT = 'edit';
 
 
-  public static function from(string $action): ?self
+  public static function fromAction(string $action): ?self
   {
     switch ($action) {
       case 'editQuest':

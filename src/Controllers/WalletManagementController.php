@@ -9,7 +9,7 @@ use App\Middleware\RedirectResponse;
 use App\Request\IFullRequest;
 use App\Middleware\IResponse;
 use App\Services\Authenticate\IAuthService;
-use App\Services\Quest\IQuestProvider;
+use App\Services\Quests\IQuestProvider;
 use App\Services\Session\ISessionService;
 use App\Services\Wallets\IWalletService;
 use App\View\IViewRenderer;

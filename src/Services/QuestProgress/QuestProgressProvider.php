@@ -4,7 +4,7 @@ namespace App\Services\QuestProgress;
 
 use App\Models\Interfaces\IQuestProgress;
 use App\Repository\QuestProgress\IQuestProgressRepository;
-use App\Services\Quest\IQuestProvider;
+use App\Services\Quests\IQuestProvider;
 use App\Services\Session\ISessionService;
 
 class QuestProgressProvider implements IQuestProgressProvider

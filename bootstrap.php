@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Container;
+namespace App;
 
+use App\Container\Container;
 use App\Database\Database;
 use App\Database\DefaultDBConfig;
 use App\Database\IDatabase;
@@ -42,7 +43,6 @@ use App\Services\Authorize\Acl;
 use App\Services\Authorize\IAcl;
 use App\Services\Authorize\Quest\AuthorizationFactory;
 use App\Services\Authorize\Quest\QuestAuthorizeService;
-use App\Services\Quest\IQuestProvider;
 use App\Services\Question\IQuestionService;
 use App\Services\Question\QuestionService;
 use App\Services\QuestProgress\IQuestProgressManager;
@@ -183,7 +183,7 @@ $app->set(IUserService::class, function ($app) {
   return new UserService($app->get(IUserRepository::class), $app->get(IRoleRepository::class));
 });
 
-$app->set(IQuestProvider::class, function ($app) {
+$app->set(\App\Services\Quests\IQuestProvider::class, function ($app) {
   return new QuestProvider($app->get(IQuestRepository::class), $app->get(IQuestionService::class), $app->get(IWalletRepository::class));
 });
 
@@ -196,11 +196,11 @@ $app->set(IQuestionService::class, function ($app) {
 });
 
 $app->set(IQuestProgressProvider::class, function ($app) {
-  return new QuestProgressProvider($app->get(ISessionService::class), $app->get(IQuestProgressRepository::class), $app->get(IQuestProvider::class));
+  return new QuestProgressProvider($app->get(ISessionService::class), $app->get(IQuestProgressRepository::class), $app->get(\App\Services\Quests\IQuestProvider::class));
 });
 
 $app->set(IQuestProgressManager::class, function ($app) {
-  return new QuestProgressManager($app->get(ISessionService::class), $app->get(IQuestProgressRepository::class), $app->get(IQuestionsRepository::class), $app->get(IQuestProvider::class), $app->get(IQuestManager::class), $app->get(IQuestProgressProvider::class));
+  return new QuestProgressManager($app->get(ISessionService::class), $app->get(IQuestProgressRepository::class), $app->get(IQuestionsRepository::class), $app->get(\App\Services\Quests\IQuestProvider::class), $app->get(IQuestManager::class), $app->get(IQuestProgressProvider::class));
 });
 
 $app->set(IQuestBuilderService::class, function ($app) {
@@ -273,4 +273,4 @@ $app->set(IAcl::class, function ($app) {
 });
 
 
-return $container;
+return $app;

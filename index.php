@@ -12,7 +12,7 @@ use App\Routing\Router;
 use App\Request\Request;
 use App\Emitter\Emitter;
 
-$app = require 'bootstrap.php';
+$app = require_once __DIR__ .'/bootstrap.php';
 $r = new Router($app);
 
 // ERROR ROUTES

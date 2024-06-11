@@ -4,7 +4,7 @@ namespace App\Services\Quests;
 
 use App\Repository\IWalletRepository;
 use App\Services\Authenticate\IIdentity;
-use App\Services\Quest\IQuestProvider;
+use App\Services\Quests\IQuestProvider;
 use App\Services\Question\IQuestionService;
 use App\Repository\IQuestRepository;
 use App\Models\IQuest;

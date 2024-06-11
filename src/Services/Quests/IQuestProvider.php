@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Quest;
+namespace App\Services\Quests;
 
 use App\Models\IQuest;
 use App\Services\Authenticate\IIdentity;

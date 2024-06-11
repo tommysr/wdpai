@@ -17,5 +17,5 @@ interface IQuestAuthorizeService
    * @param int|null $questId The ID of the quest (if applicable).
    * @throws \Exception If authorization fails.
    */
-  public function authorizeQuest(string $request, int $questId = null): IAuthResult;
+  public function authorizeQuest(QuestRequest $request, int $questId = null): IAuthResult;
 }

@@ -301,7 +301,7 @@ class QuestRepository extends Repository implements IQuestRepository
     $quests = [];
     $sql = $this->getQuestQuery('HAVING approved = :approved;');
     $stmt = $this->db->connect()->prepare($sql);
-    $stmt->execute([':approved' => $isApproved]);
+    $stmt->execute([':approved' => $isApproved ? 1 : 0]);
     $fetched = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     foreach ($fetched as $fetched_quest) {

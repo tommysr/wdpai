@@ -10,9 +10,9 @@ use App\Middleware\RedirectResponse;
 use App\Models\IQuest;
 use App\Request\IFullRequest;
 use App\Services\Authenticate\IAuthService;
-use App\Services\Quest\IQuestProvider;
 use App\Services\Quests\Builder\IQuestBuilderService;
 use App\Services\Quests\IQuestManager;
+use App\Services\Quests\IQuestProvider;
 use App\Services\Session\ISessionService;
 use App\View\IViewRenderer;
 
