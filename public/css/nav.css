@@ -67,7 +67,7 @@ body {
   height: calc(100% - 70px);
   width: 300px;
   z-index: 1000;
-  background-color: #0e130e;
+  background-color: #253125;
   overflow-x: hidden;
   transform: translateX(-100%);
   transition: transform 0.5s ease;

@@ -4,7 +4,7 @@
       <div class="profile-column  flex-column-center-center gap-1">
 
         <h1 class="user-welcome">Hello, <?= $username; ?></h1>
-        <div class="profile-picture">
+        <div class="profile-picture bg-green-box">
           <img src="https://picsum.photos/300/200" alt="image" />
         </div>
 

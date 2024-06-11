@@ -506,7 +506,7 @@ i {
 
 .profile-picture {
   border-radius: 100%;
-  border: 4px solid #b0da99;
+  border: 1px solid #30fad3;
   box-shadow: inset 0px 5px 4px rgba(229, 229, 229, 0.25);
   display: flex;
   justify-content: center;
@@ -514,12 +514,6 @@ i {
   overflow: hidden;
   width: 200px;
   height: 200px;
-}
-
-.profile-picture img {
-  flex-shrink: 0;
-  min-width: 100%;
-  min-height: 100%;
 }
 
 .join-date {
@@ -579,7 +573,7 @@ i {
   /* border-radius: 100%; */
   border: none;
   padding: 0.5em 1em;
-  background: rgb(59, 173, 104);
+  background: #393c37;
   border-radius: 30px;
   color: white;
 }
@@ -705,7 +699,7 @@ dialog {
   max-width: 1000px;
   width: 80%;
   color: #ddd;
-  background: #121d0c;
+  background-color: #253125;
   border: none;
   padding: 30px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
