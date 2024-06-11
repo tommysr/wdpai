@@ -8,15 +8,15 @@
           <h1 class="main-text">Create Quiz</h1>
           <h2 class="input-description main-text">Thumbnail</h2>
           <div class="file-input-container">
-            <input type="file" id="fileInput" class="file-input" name="file" accept="image/*">
+          <input type="file" id="fileInput" class="file-input" name="file" accept="image/*">
             <label for="fileInput" class="file-label">Choose File</label>
           </div>
         <?php endif; ?>
-        <img id="preview" src="<?= $quest ? "/public/uploads/" . $quest->getPictureUrl() != "none" : '#' ?>"
+        <img id="preview" src="<?= $quest ? "/public/uploads/" . $quest->getPictureUrl() : '#' ?>"
           alt="Image preview" />
 
         <?php if (isset($userRole) && $userRole == 'creator'): ?>
-          <button class="upload-button" onclick="uploadFile()">Upload</button>
+          <button type="button" class="upload-button" onclick="uploadFile()">Upload</button>
         <?php endif; ?>
       </div>
 
@@ -32,7 +32,7 @@
 
         <label for="quizDescription" class="input-description main-text">Quiz
           Description:</label>
-        <textarea name="description" id="description" class="main-text" cols="50" rows="10" placeholder="description"
+        <textarea name="description" id="description" cols="50" rows="10" placeholder="description" class="main-text-light"
           minlength="20" maxlength="300" required><?= $quest ? $quest->getDescription() : '' ?></textarea>
 
         <label for="requiredWallet" class="input-description main-text">Required wallet:</label>
@@ -111,7 +111,7 @@
               <div class="card">
                 <div class="container-card bg-green-box question flex-column-center-center gap-1">
                   <input type="hidden" name="questions[<?= $counter; ?>][id]" value="<?= $questionId; ?>">
-                  <textarea name="questions[<?= $counter; ?>][text]" class="questionText main-text" cols="30" rows="10"
+                  <textarea name="questions[<?= $counter; ?>][text]" class="questionText main-text-light" cols="30" rows="10"
                     minlength="3" maxlength="500" placeholder="question text"
                     required><?= $question->getText(); ?></textarea>
 

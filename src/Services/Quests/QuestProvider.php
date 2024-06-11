@@ -76,7 +76,7 @@ class QuestProvider implements IQuestProvider
   {
     $quest = $this->questRepository->getQuestById($questId);
 
-    if ($quest) {
+    if (!$quest) {
       return null;
     }
 

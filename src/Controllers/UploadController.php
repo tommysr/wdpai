@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Controllers\Interfaces\IUPloadController;
+use App\Controllers\Interfaces\IUploadController;
 use App\Middleware\IResponse;
 use App\Middleware\JsonResponse;
 use App\Middleware\RedirectResponse;
@@ -17,7 +17,7 @@ class UploadController extends AppController implements IUploadController
   const SUPPORTED_TYPES = ['image/png', 'image/jpeg'];
   const UPLOAD_DIRECTORY = '/../public/uploads/';
 
-  public function __construct(IFullRequest $request, ISessionService $sessionService, IViewRenderer $viewRenderer, IValidationChain $validation)
+  public function __construct(IFullRequest $request, ISessionService $sessionService, IViewRenderer $viewRenderer)
   {
     parent::__construct($request, $sessionService, $viewRenderer);
   }
@@ -47,13 +47,11 @@ class UploadController extends AppController implements IUploadController
   {
     $imageFileType = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
     $uniqueName = uniqid() . '.' . $imageFileType;
-    $targetFile = $filePath . $uniqueName;
+    $targetFile = $uniqueName;
 
     $counter = 1;
     while (file_exists($targetFile)) {
-      $baseName = pathinfo($filePath, PATHINFO_FILENAME);
-      $extension = pathinfo($filePath, PATHINFO_EXTENSION);
-      $targetFile = $filePath . $baseName . "_$counter" . $extension;
+      $targetFile = $uniqueName . "_$counter" . $imageFileType;
       $counter++;
     }
 
@@ -71,10 +69,15 @@ class UploadController extends AppController implements IUploadController
 
     if ($fileData && is_uploaded_file($fileData['tmp_name'])) {
       $newFileName = $this->generateFileName($fileData['name']);
-      move_uploaded_file(
+      $dir = dirname(__DIR__) . self::UPLOAD_DIRECTORY;
+
+      copy(
         $fileData['tmp_name'],
-        dirname(__DIR__) . self::UPLOAD_DIRECTORY . $newFileName
+        $dir . $newFileName
       );
+
+      $this->sessionService->set('uploadedFile', $newFileName);
+      
       return new JsonResponse(['name' => $newFileName]);
     }
 

@@ -96,6 +96,7 @@ To install and run the project, follow these steps:
 3. Use Docker Compose to build and start the services:
    ```sh
    docker-compose up --build
+   chmod o+w public/uploads 
    ```
 4. Import the database schema and data from the provided SQL dump into your PostgreSQL instance.
 5. Modify the initialize method in DefaultDBConfig.php to suit your environment settings, specifically for database connections:

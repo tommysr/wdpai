@@ -2,6 +2,7 @@
 
 namespace App\Middleware\QuestValidation;
 
+use App\Validator\EmptyRule;
 use App\Validator\ImageValidationRule;
 use App\Validator\MinMaxFloatValidationRule;
 use App\Validator\MinMaxIntValidationRule;
@@ -18,7 +19,7 @@ class QuestValidationChain extends ValidationChain
   {
     $requiredValidationRule = new RequiredValidationRule();
     $this->strict = true;
-
+    $this->addRule('file', new EmptyRule());
     $this->addRules('questThumbnail', [$requiredValidationRule, new ImageValidationRule()]);
     $this->addRules('title', [$requiredValidationRule, new MinMaxLengthValidationRule(5, 90)]);
     $this->addRules('description', [$requiredValidationRule, new MinMaxLengthValidationRule(20, 300)]);
