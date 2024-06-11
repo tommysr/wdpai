@@ -31,7 +31,7 @@
       <img src="public/assets/logo_with_name.svg" />
     </div>
 
-    <form class="flex-column-center gap-0-5">
+    <form class="flex-column-center-center gap-0-5" id="login-form">
       <input class="login-input" name="email" type="email" placeholder="email address" required />
       <span id="email-error" class="error-message"></span>
       <input class="login-input" name="username" type="text" placeholder="username" required />

@@ -843,6 +843,10 @@ menu {
   width: 100%;
 }
 
+#login-form {
+  min-width: 370px;
+}
+
 .logo {
   display: flex;
   justify-content: center;
