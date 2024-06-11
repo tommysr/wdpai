@@ -139,6 +139,10 @@ h1 {
   color: #ebf6e5;
 }
 
+button.enter-button{
+  box-sizing: content-box;
+}
+
 .tos > .checkmark {
   width: 30px;
   height: 30px;

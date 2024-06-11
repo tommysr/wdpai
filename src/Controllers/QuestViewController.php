@@ -132,11 +132,15 @@ class QuestViewController extends AppController implements IQuestViewController
 
   public function getShowRecommendedQuests(IFullRequest $request): IResponse
   {
-    $userId = $this->authService->getIdentity()->getId();
-    $questsIds = $this->recommendationService->getRecommendations($userId);
-    $quests = $this->questProvider->getQuestsByIds($questsIds);
+    try {
+      $userId = $this->authService->getIdentity()->getId();
+      $questsIds = $this->recommendationService->getRecommendations($userId);
+      $quests = $this->questProvider->getQuestsByIds($questsIds);
 
-    return new JsonResponse(['quests' => $quests], 200);
+      return new JsonResponse(['quests' => $quests], 200);
+    } catch (\Exception $e) {
+      return new JsonResponse(['quests' => []], 200);
+    }
   }
 
   // show created quests list which are not approved yet, but can be edited by creator

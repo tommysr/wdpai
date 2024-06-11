@@ -27,6 +27,11 @@ class EditAuthorizationStrategy implements IQuestAuthorizeStrategy
     if ($quest === null) {
       return new AuthorizationResult(['quest not found']);
     }
+
+    if ($this->authService->getIdentity()->getRole()->getName() === 'admin') {
+      return new AuthorizationResult([], true);
+    }
+
     if ($quest->getCreatorId() !== $userId) {
       return new AuthorizationResult(['quest is not owned by you']);
     }

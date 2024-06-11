@@ -263,6 +263,9 @@ $app->set(IAcl::class, function ($app) {
   $acl->allow(UserRole::CREATOR->value, 'UploadController', 'uploadPicture');
   $acl->allow(UserRole::NORMAL->value, 'WalletManagementController', 'showQuestWallets');
   $acl->allow(UserRole::NORMAL->value, 'WalletManagementController', 'addWallet');
+  $acl->allow(UserRole::NORMAL->value, 'QuestViewController', 'showTopRatedQuests');
+  $acl->allow(UserRole::NORMAL->value, 'QuestViewController', 'showRecommendedQuests');
+
   $acl->allow(UserRole::NORMAL->value, 'GameController', 'enterQuest');
   $acl->allow(UserRole::ADMIN->value, 'AdminController', 'refreshRecommendations');
   $acl->allow(UserRole::ADMIN->value, 'AdminController', 'publishQuest');
