@@ -39,6 +39,7 @@ class Database implements IDatabase
             );
 
             // set the PDO error mode to exception
+            $this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         } catch (PDOException $e) {

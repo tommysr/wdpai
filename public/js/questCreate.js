@@ -15,8 +15,6 @@ let questionsTexts = document.querySelectorAll(".questionText");
 let questionsPoints = document.querySelectorAll(".questionPoints");
 let optionsText = document.querySelectorAll(".optionText");
 
-console.log(optionsText);
-
 const checkOptionTextValidity = (optionT) => {
   const optionText = optionT.target;
   console.log(optionText.value, optionText.validity);
@@ -86,7 +84,6 @@ for (let i = 0; i < optionsText.length; i++) {
 }
 
 const checkTitleValidity = () => {
-  console.log(title.value.length);
   if (title.validity.valueMissing) {
     error.textContent = "You need to enter a title";
   } else if (title.validity.tooShort) {
@@ -538,7 +535,7 @@ function uploadFile() {
   const formData = new FormData();
   formData.append("file", fileInput.files[0]);
 
-  fetch("/uploadQuestPicture", {
+  fetch("/uploadPicture", {
     method: "POST",
     body: formData,
   })

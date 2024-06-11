@@ -27,10 +27,6 @@ abstract class InputValidationMiddleware extends BaseMiddleware
       return new JsonResponse(['errors' => [$e->getMessage()]]);
     }
 
-    if ($this->next !== null) {
-      return $this->next->process($request, $handler);
-    }
-
-    return $handler->handle($request);
+    return $this->next ? $this->next->process($request, $handler) : $handler->handle($request);
   }
 }

@@ -21,6 +21,7 @@ class ViewRenderer implements IViewRenderer
     if (!file_exists($templatePath)) {
       throw new TemplateNotFound('Template file not found');
     }
+    
 
     extract($variables);
     ob_start();

@@ -43,7 +43,7 @@ $r->post('/register', 'RegisterController@register', [AuthenticationMiddleware::
 
 // QUEST MANAGEMENT ROUTES - CREATOR
 $r->get('/showCreateQuest', 'QuestManagementController@showCreateQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
-$r->get('/showEditQuest/{questId}', 'QuestManagementController@showEditQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
+$r->get('/showEditQuest/{questId}', 'QuestManagementController@showEditQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
 $r->post('/createQuest', 'QuestManagementController@createQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestValidationMiddleware::class, QuestAuthorizationMiddleware::class]);
 $r->post('/editQuest/{questId}', 'QuestManagementController@editQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestValidationMiddleware::class, QuestAuthorizationMiddleware::class]);
 

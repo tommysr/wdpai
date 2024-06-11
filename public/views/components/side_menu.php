@@ -17,8 +17,6 @@
         <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />
       </svg>
     </a>
-
-
     <?php if (isset($userRole) && $userRole == 'admin'): ?>
       <a class="nav-link" href="/showQuestsToApproval">
         Quests queue
