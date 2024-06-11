@@ -82,7 +82,7 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
       ':wallet_id' => $questProgress->getWalletId(),
       ':score' => $questProgress->getScore(),
       ':completion_date' => $questProgress->getCompletionDate(),
-      ':last_question_id' => $questProgress->getLastQuestionId(),
+      ':next_question_id' => $questProgress->getLastQuestionId(),
       ':state' => $questProgress->getState()->getStateId()
     ]);
   }
@@ -92,7 +92,7 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
     $sql = "UPDATE quest_progress
               SET score = :score,
                   completion_date = :completion_date,
-                  next_question_id = :last_question_id,
+                  next_question_id = :next_question_id,
                   state = :state
               WHERE wallet_id = :wallet_id
               AND quest_id = :quest_id";
@@ -103,7 +103,7 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
       ':wallet_id' => $questProgress->getWalletId(),
       ':score' => $questProgress->getScore(),
       ':completion_date' => $questProgress->getCompletionDate(),
-      ':last_question_id' => $questProgress->getLastQuestionId(),
+      ':next_question_id' => $questProgress->getLastQuestionId(),
       ':state' => $questProgress->getState()->getStateId()
     ]);
   }

@@ -15,6 +15,7 @@ enum QuestRequest: string
         return self::EDIT;
       case 'showQuests':
       case 'enterQuest':
+      case 'showQuestWallets':
         return self::ACCESS;
       default:
         return null;

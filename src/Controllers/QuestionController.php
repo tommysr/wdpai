@@ -110,8 +110,8 @@ class QuestionController extends AppController implements IQuestionController
     $userId = $this->authService->getIdentity()->getId();
     $maxScore = $this->questProvider->getQuest($questProgress->getQuestId())->getMaxPoints();
 
-    if ($questProgress->getLastQuestionId() !== $questionId) {
-      return new RedirectResponse('/error/404');
+    if (!$questProgress || $questProgress->getLastQuestionId() !== $questionId) {
+      return new RedirectResponse('/error/404', ['question not found']);
     }
 
     $selectedOptions = $this->request->getParsedBodyParam('options') ?? [];
@@ -121,8 +121,7 @@ class QuestionController extends AppController implements IQuestionController
     $this->questProgressManager->addPoints($result['points']);
     $this->questProgressManager->recordResponses($userId, $result['options']);
     $this->questProgressManager->changeProgress($questionId);
-
-    return $this->renderQuestionSummary($result['points'], $result['maxPoints'], $questProgress->getScore() + $result['points'], $maxScore);
+    return $this->renderQuestionSummary($result['points'], $result['maxPoints'], $questProgress->getScore(), $maxScore);
   }
 
   private function renderQuestionSummary(int $questionScore, int $questionMaxScore, int $score, int $maxScore): IResponse

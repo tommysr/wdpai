@@ -14,7 +14,7 @@
     rel="stylesheet" />
 
 
-  <!-- <script type="text/javascript" src="/public/js/confirmationModal.js" defer></script> -->
+  <script type="text/javascript" src="/public/js/confirmationModal.js" defer></script>
   <title><?= $title; ?></title>
 </head>
 
@@ -38,14 +38,14 @@
       foreach ($options as $option):
         ?>
         <label class="option-container">
-          <input type="radio" name="options[]" value="<?= $option->getOptionId(); ?>" />
+          <input type="radio" name="options[]" value="<?= $option->getOptionId(); ?>" required/>
           <span class="checkmark <?= $colorClasses[$counter % count($colorClasses)]; ?>"></span>
           <span class="option-text"><?= $option->getText(); ?></span>
         </label>
         <?php
         $counter++;
       endforeach;
-      ?>`
+      ?>
     </div>
 
     <button class="main-button">Continue</button>

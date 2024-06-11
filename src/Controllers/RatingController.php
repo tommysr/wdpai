@@ -28,6 +28,11 @@ class RatingController extends AppController implements IRatingController
     $this->authService = $authService;
   }
 
+  public function getIndex(IFullRequest $request): IResponse
+  {
+    return new RedirectResponse('/error/404');
+  }
+
   public function postRating(IFullRequest $request, int $questId): IResponse
   {
     $userId = $this->authService->getIdentity()->getId();

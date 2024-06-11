@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/public/css/style.css" type="text/css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
- 
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Lekton:ital,wght@0,400;0,700;1,400&display=swap"
@@ -28,7 +28,7 @@
         </div>
     </nav>
 
-    <form action="/rating/" <?= $questId; ?> method="post" class="question-container gap-4 justify-center">
+    <form action=<?= "/rating/" . $questId; ?> method="post" class="question-container gap-4 justify-center">
         <span class="back-text">Rate the quest</span>
 
         <div class="rating-options">
@@ -38,7 +38,7 @@
             foreach ($ratingValues as $value):
                 ?>
                 <label class="rating-option">
-                    <input type="radio" name="rating" value="<?= $value; ?>" />
+                    <input type="radio" name="rating" value="<?= $value; ?>" required />
                     <span class="rating-number"><?= $value; ?></span>
                 </label>
                 <?php

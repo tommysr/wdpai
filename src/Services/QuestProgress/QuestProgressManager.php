@@ -39,15 +39,20 @@ class QuestProgressManager implements IQuestProgressManager
     $quest = $this->questProvider->getQuest($questId);
 
     if (!$quest) {
-      throw new QuestNotFoundException("Quest not found");
+      throw new NotFoundException("Quest not found");
     }
 
     if (!$this->questManager->addParticipant($questId)) {
-      throw new QuestNotFoundException("Failed to add participant to quest");
+      throw new CannotStartException("Failed to add participant to quest");
     }
 
-    $nextQuestionId = $this->questionsRepository->getNextQuestion($questId, 0)->getQuestionId();
-    $questProgress = new QuestProgress(null, 0, $questId, $walletId, $nextQuestionId, QuestState::InProgress, '');
+    $nextQuestion = $this->questionsRepository->getNextQuestion($questId, 0);
+
+    if (!$nextQuestion) {
+      throw new NotFoundException("Failed to get next question");
+    }
+
+    $questProgress = new QuestProgress(null, 0, $questId, $walletId, $nextQuestion->getQuestionId(), QuestState::InProgress, '');
 
     $this->questProgressRepository->saveQuestProgress($questProgress);
     $this->sessionService->set('questProgress', $questProgress);
@@ -56,6 +61,10 @@ class QuestProgressManager implements IQuestProgressManager
   public function completeQuest(): void
   {
     $questProgress = $this->questProgressProvider->getCurrentProgress();
+
+    if (!$questProgress) {
+      throw new NotFoundException("Quest not found");
+    }
 
     $questProgress->setState(QuestState::Finished);
     $questProgress->setCompletionDateToNow();
@@ -66,6 +75,11 @@ class QuestProgressManager implements IQuestProgressManager
   public function addPoints(int $pointsGained): void
   {
     $questProgress = $this->questProgressProvider->getCurrentProgress();
+
+    if (!$questProgress) {
+      throw new NotFoundException("Quest not found");
+    }
+
     $questProgress->setScore($questProgress->getScore() + $pointsGained);
     $this->sessionService->set('questProgress', $questProgress);
     $this->questProgressRepository->updateQuestProgress($questProgress);
@@ -79,6 +93,11 @@ class QuestProgressManager implements IQuestProgressManager
   public function changeProgress(int $questionId): void
   {
     $questProgress = $this->questProgressProvider->getCurrentProgress();
+
+    if (!$questProgress) {
+      throw new NotFoundException("Quest not found");
+    }
+
     $questionId = $this->questionsRepository->getNextQuestionId($questProgress->getQuestId(), $questProgress->getLastQuestionId());
 
     if (!$questionId) {
@@ -100,6 +119,10 @@ class QuestProgressManager implements IQuestProgressManager
   }
 }
 
-class QuestNotFoundException extends \Exception
+class CannotStartException extends \Exception
+{
+}
+
+class NotFoundException extends \Exception
 {
 }

@@ -64,6 +64,7 @@ class QuestController extends AppController implements IQuestController
 
       return new JsonResponse(['redirect' => '/play']);
     } catch (\Exception $e) {
+      error_log($e->getMessage());
       return new JsonResponse(['errors' => ['Could not start quest']]);
     }
   }

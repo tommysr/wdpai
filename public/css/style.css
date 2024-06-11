@@ -260,7 +260,7 @@ button.enter-button{
 
 @media screen and (max-width: 600px) {
   .text-background {
-    width: 95%;
+    width: 92%;
   }
 }
 
@@ -283,8 +283,8 @@ button.enter-button{
 
 .question-text {
   font-weight: 700;
-  font-size: 2em;
-  line-height: 2.5em;
+  font-size: 1.5em;
+  line-height: 1.6em;
   text-align: center;
   letter-spacing: 0.1em;
   color: #ebf6e5;
@@ -292,15 +292,15 @@ button.enter-button{
 
 .option-text {
   font-weight: 400;
-  font-size: 1.5em;
-  line-height: 2em;
+  font-size: 1.1em;
+  text-wrap: wrap;
   letter-spacing: 0.07em;
   color: #ebf6e5;
 }
 
 .option-container {
-  display: inline-flex;
-  justify-content: center;
+  display: flex;
+  /* justify-content: center; */
   align-items: center;
   width: 100%;
   gap: 1em;
@@ -360,8 +360,8 @@ button.enter-button{
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 40px;
-  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
   border-radius: 50%;
 
   border: 1px solid #58c3b5;
@@ -392,8 +392,9 @@ button.enter-button{
   position: absolute;
   opacity: 0;
   cursor: pointer;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
+  margin: 0;
 }
 
 .pink {
@@ -814,6 +815,7 @@ input[type="number"] {
   }
 
   dialog[open] {
+    border-radius: 0;
     width: auto;
     height: 100%;
     display: flex;
@@ -863,6 +865,8 @@ menu {
 }
 
 .options-container {
+  min-width: 300px;
+  width: 70%;
   padding-left: 2em;
   display: flex;
   flex-direction: column;
