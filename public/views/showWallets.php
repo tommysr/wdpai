@@ -27,9 +27,8 @@
 
       <h1 class="wallet-name"> <?= $chain; ?> </h1>
 
-      <div>
-        <form onsubmit="enterQuest(event, <?= $questId ?>)" class="flex-column-center-center gap-1-5"
-          style="margin-top: 1em;">
+      <div class="flex-column-center-center gap-0-5 enter-form">
+        <form onsubmit="enterQuest(event, <?= $questId ?>)" class="flex-column-center-center m-t-1 w-100">
           <select id="walletSelect" name="walletId" onchange="handleWalletSelect(this)" class="login-input">
             <?php foreach ($wallets as $wallet): ?>
               <option value="<?= $wallet->getWalletId(); ?>">
@@ -40,15 +39,13 @@
             <option value="new">Insert new</option>
           </select>
 
-          <button class="main-button">Enter</button>
+          <button class="enter-button">Enter</button>
         </form>
 
 
-        <form id="add-wallet-form" onsubmit="addWallet(event, '<?= $chain; ?>')"
-          class="flex-column-center-center gap-0-5">
+        <form id="add-wallet-form" onsubmit="addWallet(event, '<?= $chain; ?>')" class="flex-column-center-center w-100">
           <input id="walletAddress" name="walletAddress" type="text" class="login-input" placeholder="wallet address" />
-
-          <button class="main-button" type="submit">Add wallet</button>
+          <button class="enter-button" type="submit">Add </button>
         </form>
       </div>
       <span class="error-message" id="error"></span>

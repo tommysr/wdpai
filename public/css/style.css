@@ -91,10 +91,7 @@ body {
 
 .w-100 {
   width: 100%;
-}
 
-.m-20 {
-  margin: 20px;
 }
 
 .mt-1 {
@@ -997,6 +994,10 @@ form select {
   max-width: 100% !important;
 }
 
+.enter-form {
+  width: 60%;
+}
+
 @media screen and (max-width: 1200px) {
   .cards {
     grid-template-columns: 1fr;
@@ -1028,6 +1029,8 @@ form select {
     display: none !important;
   }
 
+
+
   .container {
     max-width: 940px !important;
     margin: 0 16px !important;
@@ -1043,6 +1046,10 @@ form select {
 @media screen and (max-width: 600px) {
   .profile-column {
     min-width: 340px;
+  }
+
+  .enter-form {
+    width: 100%;
   }
 }
 
