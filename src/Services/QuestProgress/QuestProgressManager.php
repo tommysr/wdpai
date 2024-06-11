@@ -72,6 +72,19 @@ class QuestProgressManager implements IQuestProgressManager
     $this->questProgressRepository->updateQuestProgress($questProgress);
   }
 
+  public function setRated(): void
+  {
+    $questProgress = $this->questProgressProvider->getCurrentProgress();
+
+    if (!$questProgress) {
+      throw new NotFoundException("Quest not found");
+    }
+
+    $questProgress->setState(QuestState::Rated);
+    $this->sessionService->set('questProgress', $questProgress);
+    $this->questProgressRepository->updateQuestProgress($questProgress);
+  }
+
   public function addPoints(int $pointsGained): void
   {
     $questProgress = $this->questProgressProvider->getCurrentProgress();

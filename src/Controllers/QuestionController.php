@@ -66,6 +66,7 @@ class QuestionController extends AppController implements IQuestionController
         return $this->getNextQuestion($question);
       case QuestState::Unrated:
         return new RedirectResponse('/rating/' . $questProgress->getQuestId());
+      case QuestState::Rated:
       case QuestState::Finished:
         return new RedirectResponse('/summary/' . $questProgress->getQuestId());
       case QuestState::Abandoned:

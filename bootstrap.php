@@ -268,6 +268,7 @@ $app->set(IAcl::class, function ($app) {
   $acl->allow(UserRole::NORMAL->value, 'QuestionController', 'play');
   $acl->allow(UserRole::NORMAL->value, 'QuestionController', 'answer');
   $acl->allow(UserRole::NORMAL->value, 'RatingController', 'rating');
+  $acl->allow(UserRole::NORMAL->value, 'QuestController', 'summary');
 
   $acl->allow(UserRole::NORMAL->value, 'QuestController', 'enterQuest');
   $acl->allow(UserRole::ADMIN->value, 'AdminController', 'refreshRecommendations');
