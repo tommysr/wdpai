@@ -12,7 +12,8 @@ ENV BUILD_DEPS \
     libzip-dev \
     libpng-dev \
     libjpeg-turbo-dev \
-    postgresql-dev
+    postgresql-dev \ 
+    git
 
 ENV PHP_EXTENSIONS \
     opcache \
@@ -29,9 +30,19 @@ RUN apk add --no-cache --virtual .build-deps $BUILD_DEPS \
 
 RUN apk add --no-cache --virtual .run-deps $RUN_DEPS
 
-RUN echo 'memory_limit = -1' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini;
-
 # Copy the application code
 COPY . /app
+# Change working directory
+WORKDIR /app
 
+# ENV COMPOSER_ALLOW_SUPERUSER=1
+# COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# RUN chmod +x /usr/bin/composer
+# RUN composer install
+
+# RUN ./vendor/bin/phpunit --colors=always tests/
+
+# Define volumes
 VOLUME ["/app"]
+
+

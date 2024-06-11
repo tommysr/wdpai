@@ -13,6 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Lekton:ital,wght@0,400;0,700;1,400&display=swap"
     rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
   <script type="text/javascript" src="public/js/login.js" defer></script>
 
@@ -30,24 +31,20 @@
     </div>
 
     <div class="flex-column-center-center gap-1-5">
-      <form action="login" method="post" class="flex-column-center-center gap-1-5">
-        <div class="flex-column-center-center">
-          <input class="login-input" name="email" type="email" placeholder="email address" required />
-          <span id="email-error" class="error-message"></span>
-        </div>
-
-        <div class="flex-column-center-center">
-          <input class="login-input" name="password" type="password" placeholder="password" required minlength="8" />
-          <span id="password-error" class="error-message"></span>
-        </div>
+      <form class="flex-column-center-center gap-0-5">
+        <input class="login-input" name="email" type="email" placeholder="email address" required />
+        <span id="email-error" class="error-message"></span>
+        <input class="login-input" name="password" type="password" placeholder="password" required minlength="8" />
+        <span id="password-error" class="error-message"></span>
+        <span id="form-error" class="error-message"></span>
+        <input type="hidden" name="login_method" value="db" />
         <button class="main-button">Sign in</button>
       </form>
 
-      <form action="/register">
-        <button class="secondary-button">Create account</button>
-      </form>
-
-      <span class="error-message"><?= $message; ?></span>
+      <a href="/register" class="secondary-button"
+        style="text-decoration: none; text-align: center; align-items: center; display: flex; justify-content: center;">
+        Create Account
+      </a>
     </div>
   </main>
 </body>

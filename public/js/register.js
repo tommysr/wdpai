@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
       passwordErrorMessage.textContent = "";
     } else if (password.validity.tooShort || password.validity.valueMissing) {
       passwordErrorMessage.textContent =
-        "Password must be at least 8 characters long";
+        "Password must be at least 8 characters";
     }
   };
 
@@ -72,13 +72,34 @@ document.addEventListener("DOMContentLoaded", function () {
   tosCheckbox.addEventListener("blur", checkTosValidity);
 
   form.addEventListener("submit", (event) => {
+    event.preventDefault();
+
     checkEmailValidity();
     checkUsernameValidity();
     checkPasswordValidity();
     checkTosValidity();
 
     if (!form.checkValidity() && !checkConfirmedPasswordValidity()) {
-      event.preventDefault();
+      return;
     }
+
+    fetch("/register", {
+      method: "POST",
+      body: new FormData(form),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        if (data.errors) {
+          tosErrorMessage.textContent = data.errors[0];
+        } else {
+          window.location = "/login";
+        }
+      })
+      .catch((error) => {
+        tosErrorMessage.textContent = "form error";
+        console.error(error);
+      });
   });
 });
