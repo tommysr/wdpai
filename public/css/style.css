@@ -7,7 +7,6 @@
   --text-color: #ebf6e5;
 }
 
-
 body {
   font-family: "Lekton";
   font-style: normal;
@@ -88,6 +87,11 @@ body {
   gap: 4em;
 }
 
+.f-1 {
+  font-size: 1em;
+  font-weight: 400;
+}
+
 .full-width {
   width: 100%;
 }
@@ -119,7 +123,6 @@ body {
   align-self: center;
 }
 
-
 .full-container {
   height: 100vh;
   width: 100vw;
@@ -150,9 +153,22 @@ button.enter-button {
   box-sizing: content-box;
 }
 
+
+
+button.enter-button {
+  font-size: 1.1em!important;
+}
+
+.tos {
+  width: 10% !important;
+}
+
 .tos > .checkmark {
-  width: 30px;
-  height: 30px;
+  min-width: 25px;
+  min-height: 25px;
+
+  width: 25px;
+  height: 25px;
 }
 
 .view-button {
@@ -288,8 +304,9 @@ button.enter-button {
 }
 
 .question-text {
+  width: 95%;
   font-weight: 700;
-  font-size: 1.5em;
+  font-size: 1.4em;
   line-height: 1.6em;
   text-align: center;
   letter-spacing: 0.1em;
@@ -320,6 +337,10 @@ button.enter-button {
 
 .option-container input:checked ~ .checkmark:after {
   display: block;
+}
+
+.optionText {
+  padding-left: 0.2em;
 }
 
 .tos-checkbox {
@@ -465,6 +486,7 @@ a.main-button {
 }
 
 .secondary-button {
+  color: var(--text-color);
   width: 200px;
   height: 65px;
   text-transform: uppercase;
@@ -727,7 +749,7 @@ dialog {
   max-width: 1000px;
   width: 80%;
   color: var(--text-color);
-  background-color:var(--tertiary-color);
+  background-color: var(--tertiary-color);
   border: none;
   padding: 30px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -1044,6 +1066,8 @@ form select {
   }
 }
 
+
+
 .container-card {
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
   border: 2px solid transparent;
@@ -1096,7 +1120,9 @@ form select {
 }
 
 .image-green-box {
-  box-shadow: rgba(0, 0, 0, 0.09) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px, rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px, rgba(0, 0, 0, 0.09) 0px 32px 16px;
+  box-shadow: rgba(0, 0, 0, 0.09) 0px 2px 1px, rgba(0, 0, 0, 0.09) 0px 4px 2px,
+    rgba(0, 0, 0, 0.09) 0px 8px 4px, rgba(0, 0, 0, 0.09) 0px 16px 8px,
+    rgba(0, 0, 0, 0.09) 0px 32px 16px;
   position: relative;
 }
 
@@ -1187,7 +1213,8 @@ form select {
   }
 }
 
-.enter-button:hover, .show-more-btn:hover {
+.enter-button:hover,
+.show-more-btn:hover {
   background: var(--accent-color);
   cursor: pointer;
   transition: background-color 0.5s;
@@ -1361,6 +1388,7 @@ textarea {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  color: var(--text-color);
   transition: background-color 0.3s;
 }
 

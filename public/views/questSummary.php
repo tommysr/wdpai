@@ -43,7 +43,9 @@
             <span class="score"><?= $better_than; ?> %</span>
             <span class="score-sub-text">other participants</span>
         </div>
-        <a href="/endQuest" class="main-button">Continue</a>
+        <form action="/completeQuest" method="post">
+            <button class="main-button">Continue</button>
+        </form>
     </div>
 
     <script type="text/javascript" src="/public/js/progress.js" defer></script>

@@ -68,7 +68,7 @@ $r->get('/rating/{questId}', 'RatingController@rating', [AuthenticationMiddlewar
 $r->get('/summary/{questId}', 'QuestController@summary', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
 $r->post('/rating/{questId}', 'RatingController@rating', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
 $r->post('/abandonQuest', 'QuestController@abandonQuest', [AuthenticationMiddleware::class]);
-$r->get('/endQuest', 'QuestController@reset', [AuthenticationMiddleware::class]);
+$r->post('/completeQuest', 'QuestController@completeQuest', [AuthenticationMiddleware::class]);
 
 $request = new Request($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
 $emitter = new Emitter();
