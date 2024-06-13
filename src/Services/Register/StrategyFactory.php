@@ -22,6 +22,11 @@ class StrategyFactory implements IRegisterStrategyFactory
 
     return $this->strategies[$method];
   }
+
+  public function getStrategies(): array
+  {
+    return $this->strategies;
+  }
 }
 
 class InvalidRegisterMethodException extends \Exception
