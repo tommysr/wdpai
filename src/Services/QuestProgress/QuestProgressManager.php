@@ -43,7 +43,7 @@ class QuestProgressManager implements IQuestProgressManager
     }
 
     if (!$this->questManager->addParticipant($questId)) {
-      throw new CannotStartException("Failed to add participant to quest");
+      throw new NotAuthorizedException("Failed to add participant to quest");
     }
 
     $nextQuestion = $this->questionsRepository->getNextQuestion($questId, 0);
@@ -66,7 +66,10 @@ class QuestProgressManager implements IQuestProgressManager
       throw new NotFoundException("Quest not found");
     }
 
-    $questProgress->setState(QuestState::Finished);
+    if ($questProgress->getState() != QuestState::Rated || $questProgress->getCompletionDate() !== null) {
+      throw new NotAuthorizedException("Quest not rated yet or already rated");
+    }
+
     $questProgress->setCompletionDateToNow();
     $this->sessionService->set('questProgress', $questProgress);
     $this->questProgressRepository->updateQuestProgress($questProgress);
@@ -137,5 +140,9 @@ class CannotStartException extends \Exception
 }
 
 class NotFoundException extends \Exception
+{
+}
+
+class NotAuthorizedException extends \Exception
 {
 }

@@ -6,6 +6,7 @@ use App\Controllers\AppController;
 use App\Controllers\Interfaces\IRatingController;
 use App\Middleware\IResponse;
 use App\Middleware\RedirectResponse;
+use App\Models\QuestState;
 use App\Request\IFullRequest;
 use App\Services\Authenticate\IAuthService;
 use App\Services\QuestProgress\IQuestProgressManager;
@@ -33,7 +34,7 @@ class RatingController extends AppController implements IRatingController
 
   public function getIndex(IFullRequest $request): IResponse
   {
-    return new RedirectResponse('/error/404');
+    return new RedirectResponse('/error/404', ['what are you looking for?']);
   }
 
   public function postRating(IFullRequest $request, int $questId): IResponse
@@ -41,8 +42,8 @@ class RatingController extends AppController implements IRatingController
     $userId = $this->authService->getIdentity()->getId();
     $questProgress = $this->questProgressProvider->getCurrentProgress();
 
-    if (!$questProgress || !$questProgress->isCompleted()) {
-      return new RedirectResponse('/error/404');
+    if (!$questProgress || $questProgress->getState() >= QuestState::Rated || $questProgress->getQuestId() !== $questId) {
+      return new RedirectResponse('/error/403', ['you are not supposed to be here']);
     }
 
     $rating = $this->request->getParsedBodyParam('rating');

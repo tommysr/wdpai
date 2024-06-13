@@ -90,6 +90,8 @@ class QuestViewController extends AppController implements IQuestViewController
       ];
     }
 
+    $wallets = $this->questProgressProvider->getCompletedWallets($questId);
+
     $questReport = [
       'quest_id' => $quest->getQuestID(),
       'title' => $quest->getTitle(),
@@ -104,7 +106,8 @@ class QuestViewController extends AppController implements IQuestViewController
       'pool_amount' => $quest->getPoolAmount(),
       'token' => $quest->getToken(),
       'creator_id' => $quest->getCreatorId(),
-      'questions' => $questionsArray
+      'questions' => $questionsArray,
+      'addresses' => $wallets
     ];
 
     return new JsonResponse($questReport);

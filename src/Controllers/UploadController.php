@@ -24,7 +24,7 @@ class UploadController extends AppController implements IUploadController
 
   public function getIndex(IFullRequest $request): IResponse
   {
-    return new RedirectResponse('/error/404', ['unknown route']);
+    return new RedirectResponse('/error/404', ['what are you looking for?']);
   }
 
   // leave it here for now, but i can be middleware 

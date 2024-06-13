@@ -41,7 +41,7 @@ class QuestManagementController extends AppController implements IQuestManagemen
 
   public function getIndex(IFullRequest $request): IResponse
   {
-    return new RedirectResponse('/error/404', ['not found']);
+    return new RedirectResponse('/error/404', ['what are you looking for?']);
   }
 
   private function renderEditAndCreateView(IQuest $quest = null): IResponse

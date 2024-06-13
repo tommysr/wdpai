@@ -1,3 +1,5 @@
+<?php use App\Models\QuestState; ?>
+
 <main class="flex-column-center-center">
   <div class="container">
     <div class="cards w-100">
@@ -31,7 +33,8 @@
         <div class="one-line-list">
           <div class="information-container bg-green-box">
             <!-- TODO: change color based on some ranking -->
-            <i class="fas fa-crown <?php if ($points > 200): ?>
+            <i class="fas fa-crown <?php if ($points > 200):
+              ?>
               fa-gold
               <?php elseif ($points > 100): ?>
               fa-silver
@@ -78,7 +81,7 @@
 
                     <span class="info">
                       <i class="fas fa-calendar-check"></i>
-                      <?= $progress->getCompletionDate() ?: 'uncomplete'; ?>
+                      <?= $progress->getCompletionDate() ?: 'not ended'; ?>
                     </span>
                   </div>
                 </div>
@@ -102,9 +105,9 @@
 
                 <span class="published">
                   Status:
-                  <?php if ($progress->getState()->getStateId() == 1): ?>
+                  <?php if ($progress->getState() == QuestState::InProgress): ?>
                     In progress
-                  <?php elseif ($progress->getState()->getStateId() == 4): ?>
+                  <?php elseif ($progress->getState() == QuestState::Abandoned): ?>
                     Abandoned
                   <?php elseif (strtotime($quest->getPayoutDate()) < time()): ?>
                     Withdrawed

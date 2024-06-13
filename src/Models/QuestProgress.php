@@ -89,7 +89,7 @@ class QuestProgress implements IQuestProgress
 
   public function isCompleted(): bool
   {
-    return $this->state !== QuestState::InProgress;
+    return $this->completion_date !== null;
   }
 
   public function setState(IQuestState $state): void

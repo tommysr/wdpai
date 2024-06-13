@@ -57,6 +57,7 @@ function addWallet(event, blockchain) {
       if (data.errors) {
         error.innerText = data.errors[0];
       } else {
+        error.innerText = "";
         const walletId = data.walletId;
         const walletAddress = data.walletAddress;
         let option = document.createElement("option");
