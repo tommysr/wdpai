@@ -47,7 +47,7 @@ function handleTopRatedClick() {
       }
 
       const h1 = document.querySelector("h1.main-text");
-      
+
       if (data.quests.length == 0 && h1 == null) {
         quests.innerHTML = '<h1 class="main-text">No records found </h1>';
       }
@@ -90,8 +90,11 @@ function createQuest(quest) {
   const template = document.querySelector("#quest-template");
   const clone = template.content.cloneNode(true);
 
+  const image = clone.querySelector(".card-image");
+  image.src = '/public/uploads/' + quest.pictureUrl;
+
   const infos = clone.querySelectorAll(".info");
-  const rating = document.createTextNode(quest.avgRating);
+  const rating = document.createTextNode(quest.avgRating.toFixed(2));
   infos[0].appendChild(rating);
 
   const blockchain = document.createTextNode(quest.blockchain);
