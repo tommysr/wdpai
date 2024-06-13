@@ -66,13 +66,13 @@ class QuestProgressManager implements IQuestProgressManager
       throw new NotFoundException("Quest not found");
     }
 
-    if ($questProgress->getState() != QuestState::Rated || $questProgress->getCompletionDate() !== null) {
-      throw new NotAuthorizedException("Quest not rated yet or already rated");
+    if ($questProgress->getState() != QuestState::Rated && $questProgress->getCompletionDate() !== null) {
+      throw new NotAuthorizedException("Quest already completed");
     }
 
     $questProgress->setCompletionDateToNow();
-    $this->sessionService->set('questProgress', $questProgress);
     $this->questProgressRepository->updateQuestProgress($questProgress);
+    $this->sessionService->delete('questProgress');
   }
 
   public function setRated(): void
@@ -130,8 +130,9 @@ class QuestProgressManager implements IQuestProgressManager
   {
     $questProgress = $this->questProgressProvider->getCurrentProgress();
     $questProgress->setState(QuestState::Abandoned);
-    $this->sessionService->delete('questProgress');
+
     $this->questProgressRepository->updateQuestProgress($questProgress);
+    $this->sessionService->delete('questProgress');
   }
 }
 
