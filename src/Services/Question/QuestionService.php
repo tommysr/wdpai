@@ -36,7 +36,7 @@ class QuestionService implements IQuestionService
     switch ($question->getFlag()) {
       case 'added':
         $questionId = $this->questionRepository->saveQuestion($question);
-        $question->setQuestionId($question->getQuestionId());
+        $question->setQuestionId($questionId);
         $this->processOptions($question);
         break;
       case 'removed':

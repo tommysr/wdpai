@@ -33,10 +33,35 @@ class WalletManagementController extends AppController implements IWalletManagem
     return new RedirectResponse('/error404');
   }
 
+  function validateCryptoAddress($address)
+  {
+    $validCharacters = '/^[a-km-zA-HJ-NP-Z0-9]+$/';
+
+    $patterns = [
+      'bitcoin' => '/^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$|^bc1[ac-hj-np-z02-9]{11,71}$/',
+      'ethereum' => '/^0x[a-fA-F0-9]{40}$/',
+      'litecoin' => '/^[LM3][a-km-zA-HJ-NP-Z1-9]{26,33}$|^ltc1[ac-hj-np-z02-9]{11,71}$/',
+      'solana' => '/^[1-9A-HJ-NP-Za-km-z]{32,44}$/',
+    ];
+
+    if (!preg_match($validCharacters, $address)) {
+      return false;
+    }
+
+    foreach ($patterns as $crypto => $pattern) {
+      if (preg_match($pattern, $address)) {
+        return true;
+      }
+    }
+
+    return true;
+  }
+
+
   public function getShowQuestWallets(IFullRequest $request, int $questId): IResponse
   {
     $identity = $this->authService->getIdentity();
-    $quest = $this->questService->getQuest($questId); 
+    $quest = $this->questService->getQuest($questId);
 
     if (!$quest) {
       return new RedirectResponse('/error/404', ['no such quest']);
@@ -53,6 +78,11 @@ class WalletManagementController extends AppController implements IWalletManagem
   {
     $identity = $this->authService->getIdentity();
     $walletAddress = $this->request->getParsedBodyParam('walletAddress');
+
+    if (!$this->validateCryptoAddress($walletAddress)) {
+      return new JsonResponse(['errors' => ['invalid address']]);
+    }
+
     $walletId = $this->walletService->createWallet($identity, $blockchain, $walletAddress);
 
     return new JsonResponse(['walletId' => $walletId, 'walletAddress' => $walletAddress]);

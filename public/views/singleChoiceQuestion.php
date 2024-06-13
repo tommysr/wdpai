@@ -5,9 +5,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="/public/css/style.css" type="text/css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,7 +12,7 @@
     rel="stylesheet" />
 
 
-  <!-- <script type="text/javascript" src="/public/js/confirmationModal.js" defer></script> -->
+  <script type="text/javascript" src="/public/js/confirmationModal.js" defer></script>
   <title><?= $title; ?></title>
 </head>
 
@@ -39,14 +36,14 @@
       foreach ($options as $option):
         ?>
         <label class="option-container">
-          <input type="radio" name="options[]" value="<?= $option->getOptionId(); ?>" />
+          <input type="radio" name="options[]" value="<?= $option->getOptionId(); ?>" required/>
           <span class="checkmark <?= $colorClasses[$counter % count($colorClasses)]; ?>"></span>
           <span class="option-text"><?= $option->getText(); ?></span>
         </label>
         <?php
         $counter++;
       endforeach;
-      ?>`
+      ?>
     </div>
 
     <button class="main-button">Continue</button>

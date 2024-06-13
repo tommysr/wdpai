@@ -4,7 +4,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="public/css/style.css" type="text/css" />
   <title>Error</title>
   <style>
     body {
@@ -12,19 +11,21 @@
       background-color: #f4f4f4;
       margin: 0;
       padding: 0;
+      background-color: #0e130e;
+      color:#f4f4f4;
     }
 
     .container {
       max-width: 800px;
       margin: 100px auto;
       padding: 20px;
-      background-color: #fff;
+      background-color: #253125;
       border-radius: 5px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     }
 
     h1 {
-      color: #e74c3c;
+      color: #f4f4f4;
     }
 
     p {
@@ -42,7 +43,7 @@
     <?php foreach ($messages as $message): ?>
       <p><?= $message; ?></p>
     <?php endforeach; ?>
-    </div>
+  </div>
 </body>
 
 </html>

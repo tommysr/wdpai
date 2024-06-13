@@ -61,6 +61,7 @@ abstract class AppController implements IHandler
 
         $variables = array_merge($variables, $globalVariables);
         $content = $this->viewRenderer->render($template, $variables, $content);
+
         return new BaseResponse(200, [], $content);
     }
 }

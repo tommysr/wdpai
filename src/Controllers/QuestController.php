@@ -64,6 +64,7 @@ class QuestController extends AppController implements IQuestController
 
       return new JsonResponse(['redirect' => '/play']);
     } catch (\Exception $e) {
+      error_log($e->getMessage());
       return new JsonResponse(['errors' => ['Could not start quest']]);
     }
   }
@@ -71,7 +72,7 @@ class QuestController extends AppController implements IQuestController
   public function getReset(IFullRequest $request): IResponse
   {
     $this->questProgressManager->resetSession();
-    return new RedirectResponse('/showQuests');
+    return new RedirectResponse('/dashboard');
   }
 
   public function getSummary(IFullRequest $request, int $questId): IResponse

@@ -21,11 +21,12 @@ class QuestAuthorizationMiddleware extends BaseMiddleware
 
   public function process(IFullRequest $request, IHandler $handler): IResponse
   {
+
     $params = $request->getAttribute('params');
     $requestAction = $request->getAttribute('action');
     $questRequest = QuestRequest::fromAction($requestAction);
     $questId = isset($params['questId']) ? (int) $params['questId'] : null;
-
+;
     if ($questRequest !== null) {
       $authResult = $this->questAuthorizeService->authorizeQuest($questRequest, $questId);
 
@@ -36,14 +37,10 @@ class QuestAuthorizationMiddleware extends BaseMiddleware
       }
 
       if (!$authResult->isValid()) {
-        return new RedirectResponse('/error/401', ['cannot authorize this action']);
+        return new RedirectResponse('/error/403', ['cannot authorize this action']);
       }
     }
 
-    if ($this->next !== null) {
-      return $this->next->process($request, $handler);
-    }
-
-    return $handler->handle($request);
+    return $this->next ? $this->next->process($request, $handler) : $handler->handle($request);
   }
 }

@@ -53,7 +53,7 @@
             </div>
 
             <?php if ($quest->isExpired()): ?>
-              <button class="enter-button" onclick="downloadReport(<?= $quest->getQuestID(); ?>)">get report</button>
+              <button class="enter-button" onclick="downloadReport(<?= $quest->getQuestID(); ?>)">download</button>
             <?php elseif ($quest->getIsApproved()): ?>
               <span class="published">
                 <i class="fas fa-check"></i>

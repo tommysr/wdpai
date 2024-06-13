@@ -39,15 +39,20 @@ class QuestProgressManager implements IQuestProgressManager
     $quest = $this->questProvider->getQuest($questId);
 
     if (!$quest) {
-      throw new QuestNotFoundException("Quest not found");
+      throw new NotFoundException("Quest not found");
     }
 
     if (!$this->questManager->addParticipant($questId)) {
-      throw new QuestNotFoundException("Failed to add participant to quest");
+      throw new NotAuthorizedException("Failed to add participant to quest");
     }
 
-    $nextQuestionId = $this->questionsRepository->getNextQuestion($questId, 0)->getQuestionId();
-    $questProgress = new QuestProgress(null, 0, $questId, $walletId, $nextQuestionId, QuestState::InProgress, '');
+    $nextQuestion = $this->questionsRepository->getNextQuestion($questId, 0);
+
+    if (!$nextQuestion) {
+      throw new NotFoundException("Failed to get next question");
+    }
+
+    $questProgress = new QuestProgress(null, 0, $questId, $walletId, $nextQuestion->getQuestionId(), QuestState::InProgress, '');
 
     $this->questProgressRepository->saveQuestProgress($questProgress);
     $this->sessionService->set('questProgress', $questProgress);
@@ -57,8 +62,28 @@ class QuestProgressManager implements IQuestProgressManager
   {
     $questProgress = $this->questProgressProvider->getCurrentProgress();
 
-    $questProgress->setState(QuestState::Finished);
+    if (!$questProgress) {
+      throw new NotFoundException("Quest not found");
+    }
+
+    if ($questProgress->getState() != QuestState::Rated && $questProgress->getCompletionDate() !== null) {
+      throw new NotAuthorizedException("Quest already completed");
+    }
+
     $questProgress->setCompletionDateToNow();
+    $this->questProgressRepository->updateQuestProgress($questProgress);
+    $this->sessionService->delete('questProgress');
+  }
+
+  public function setRated(): void
+  {
+    $questProgress = $this->questProgressProvider->getCurrentProgress();
+
+    if (!$questProgress) {
+      throw new NotFoundException("Quest not found");
+    }
+
+    $questProgress->setState(QuestState::Rated);
     $this->sessionService->set('questProgress', $questProgress);
     $this->questProgressRepository->updateQuestProgress($questProgress);
   }
@@ -66,6 +91,11 @@ class QuestProgressManager implements IQuestProgressManager
   public function addPoints(int $pointsGained): void
   {
     $questProgress = $this->questProgressProvider->getCurrentProgress();
+
+    if (!$questProgress) {
+      throw new NotFoundException("Quest not found");
+    }
+
     $questProgress->setScore($questProgress->getScore() + $pointsGained);
     $this->sessionService->set('questProgress', $questProgress);
     $this->questProgressRepository->updateQuestProgress($questProgress);
@@ -79,6 +109,11 @@ class QuestProgressManager implements IQuestProgressManager
   public function changeProgress(int $questionId): void
   {
     $questProgress = $this->questProgressProvider->getCurrentProgress();
+
+    if (!$questProgress) {
+      throw new NotFoundException("Quest not found");
+    }
+
     $questionId = $this->questionsRepository->getNextQuestionId($questProgress->getQuestId(), $questProgress->getLastQuestionId());
 
     if (!$questionId) {
@@ -95,11 +130,20 @@ class QuestProgressManager implements IQuestProgressManager
   {
     $questProgress = $this->questProgressProvider->getCurrentProgress();
     $questProgress->setState(QuestState::Abandoned);
-    $this->sessionService->delete('questProgress');
+
     $this->questProgressRepository->updateQuestProgress($questProgress);
+    $this->sessionService->delete('questProgress');
   }
 }
 
-class QuestNotFoundException extends \Exception
+class CannotStartException extends \Exception
+{
+}
+
+class NotFoundException extends \Exception
+{
+}
+
+class NotAuthorizedException extends \Exception
 {
 }

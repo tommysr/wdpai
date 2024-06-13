@@ -19,18 +19,14 @@ abstract class InputValidationMiddleware extends BaseMiddleware
   { 
     try {
       $errors = $this->validationChain->validateFields($this->toValidate);
- 
+
       if (count($errors) > 0) {
-        return new JsonResponse(['errors' => $errors]);
+        return new JsonResponse(['errors' => [$errors]]);
       }
     } catch (\Exception $e) {
       return new JsonResponse(['errors' => [$e->getMessage()]]);
     }
 
-    if ($this->next !== null) {
-      return $this->next->process($request, $handler);
-    }
-
-    return $handler->handle($request);
+    return $this->next ? $this->next->process($request, $handler) : $handler->handle($request);
   }
 }

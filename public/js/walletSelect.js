@@ -57,6 +57,7 @@ function addWallet(event, blockchain) {
       if (data.errors) {
         error.innerText = data.errors[0];
       } else {
+        error.innerText = "";
         const walletId = data.walletId;
         const walletAddress = data.walletAddress;
         let option = document.createElement("option");
@@ -64,7 +65,7 @@ function addWallet(event, blockchain) {
         option.text = walletAddress;
         select.add(option);
         select.value = walletId;
-        form.style.display = "none";
+        newWalletForm.style.display = "none";
         handleWalletSelect(select);
       }
     })

@@ -44,7 +44,7 @@ class Question implements IQuestion
     return $this->flag;
   }
 
-  public function setQuestionId(int $id)
+  public function setQuestionId(int $id):void
   {
     $this->questionId = $id;
   }

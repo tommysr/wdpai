@@ -31,6 +31,7 @@ function handleTopRatedClick() {
     })
         .then(response => response.json())
         .then(data => {
+            console.log(data)
             if (data.quests) {
                 quests.innerHTML = '';
                 data.quests.forEach(quest => createQuest(quest));

@@ -11,11 +11,19 @@ const participantsLimit = document.querySelector(
 const poolAmount = document.querySelector("input[name='poolAmount']");
 const token = document.querySelector("input[name='token']");
 const error = document.getElementById("error");
-let questionsTexts = document.querySelectorAll(".questionText");
-let questionsPoints = document.querySelectorAll(".questionPoints");
-let optionsText = document.querySelectorAll(".optionText");
+let questionsTexts = [];
+document.querySelectorAll(".questionText").forEach(e => questionsTexts.push(e));
+let questionsPoints = [];
+document.querySelectorAll(".questionPoints").forEach(e => questionsPoints.push(e));
+let optionsText = [] 
+document.querySelectorAll(".optionText").forEach(e => optionsText.push(e));
+const questionsDiv = document.querySelector(".cards");
+const questions = document.querySelectorAll(".container-card");
+const optionsDiv = document.querySelectorAll(".grid-3");
+const errorDiv = document.querySelector("#error");
 
-console.log(optionsText);
+let questionsOption = {};
+let lastQuestionId = null;
 
 const checkOptionTextValidity = (optionT) => {
   const optionText = optionT.target;
@@ -86,7 +94,6 @@ for (let i = 0; i < optionsText.length; i++) {
 }
 
 const checkTitleValidity = () => {
-  console.log(title.value.length);
   if (title.validity.valueMissing) {
     error.textContent = "You need to enter a title";
   } else if (title.validity.tooShort) {
@@ -238,14 +245,6 @@ const checkTokenValidity = () => {
 
 token.addEventListener("blur", checkTokenValidity);
 
-const questionsDiv = document.querySelector(".cards");
-const questions = document.querySelectorAll(".container-card");
-const optionsDiv = document.querySelectorAll(".grid-3");
-const errorDiv = document.querySelector("#error");
-
-let questionsOption = {};
-let lastQuestionId = null;
-
 function removeQuestion(callDiv, questionId) {
   const questionDiv = callDiv.parentNode.parentNode;
 
@@ -278,7 +277,7 @@ function addQuestion(questionId) {
 
   newQuestionDiv.innerHTML = `
       <div class="container-card bg-green-box question flex-column-center-center gap-1">
-        <textarea name="questions[${questionId}][text]" class="questionText main-text" cols="30" rows="10" placeholder="question text" minlength="3" maxlength="500" required> </textarea>
+        <textarea name="questions[${questionId}][text]" class="main-text-light questionText" cols="30" rows="10" placeholder="question text" minlength="3" maxlength="500" required> </textarea>
         <div class="grid-2">
           <label for="questionPoints" class="input-description main-text center">Points:</label>
           <input class="points questionPoints" type="number" name="questions[${questionId}][score]" min="1" max="100"
@@ -300,12 +299,17 @@ function addQuestion(questionId) {
     "blur",
     checkQuestionTestsValidity.bind(newQuestionText)
   );
+
+  questionsTexts.push(newQuestionText);
+
   const newQuestionPoints = newQuestionDiv.querySelector("div > input");
   console.log(newQuestionPoints);
   newQuestionPoints.addEventListener(
     "blur",
     checkQuestionPointsValidity.bind(newQuestionPoints)
   );
+
+  questionsPoints.push(newQuestionPoints);
 
   newQuestionDiv
     .querySelector(".addOption")
@@ -445,6 +449,7 @@ function serializeForm(form) {
 const validateFileInput = () => {
   const questThumbnail = document.getElementById("questThumbnail");
 
+  console.log(questThumbnail, questThumbnail.validity)
   if (!questThumbnail.value) {
     error.textContent = "You need to upload a file";
   } else {
@@ -460,6 +465,25 @@ const validateFileInput = () => {
     return false;
   }
 };
+
+function processErrors(errors) {
+  let flatArray = [];
+
+  // Flatten the array if it contains objects
+  errors.forEach(error => {
+      if (typeof error === 'object' && error !== null) {
+          // If it's an object, extract its values
+          flatArray.push(...Object.values(error));
+      } else {
+          // If it's not an object, just add it to the flat array
+          flatArray.push(error);
+      }
+  });
+
+  // Join the array elements with newline separators
+  return flatArray.join('\n');
+}
+
 
 function submitForm(event) {
   event.preventDefault();
@@ -506,16 +530,16 @@ function submitForm(event) {
     .then((response) => response.json())
     .then((data) => {
       if (data.errors) {
-        errorDiv.textContent = data.errors[0];
+        errorDiv.textContent = processErrors(data.errors);
       } else if (data.redirectUrl) {
         window.location.href = data.redirectUrl;
       }
     })
     .catch((error) => {
-      errorDiv.textContent = data.errors;
       console.error("Error:", error);
     });
 }
+
 
 const fileInput = document.getElementById("fileInput");
 const preview = document.getElementById("preview");
@@ -538,7 +562,7 @@ function uploadFile() {
   const formData = new FormData();
   formData.append("file", fileInput.files[0]);
 
-  fetch("/uploadQuestPicture", {
+  fetch("/uploadPicture", {
     method: "POST",
     body: formData,
   })

@@ -67,7 +67,8 @@ The application uses a PostgreSQL database with tables storing quests, questions
 - **users**: Stores user information.
 - **wallets**: Stores user wallets and associated blockchain information.
 
-![ERD](ERD.png)
+### ERD:
+![ERD](erd.png)
 
 ## Design Patterns Used
 
@@ -92,10 +93,11 @@ Other patterns used include:
 
 To install and run the project, follow these steps:
 1. Ensure Docker is installed on your machine.
-2. Clone the repository and navigate to the project directory.
+2. Clone the repository and navigate to the project directory, make sure to create uploads directory.
 3. Use Docker Compose to build and start the services:
    ```sh
    docker-compose up --build
+   chmod o+w public/uploads 
    ```
 4. Import the database schema and data from the provided SQL dump into your PostgreSQL instance.
 5. Modify the initialize method in DefaultDBConfig.php to suit your environment settings, specifically for database connections:
@@ -111,7 +113,97 @@ To install and run the project, follow these steps:
 
 ## Screenshots
 
-Screenshots of the application's user interface can be found in the `screenshots` directory.
+Screenshots of different views for both desktop and mobile are provided below.
+
+### User Main Views
+
+#### Desktop
+![User Main Desktop](./screenshots/user_main_desktop.png)
+
+#### Mobile
+![User Main Mobile](./screenshots/user_main_mobile.png)
+
+### Wallet Select Views
+
+#### Desktop
+![Wallet Select Desktop](./screenshots/wallet_select_desktop.png)
+
+#### Mobile
+![Wallet Select Mobile](./screenshots/wallet_select_mobile.png)
+
+
+
+### Dashboard Views
+
+#### Desktop
+![Dashboard Desktop](./screenshots/dahboard_desktop.png)
+
+#### Mobile
+![Dashboard Mobile](./screenshots/dashboard_mobile.png)
+
+
+### Single Choice Views
+
+#### Desktop
+![Single Choice Desktop](./screenshots/single_choice_desktop.png)
+
+#### Mobile
+![Single Choice Mobile](./screenshots/single_choice_mobile.png)
+
+
+### Multiple Choice Views
+
+#### Desktop
+![Multiple Choice Desktop](./screenshots/multiple_choice_desktop.png)
+
+#### Mobile
+![Multiple Choice Mobile](./screenshots/multiple_choice_mobile.png)
+
+### Quest Summary Views
+
+#### Desktop
+![Quest Summary Desktop](./screenshots/quest_summary_desktop.png)
+
+#### Mobile
+![Quest Summary Mobile](./screenshots/quest_summary_mobile.png)
+
+### Question Summary Views
+
+#### Desktop
+![Question Summary Desktop](./screenshots/question_summary_desktop.png)
+
+#### Mobile
+![Question Summary Mobile](./screenshots/question_summary_mobile.png)
+
+### Read Text Views
+
+#### Desktop
+![Read Text Desktop](./screenshots/read_text_desktop.png)
+
+#### Mobile
+![Read Text Mobile](./screenshots/read_text_mobile.png)
+
+### Admin Views
+
+#### Desktop
+![Admin View 1](./screenshots/admin_2_desktop.png)
+![Admin View 2](./screenshots/admin_desktop.png)
+![Admin View 3](./screenshots/admin_view_desktop.png)
+
+### Creator Page Views
+
+#### Desktop
+![Creator Page Desktop](./screenshots/creator_page_desktop.png)
+
+#### Mobile
+![Creator Page Mobile](./screenshots/creator_page_mobile.png)
+
+### Create/Edit Views
+
+#### Desktop
+![Create/Edit Desktop](./screenshots/create_edit_desktop.png)
+
+More screenshots in screenshots directory.
 
 ## License
 
