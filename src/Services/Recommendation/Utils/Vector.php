@@ -29,7 +29,7 @@ class Vector implements IVector
     }
 
     for ($i = 0; $i < $this->dimensions; $i++) {
-      if ($other->getDimensionValue($i) === 0) {
+      if ($other->getDimensionValue($i) === 0.0) {
         $res[$i] = 0;
       } else {
         $res[$i] = $this->data[$i];

@@ -1,4 +1,6 @@
 <?php
+use App\Container\BindingNotFoundException;
+use App\Container\UnresolvableException;
 use PHPUnit\Framework\TestCase;
 use App\Container\Container;
 
@@ -177,7 +179,7 @@ class ContainerTest extends TestCase
 
   public function testGetThrowsExceptionForUnboundIdentifier()
   {
-    $this->expectException(InvalidArgumentException::class);
+    $this->expectException(BindingNotFoundException::class);
     $this->expectExceptionMessage('No binding found for [UnboundService].');
 
     $container = new Container();
@@ -189,7 +191,7 @@ class ContainerTest extends TestCase
 
   public function testCallMethodThrowsExceptionForUnresolvableDependency()
   {
-    $this->expectException(RuntimeException::class);
+    $this->expectException(UnresolvableException::class);
     $this->expectExceptionMessage('Unresolvable dependency [param3] in method [index]');
 
     $container = new Container();
