@@ -1,5 +1,4 @@
 # Chain Quest Application
-## Chain Quest Application
 
 Chain Quest is an application that allows creators to create quizzes related to blockchain with multiple questions. Users can then play these quizzes, and after the quiz ends, the creator distributes the shared pool amount between the addresses given by users during the quiz start. Everything is managed by an admin who publishes quests after creation. Creators can then generate reports with user wallet addresses and answers to each question.
 
