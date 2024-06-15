@@ -57,7 +57,7 @@ class QuestProvider implements IQuestProvider
 
   public function getTopRatedQuests(): array
   {
-    $quests = $this->questRepository->getApprovedQuests();
+    $quests = $this->getQuestsToPlay();
 
     usort($quests, function ($a, $b) {
       return $b->getAvgRating() <=> $a->getAvgRating();

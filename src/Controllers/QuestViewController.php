@@ -140,6 +140,12 @@ class QuestViewController extends AppController implements IQuestViewController
       $questsIds = $this->recommendationService->getRecommendations($userId);
       $quests = $this->questProvider->getQuestsByIds($questsIds);
 
+
+      $quests = array_values(array_filter($quests, function ($quest) {
+        return $quest->getIsApproved() && $quest->getParticipantsCount() < $quest->getParticipantsLimit() &&
+        \DateTime::createFromFormat('Y-m-d', $quest->getExpiryDateString()) > new \DateTime();
+      }));
+
       return new JsonResponse(['quests' => $quests], 200);
     } catch (\Exception $e) {
       return new JsonResponse(['quests' => []], 200);

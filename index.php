@@ -19,12 +19,12 @@ $r = new Router($app);
 $r->get('/error/{code}', 'ErrorController@error');
 
 // QUEST DATA VIEW / FETCH ROUTES
-$r->get('/', 'QuestViewController@showQuests', [AuthenticationMiddleware::class, QuestAuthorizationMiddleware::class]);
+$r->get('/', 'ProfileController@showProfile', [AuthenticationMiddleware::class]);
 $r->get('/showCreatedQuests', 'QuestViewController@showCreatedQuests', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
 $r->get('/showQuestsToApproval', 'QuestViewController@showQuestsToApproval', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
 $r->get('/showApprovedQuests', 'QuestViewController@showApprovedQuests', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
 $r->get('/reportQuest/{questId}', 'QuestViewController@questReport', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
-$r->get('/showQuests', 'QuestViewController@showQuests', [AuthenticationMiddleware::class, QuestAuthorizationMiddleware::class]);
+$r->get('/showQuests', 'QuestViewController@showQuests', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
 $r->get('/showTopRatedQuests', 'QuestViewController@showTopRatedQuests', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
 $r->get('/showRecommendedQuests', 'QuestViewController@showRecommendedQuests', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
 

@@ -16,14 +16,14 @@ use App\Services\Authenticate\IAuthAdapterFactory;
 class AuthenticationMiddleware extends BaseMiddleware
 {
     private string $loginPath;
-    private string $redirectUrl;
+    private array $redirectUrls;
     private array $allowedPaths;
     private IAuthService $authService;
     private IAuthAdapterFactory $authAdapterFactory;
 
-    public function __construct(IAuthService $authService, IAuthAdapterFactory $authAdapterFactory, string $redirectUrl = '/', string $loginPath = '/login', array $allowedPaths = ['/login', '/register'])
+    public function __construct(IAuthService $authService, IAuthAdapterFactory $authAdapterFactory, array $redirectUrls = ['normal' => '/showQuests', 'creator' => '/showCreatedQuests', 'admin' => '/showQuestsToApproval'], string $loginPath = '/login', array $allowedPaths = ['/login', '/register'])
     {
-        $this->redirectUrl = $redirectUrl;
+        $this->redirectUrls = $redirectUrls;
         $this->authService = $authService;
         $this->authAdapterFactory = $authAdapterFactory;
         $this->loginPath = $loginPath;
@@ -40,11 +40,13 @@ class AuthenticationMiddleware extends BaseMiddleware
 
         $result = $this->authService->authenticate($authAdapter);
 
+
         if (!$result->isValid()) {
             return new JsonResponse(['errors' => $result->getMessages()], 401);
         }
 
-        return new JsonResponse(['redirectUrl' => $this->redirectUrl]);
+        $roleName = $result->getIdentity()->getRole()->getName();
+        return new JsonResponse(['redirectUrl' => $this->redirectUrls[$roleName]]);
     }
 
     public function process(IFullRequest $request, IHandler $handler): IResponse
@@ -61,7 +63,8 @@ class AuthenticationMiddleware extends BaseMiddleware
 
         // Redirect authenticated users away from login page and register page if authenticated
         if ($authenticated && in_array($path, $this->allowedPaths)) {
-            return new RedirectResponse($this->redirectUrl);
+            $roleName = $this->authService->getIdentity()->getRole()->getName();
+            return new RedirectResponse($this->redirectUrls[$roleName]);
         }
 
         // If not authenticated and not accessing an allowed path, attempt to authenticate

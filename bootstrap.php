@@ -98,7 +98,7 @@ $app->set(IAuthAdapterFactory::class, function ($app) {
 });
 
 $app->set(AuthenticationMiddleware::class, function ($app) {
-  return new AuthenticationMiddleware($app->get(IAuthService::class), $app->get(IAuthAdapterFactory::class), '/showQuests');
+  return new AuthenticationMiddleware($app->get(IAuthService::class), $app->get(IAuthAdapterFactory::class));
 });
 
 $app->set(IViewRenderer::class, function () {
@@ -269,6 +269,7 @@ $app->set(IAcl::class, function ($app) {
   $acl->allow(UserRole::NORMAL->value, 'QuestionController', 'answer');
   $acl->allow(UserRole::NORMAL->value, 'RatingController', 'rating');
   $acl->allow(UserRole::NORMAL->value, 'QuestController', 'summary');
+  $acl->allow(UserRole::NORMAL->value, 'QuestViewController', 'showQuests');
 
   $acl->allow(UserRole::NORMAL->value, 'QuestController', 'enterQuest');
   $acl->allow(UserRole::ADMIN->value, 'AdminController', 'refreshRecommendations');

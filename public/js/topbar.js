@@ -64,6 +64,7 @@ function handleRecommendedClick() {
   })
     .then((response) => response.json())
     .then((data) => {
+      console.log(data.quests);
       if (data.quests) {
         quests.innerHTML = "";
         data.quests.forEach((quest) => createQuest(quest));
