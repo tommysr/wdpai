@@ -128,7 +128,11 @@ class QuestViewController extends AppController implements IQuestViewController
 
   public function getShowTopRatedQuests(IFullRequest $request): IResponse
   {
+    $id = $this->authService->getIdentity()->getId();
     $quests = $this->questProvider->getTopRatedQuests();
+    $quests = array_values(array_filter($quests, function ($quest) use ($id) {
+      return !$this->questProgressProvider->isQuestPlayed($id, $quest->getQuestID());
+    }));
 
     return new JsonResponse(['quests' => $quests], 200);
   }
@@ -145,6 +149,7 @@ class QuestViewController extends AppController implements IQuestViewController
         return $quest->getIsApproved() && $quest->getParticipantsCount() < $quest->getParticipantsLimit() &&
         \DateTime::createFromFormat('Y-m-d', $quest->getExpiryDateString()) > new \DateTime();
       }));
+
 
       return new JsonResponse(['quests' => $quests], 200);
     } catch (\Exception $e) {

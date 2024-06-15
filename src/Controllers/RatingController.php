@@ -56,6 +56,6 @@ class RatingController extends AppController implements IRatingController
 
   public function getRating(IFullRequest $request, int $questId): IResponse
   {
-    return $this->render('rating', ['questId' => $questId]);
+    return $this->render('rating', ['questId' => $questId, 'title' => 'rate quest']);
   }
 }

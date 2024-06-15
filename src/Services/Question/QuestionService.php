@@ -122,7 +122,7 @@ class QuestionService implements IQuestionService
     return [
       'points' => $points,
       'maxPoints' => $question->getPoints(),
-      'options' => array_intersect($correctIds, $optionIds)
+      'options' => array_intersect($selectedOptions, $optionIds)
     ];
   }
 }
