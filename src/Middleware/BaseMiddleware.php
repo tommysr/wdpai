@@ -6,7 +6,7 @@ use App\Middleware\IMiddleware;
 
 abstract class BaseMiddleware implements IMiddleware
 {
-    protected ? IMiddleware $next;
+    protected ? IMiddleware $next = null;
 
     public function setNext(IMiddleware $middleware): IMiddleware
     {

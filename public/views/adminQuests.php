@@ -15,7 +15,7 @@
                             <div class="infos">
                                 <span class="info">
                                     <i class="fas fa-star"></i>
-                                    <?= $quest->getAvgRating(); ?>
+                                    <?= number_format($quest->getAvgRating(), 2); ?>
                                 </span>
 
                                 <span class="info">
@@ -53,7 +53,7 @@
 
                         <div class="flex-column-center-center gap-0-5">
                             <a href="/showEditQuest/<?= $quest->getQuestId(); ?>" class="enter-button">Show</a>
-                            <button id="publishButton" class="enter-button"
+                            <button id="publishButton" class="enter-button f-1"
                                 onclick="togglePublish(this, <?= $quest->getQuestId(); ?>)">
                                 <?php if (!$quest->getIsApproved()): ?>
                                     Publish

@@ -58,7 +58,7 @@ class ValidationChain implements IValidationChain
       $keys_not_included = array_diff(array_keys($this->rules), array_keys($fields));
 
       if (!empty($keys_not_included)) {
-        throw new ValidationRuleNotDefined("Invalid post data");
+        throw new ValidationRuleNotDefined("Unexpected fields: " . implode(", ", $keys_not_included));
       }
     }
 

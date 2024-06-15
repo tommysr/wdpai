@@ -2,6 +2,10 @@
 
 namespace App\Middleware\QuestValidation;
 
+use App\Validator\EmptyRule;
+use App\Validator\ImageValidationRule;
+use App\Validator\MinMaxFloatValidationRule;
+use App\Validator\MinMaxIntValidationRule;
 use App\Validator\MinMaxLengthValidationRule;
 use App\Validator\MinMaxValidationRule;
 use App\Validator\RequiredValidationRule;
@@ -12,19 +16,20 @@ use App\Middleware\QuestValidation\QuestionsRule;
 class QuestValidationChain extends ValidationChain
 {
   public function __construct()
-  { 
-    // TODO: add some rules
+  {
+    $requiredValidationRule = new RequiredValidationRule();
     $this->strict = true;
-    $this->addRules('questThumbnail', [new RequiredValidationRule()]);
-    $this->addRules('title', [new RequiredValidationRule(), new MinMaxLengthValidationRule(5, 90)]);
-    $this->addRules('description', [new RequiredValidationRule(), new MinMaxLengthValidationRule(20, 300)]);
-    $this->addRules('blockchain', [new RequiredValidationRule(), new MinMaxLengthValidationRule(3, 50)]);
-    $this->addRules('minutesRequired', [new RequiredValidationRule(), new MinMaxValidationRule(1, 120)]);
-    $this->addRules('expiryDate', [new RequiredValidationRule()]); // TODO:
-    $this->addRules('payoutDate', [new RequiredValidationRule()]); // TODO:
-    $this->addRules('participantsLimit', [new RequiredValidationRule(), new MinMaxValidationRule(20, 1000)]);
-    $this->addRules('poolAmount', [new RequiredValidationRule(), new MinMaxValidationRule(0, PHP_INT_MAX)]); // TODO: do it for float
-    $this->addRules('token', [new RequiredValidationRule(), new MinMaxLengthValidationRule(3, 20)]);
-    $this->addRules('questions', [new QuestionsRule()]);
+    $this->addRule('file', new EmptyRule());
+    $this->addRules('questThumbnail', [$requiredValidationRule, new ImageValidationRule()]);
+    $this->addRules('title', [$requiredValidationRule, new MinMaxLengthValidationRule(5, 90)]);
+    $this->addRules('description', [$requiredValidationRule, new MinMaxLengthValidationRule(20, 300)]);
+    $this->addRules('blockchain', [$requiredValidationRule, new MinMaxLengthValidationRule(3, 50)]);
+    $this->addRules('token', [$requiredValidationRule, new MinMaxLengthValidationRule(3, 20)]);
+    $this->addRules('expiryDate', [$requiredValidationRule]); 
+    $this->addRules('payoutDate', [$requiredValidationRule]); 
+    $this->addRules('minutesRequired', [$requiredValidationRule,  new MinMaxIntValidationRule(1, 120)]);
+    $this->addRules('participantsLimit', [$requiredValidationRule, new MinMaxIntValidationRule(20, 1000)]);
+    $this->addRules('poolAmount', [$requiredValidationRule, new MinMaxFloatValidationRule(0.0, PHP_FLOAT_MAX)]);
+    $this->addRules('questions', [$requiredValidationRule, new QuestionsRule()]);
   }
 }

@@ -16,7 +16,7 @@
               <div class="infos">
                 <span class="info">
                   <i class="fas fa-star"></i>
-                  <?= $quest->getAvgRating(); ?>
+                  <?= number_format($quest->getAvgRating(), 2); ?>
                 </span>
 
                 <span class="info">
@@ -53,7 +53,7 @@
             </div>
 
             <?php if ($quest->isExpired()): ?>
-              <button class="enter-button" onclick="downloadReport(<?= $quest->getQuestID(); ?>)">get report</button>
+              <button class="enter-button" onclick="downloadReport(<?= $quest->getQuestID(); ?>)">download</button>
             <?php elseif ($quest->getIsApproved()): ?>
               <span class="published">
                 <i class="fas fa-check"></i>

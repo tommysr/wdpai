@@ -3,6 +3,7 @@
 namespace App\Services\QuestProgress;
 
 use App\Models\Interfaces\IQuestProgress;
+use App\Models\QuestState;
 use App\Repository\QuestProgress\IQuestProgressRepository;
 use App\Services\Quests\IQuestProvider;
 use App\Services\Session\ISessionService;
@@ -57,6 +58,14 @@ class QuestProgressProvider implements IQuestProgressProvider
   public function getCurrentProgress(): ?IQuestProgress
   {
     return $this->sessionService->get('questProgress');
+  }
+
+  public function getCompletedWallets(int $questId): array
+  {
+    $progresses = $this->questProgressRepository->getAllProgresses($questId);
+    $completed = array_filter($progresses, fn($progress) => $progress->getState() === QuestState::Rated);
+    usort($completed, fn($a, $b) => $a->getScore() <=> $b->getScore());
+    return array_map(fn($progress) => $progress->getWalletAddress(), $completed);
   }
 
   public function getUserQuests(int $userId): array

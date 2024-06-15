@@ -68,7 +68,8 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
       return null;
     }
 
-    return new QuestProgress($qp['completion_date'], $qp['score'], $qp['quest_id'], $qp['wallet_id'], $qp['next_question_id'], QuestState::fromId($qp['state']), $qp['address']);  }
+    return new QuestProgress($qp['completion_date'], $qp['score'], $qp['quest_id'], $qp['wallet_id'], $qp['next_question_id'], QuestState::fromId($qp['state']), $qp['address']);
+  }
 
   public function saveQuestProgress(IQuestProgress $questProgress): void
   {
@@ -82,7 +83,7 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
       ':wallet_id' => $questProgress->getWalletId(),
       ':score' => $questProgress->getScore(),
       ':completion_date' => $questProgress->getCompletionDate(),
-      ':last_question_id' => $questProgress->getLastQuestionId(),
+      ':next_question_id' => $questProgress->getLastQuestionId(),
       ':state' => $questProgress->getState()->getStateId()
     ]);
   }
@@ -92,7 +93,7 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
     $sql = "UPDATE quest_progress
               SET score = :score,
                   completion_date = :completion_date,
-                  next_question_id = :last_question_id,
+                  next_question_id = :next_question_id,
                   state = :state
               WHERE wallet_id = :wallet_id
               AND quest_id = :quest_id";
@@ -103,9 +104,26 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
       ':wallet_id' => $questProgress->getWalletId(),
       ':score' => $questProgress->getScore(),
       ':completion_date' => $questProgress->getCompletionDate(),
-      ':last_question_id' => $questProgress->getLastQuestionId(),
+      ':next_question_id' => $questProgress->getLastQuestionId(),
       ':state' => $questProgress->getState()->getStateId()
     ]);
+  }
+
+  public function getAllProgresses(int $questId): array
+  {
+    $sql = "SELECT qp.completion_date, qp.score, qp.quest_id, qp.wallet_id, qp.next_question_id, qp.state, w.address FROM quest_progress qp
+              INNER JOIN wallets w ON qp.wallet_id = w.wallet_id
+              WHERE quest_id = :quest_id";
+    $stmt = $this->db->connect()->prepare($sql);
+    $stmt->execute([':quest_id' => $questId]);
+    $entries = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    $progresses = [];
+    foreach ($entries as $qp) {
+      $progresses[] = new QuestProgress($qp['completion_date'], $qp['score'], $qp['quest_id'], $qp['wallet_id'], $qp['next_question_id'], QuestState::fromId($qp['state']), $qp['address']);
+    }
+
+    return $progresses;
   }
 
   public function getPercentileRank(int $userId, int $questId): int
@@ -128,7 +146,7 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
             )
             SELECT 
               CASE 
-                  WHEN total = 0 THEN NULL
+                  WHEN total = 1 THEN 100
                   ELSE (better_than::decimal / total::decimal) * 100 
               END AS percentile_rank
             FROM 
@@ -137,10 +155,6 @@ class QuestProgressRepository extends Repository implements IQuestProgressReposi
     $stmt = $this->db->connect()->prepare($sql);
     $stmt->execute([':user_id' => $userId, ':quest_id' => $questId]);
     $qp = $stmt->fetchColumn();
-
-    if (!$qp) {
-      return 100;
-    }
 
     return (int) $qp;
   }

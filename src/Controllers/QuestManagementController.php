@@ -16,7 +16,7 @@ use App\Services\Quests\IQuestProvider;
 use App\Services\Session\ISessionService;
 use App\View\IViewRenderer;
 
-class QuestsManagementController extends AppController implements IQuestManagementController
+class QuestManagementController extends AppController implements IQuestManagementController
 {
   private IQuestProvider $questProvider;
   private IQuestManager $questManager;
@@ -41,7 +41,7 @@ class QuestsManagementController extends AppController implements IQuestManageme
 
   public function getIndex(IFullRequest $request): IResponse
   {
-    return new RedirectResponse('/error/404', ['not found']);
+    return new RedirectResponse('/error/404', ['what are you looking for?']);
   }
 
   private function renderEditAndCreateView(IQuest $quest = null): IResponse
@@ -59,7 +59,7 @@ class QuestsManagementController extends AppController implements IQuestManageme
     $quest = $this->questProvider->getQuestWithQuestions($questId);
 
     if (!$quest) {
-      return new RedirectResponse('/error/404', ['no such quest exist'], 0);
+      return new RedirectResponse('/error/404', ['no such quest exist']);
     }
 
     return $this->renderEditAndCreateView($quest);

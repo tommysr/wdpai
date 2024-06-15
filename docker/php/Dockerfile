@@ -1,5 +1,8 @@
 FROM php:8.3.7RC1-fpm-alpine3.19
 
+ARG user
+ARG uid
+
 ENV RUN_DEPS \
     zlib \
     libzip \
@@ -30,17 +33,16 @@ RUN apk add --no-cache --virtual .build-deps $BUILD_DEPS \
 
 RUN apk add --no-cache --virtual .run-deps $RUN_DEPS
 
+
+
 # Copy the application code
 COPY . /app
+
+
 # Change working directory
 WORKDIR /app
 
-# ENV COMPOSER_ALLOW_SUPERUSER=1
-# COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-# RUN chmod +x /usr/bin/composer
-# RUN composer install
 
-# RUN ./vendor/bin/phpunit --colors=always tests/
 
 # Define volumes
 VOLUME ["/app"]

@@ -61,6 +61,7 @@ class RecommendationService implements IRecommendationService
   public function refreshRecommendations(): void
   {
     $data = $this->ratingService->getUserItemMatrix();
+    // var_dump($data);
     $this->dataManager->setData($data);
     $this->recommender->construct();
 

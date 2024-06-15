@@ -25,14 +25,13 @@ class RoleAuthorizationMiddleware extends BaseMiddleware
 
   public function process(IFullRequest $request, IHandler $handler): IResponse
   {
-
     $identity = $this->authService->getIdentity();
     $role = $identity ? $identity->getRole()->getName() : (string) UserRole::GUEST;
     $resource = $request->getAttribute('controller');
     $privilege = $request->getAttribute('action');
 
     if (!$this->acl->isAllowed($role, $resource, $privilege)) {
-      return new RedirectResponse('/error/401', ['not allowed']);
+      return new RedirectResponse('/error/403', ['not allowed']);
     }
 
     if ($this->next !== null) {

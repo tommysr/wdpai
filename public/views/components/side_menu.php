@@ -17,8 +17,6 @@
         <path d="M0 1H132" stroke="#EBF6E5" stroke-width="2" />
       </svg>
     </a>
-
-
     <?php if (isset($userRole) && $userRole == 'admin'): ?>
       <a class="nav-link" href="/showQuestsToApproval">
         Quests queue
@@ -67,8 +65,8 @@
     </div>
     <div>
       <a href="https://facebook.com"><i class="fab fa-facebook-f"></i></a>
-      <a href="https://instagram.com"></a><i class="fab fa-instagram"></i></a>
-      <a href="https://linkedin.com"></a><i class="fab fa-linkedin-in"></i></a>
+      <a href="https://instagram.com"><i class="fab fa-instagram"></i></a>
+      <a href="https://linkedin.com"><i class="fab fa-linkedin-in"></i></a>
       <img src="/public/assets/follow-bar/arrow_left.svg" />
     </div>
   </div>

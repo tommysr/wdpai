@@ -12,7 +12,7 @@ use App\Routing\Router;
 use App\Request\Request;
 use App\Emitter\Emitter;
 
-$app = require_once __DIR__ .'/bootstrap.php';
+$app = require_once __DIR__ . '/bootstrap.php';
 $r = new Router($app);
 
 // ERROR ROUTES
@@ -43,7 +43,7 @@ $r->post('/register', 'RegisterController@register', [AuthenticationMiddleware::
 
 // QUEST MANAGEMENT ROUTES - CREATOR
 $r->get('/showCreateQuest', 'QuestManagementController@showCreateQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
-$r->get('/showEditQuest/{questId}', 'QuestManagementController@showEditQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
+$r->get('/showEditQuest/{questId}', 'QuestManagementController@showEditQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
 $r->post('/createQuest', 'QuestManagementController@createQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestValidationMiddleware::class, QuestAuthorizationMiddleware::class]);
 $r->post('/editQuest/{questId}', 'QuestManagementController@editQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestValidationMiddleware::class, QuestAuthorizationMiddleware::class]);
 
@@ -63,11 +63,12 @@ $r->get('/promoteToCreator/{userName}', 'AdminController@promoteUser', [Authenti
 // GAME ROUTES
 $r->post('/enterQuest/{questId}', 'QuestController@enterQuest', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
 $r->get('/play', 'QuestionController@play', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
-$r->post('/answer/{questionId}', 'QuestionController@answer', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
-$r->get('/rating', 'RatingController@rating', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
-$r->get('/rating', 'RatingController@rating', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
+$r->post('/answer/{questionId}', 'QuestionController@answer', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
+$r->get('/rating/{questId}', 'RatingController@rating', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
+$r->get('/summary/{questId}', 'QuestController@summary', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class]);
+$r->post('/rating/{questId}', 'RatingController@rating', [AuthenticationMiddleware::class, RoleAuthorizationMiddleware::class, QuestAuthorizationMiddleware::class]);
 $r->post('/abandonQuest', 'QuestController@abandonQuest', [AuthenticationMiddleware::class]);
-$r->get('/endQuest', 'QuestController@reset', [AuthenticationMiddleware::class]);
+$r->post('/completeQuest', 'QuestController@completeQuest', [AuthenticationMiddleware::class]);
 
 $request = new Request($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
 $emitter = new Emitter();

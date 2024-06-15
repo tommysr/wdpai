@@ -162,7 +162,6 @@ class RequestTest extends TestCase
   public function testGetStatusCode()
   {
     $request = new Request();
-    http_response_code(200);
     $this->assertEquals(200, $request->getStatusCode());
   }
 }

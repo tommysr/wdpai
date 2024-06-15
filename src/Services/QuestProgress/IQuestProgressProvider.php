@@ -7,6 +7,7 @@ use App\Models\Interfaces\IQuestProgress;
 interface IQuestProgressProvider
 {
   public function getProgress(int $userId, int $questId): ?IQuestProgress;
+  public function getCompletedWallets(int $questId): array;
   public function getCurrentProgress(): ?IQuestProgress;
   public function getQuestSummary(int $userId, int $questId): array;
   public function getUserQuests(int $userId): array;

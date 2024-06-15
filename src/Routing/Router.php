@@ -44,28 +44,34 @@ class Router implements IRouter
 
   private function buildMiddleware(array $middlewares): ?IMiddleware
   {
-    $middlewareStack = null;
+    if (empty($middlewares)) {
+      return null;
+    }
+
+    $firstMiddleware = null;
     $lastMiddleware = null;
 
-    for ($i = count($middlewares) - 1; $i >= 0; $i--) {
-      $middlewareClass = $middlewares[$i];
-      $middlewareInstance = $this->container->get($middlewareClass);
+    foreach ($middlewares as $middleware) {
+      $middlewareInstance = $this->container->get($middleware);
 
       if (!$middlewareInstance instanceof IMiddleware) {
         throw new MissingImplementationException("Middleware must implement IMiddleware");
       }
 
       if ($lastMiddleware) {
-        $middlewareInstance->setNext($lastMiddleware);
-      } else {
-        $middlewareInstance->removeNext();
+        $lastMiddleware->setNext($middlewareInstance);
+      }
+
+      if (!$firstMiddleware) {
+        $firstMiddleware = $middlewareInstance;
       }
 
       $lastMiddleware = $middlewareInstance;
     }
 
-    $middlewareStack = $lastMiddleware;
-    return $middlewareStack;
+    $lastMiddleware->removeNext();
+
+    return $firstMiddleware;
   }
 
   public function dispatch(IFullRequest $request): IResponse
@@ -106,7 +112,7 @@ class Router implements IRouter
           return $this->container->callMethod($middleware, 'process', [$request, $controllerInstance]);
         }
 
-        
+
         return $this->container->callMethod($controllerInstance, 'handle', [$request]);
       }
     }
