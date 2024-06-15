@@ -1,6 +1,7 @@
 # Chain Quest Application
+## Chain Quest Application
 
-Chain Quest is an application that allows creators to create quizzes with multiple questions. Users can then play these quizzes, and the creator, after the quiz ends, distributes the shared pool amount between addresses given by users during quiz start. Everything is managed by an admin who publishes quests after creation. Creators can then generate reports with user wallet addresses and answers to each question.
+Chain Quest is an application that allows creators to create quizzes related to blockchain with multiple questions. Users can then play these quizzes, and after the quiz ends, the creator distributes the shared pool amount between the addresses given by users during the quiz start. Everything is managed by an admin who publishes quests after creation. Creators can then generate reports with user wallet addresses and answers to each question.
 
 ## Table of Contents
 1. [Features](#features)
@@ -13,17 +14,17 @@ Chain Quest is an application that allows creators to create quizzes with multip
 
 ## Features
 
-1. Users can register into the system and start playing quests right away.
-2. Application has a system of permissions:
-   - Users can play only published quests and those they didn't play/abandon before.
-   - Users are forced to end/abandon the quest after starting it.
-   - Creators, after approval by the system administrator, can create quests and update them.
+1. Users can register in the system and start playing quests right away.
+2. The application has a system of permissions:
+   - Users can play only published quests and those they haven't played or abandoned before.
+   - Users are forced to end or abandon the quest after starting it.
+   - Creators, after approval by the system administrator, can create and update quests.
    - Administrators can approve quests created by creators, allowing users to find them.
 3. Users can choose top-rated quests and recommended ones.
 4. Recommended quests are provided by the system using a memory-based collaborative filtering service.
 5. Question types include read text, single choice, and multiple choice.
 6. A rating system forces users to rate the quest after completing it from 1 to 5.
-7. Users see their progress and points accrued after each question and after ending the quest.
+7. Users see their progress and points accrued after each question and upon ending the quest.
 8. Users can see their percentile score.
 9. Users can change their password on the profile page.
 10. Users can see their results for each quest and rank based on quizzes done.
@@ -34,6 +35,7 @@ Chain Quest is an application that allows creators to create quizzes with multip
     - Quest-based: Used by creators and users to prevent users from entering other routes during gameplay which they need to first end. Creators also use this to prevent them from modifying quests already published and from editing/viewing quests not created by them.
 13. Admin inspection - Admin can preview quests with questions to check the validity of the quest before publishing it.
 14. Support for multiple wallets for each blockchain.
+
 
 ## Technologies Used
 
@@ -94,12 +96,22 @@ Other patterns used include:
 To install and run the project, follow these steps:
 1. Ensure Docker is installed on your machine.
 2. Clone the repository and navigate to the project directory, make sure to create uploads directory.
+3. Make sure you have public/uploads directory created.
+4. Modify permissions:
+   ```sh
+   chmod 777 public/uploads
+   ```
 3. Use Docker Compose to build and start the services:
    ```sh
    docker-compose up --build
    chmod 777 public/uploads 
    ```
-4. Import the database schema and data from the provided SQL dump into your PostgreSQL instance.
+5. Import the database schema and data from the provided SQL dump into your PostgreSQL instance:
+   ```sh
+   docker compose cp sql_dump.sql db:sql_dump.sql
+   docker compose exec db sh
+   psql -U "your_user" -d "your_database" -f objects.sql
+   ```
 5. Modify the initialize method in DefaultDBConfig.php to suit your environment settings, specifically for database connections:
    ```php
     $this->setValue(self::USERNAME_KEY, 'docker');
