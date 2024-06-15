@@ -16,7 +16,7 @@
               <div class="infos">
                 <span class="info">
                   <i class="fas fa-star"></i>
-                  <?= $quest->getAvgRating(); ?>
+                  <?= number_format($quest->getAvgRating(), 2); ?>
                 </span>
 
                 <span class="info">

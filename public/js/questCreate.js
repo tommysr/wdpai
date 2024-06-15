@@ -12,11 +12,15 @@ const poolAmount = document.querySelector("input[name='poolAmount']");
 const token = document.querySelector("input[name='token']");
 const error = document.getElementById("error");
 let questionsTexts = [];
-document.querySelectorAll(".questionText").forEach(e => questionsTexts.push(e));
+document
+  .querySelectorAll(".questionText")
+  .forEach((e) => questionsTexts.push(e));
 let questionsPoints = [];
-document.querySelectorAll(".questionPoints").forEach(e => questionsPoints.push(e));
-let optionsText = [] 
-document.querySelectorAll(".optionText").forEach(e => optionsText.push(e));
+document
+  .querySelectorAll(".questionPoints")
+  .forEach((e) => questionsPoints.push(e));
+let optionsText = [];
+document.querySelectorAll(".optionText").forEach((e) => optionsText.push(e));
 const questionsDiv = document.querySelector(".cards");
 const questions = document.querySelectorAll(".container-card");
 const optionsDiv = document.querySelectorAll(".grid-3");
@@ -449,7 +453,7 @@ function serializeForm(form) {
 const validateFileInput = () => {
   const questThumbnail = document.getElementById("questThumbnail");
 
-  console.log(questThumbnail, questThumbnail.validity)
+  console.log(questThumbnail, questThumbnail.validity);
   if (!questThumbnail.value) {
     error.textContent = "You need to upload a file";
   } else {
@@ -470,20 +474,19 @@ function processErrors(errors) {
   let flatArray = [];
 
   // Flatten the array if it contains objects
-  errors.forEach(error => {
-      if (typeof error === 'object' && error !== null) {
-          // If it's an object, extract its values
-          flatArray.push(...Object.values(error));
-      } else {
-          // If it's not an object, just add it to the flat array
-          flatArray.push(error);
-      }
+  errors.forEach((error) => {
+    if (typeof error === "object" && error !== null) {
+      // If it's an object, extract its values
+      flatArray.push(...Object.values(error));
+    } else {
+      // If it's not an object, just add it to the flat array
+      flatArray.push(error);
+    }
   });
 
   // Join the array elements with newline separators
-  return flatArray.join('\n');
+  return flatArray.join("\n");
 }
-
 
 function submitForm(event) {
   event.preventDefault();
@@ -540,7 +543,6 @@ function submitForm(event) {
     });
 }
 
-
 const fileInput = document.getElementById("fileInput");
 const preview = document.getElementById("preview");
 
@@ -558,9 +560,19 @@ fileInput.addEventListener("change", () => {
   }
 });
 
-function uploadFile() {
+function uploadFile(lastUploadedFile) {
   const formData = new FormData();
+
+  if (fileInput.files.length == 0) {
+    error.textContent = "You need to choose a file";
+    return;
+  }
+
   formData.append("file", fileInput.files[0]);
+
+  if (lastUploadedFile != "") {
+    formData.append("lastUploadedFile", lastUploadedFile);
+  }
 
   fetch("/uploadPicture", {
     method: "POST",

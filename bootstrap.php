@@ -216,7 +216,7 @@ $app->set(IRatingService::class, function ($app) {
   return new RatingService($app->get(IRatingRepository::class), $app->get(IQuestRepository::class), $app->get(IUserRepository::class));
 });
 
-$app->set(IDataManager::class, function ($app) {
+$app->singleton(IDataManager::class, function ($app) {
   return new DataManager();
 });
 

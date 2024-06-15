@@ -16,7 +16,8 @@
           alt="Image preview" />
 
         <?php if (isset($userRole) && $userRole == 'creator'): ?>
-          <button type="button" class="upload-button" onclick="uploadFile()">Upload</button>
+          <button type="button" class="upload-button"
+            onclick="uploadFile('<?= $quest ? $quest->getPictureUrl() : '' ?>')">Upload</button>
         <?php endif; ?>
       </div>
 

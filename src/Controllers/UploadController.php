@@ -62,6 +62,12 @@ class UploadController extends AppController implements IUploadController
   {
     $fileData = $this->request->getUploadedFiles()['file'];
     $errors = $this->validateQuestFile($fileData);
+    $lastUploadedFile = $request->getParsedBodyParam('lastUploadedFile');
+
+    if ($lastUploadedFile) {
+      $dir = dirname(__DIR__) . self::UPLOAD_DIRECTORY;
+      unlink($dir . $lastUploadedFile);
+    }
 
     if ($errors) {
       return new JsonResponse(['errors' => $errors]);
@@ -76,8 +82,6 @@ class UploadController extends AppController implements IUploadController
         $dir . $newFileName
       );
 
-      $this->sessionService->set('uploadedFile', $newFileName);
-      
       return new JsonResponse(['name' => $newFileName]);
     }
 
